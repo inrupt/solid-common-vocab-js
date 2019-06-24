@@ -1,0 +1,23 @@
+node_modules
+.nyc_output
+.idea
+*.iml
+
+.env
+
+# Deliberately ignore our developer-specific configuration file (Production should have none, with everything in
+# environment variables, e.g. the way Heroku operates).
+config/config.json
+
+#vscode
+/.vscode
+
+# Tests can generate output files, so ignore everything in there.
+test/resources/output
+coverage/
+
+#
+# yalc is used to allow us change dependent projects without having to publish those changes to a remote Git repo.
+#
+.yalc
+yalc.lock
