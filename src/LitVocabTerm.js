@@ -3,7 +3,6 @@
 const rdf = require('rdf-ext')
 
 const LitContext = require('./LitContext')
-// const LitSessionContext = require('./LitSessionContext')
 const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
 const LitUtils = require('./LitUtils')
 
@@ -16,7 +15,7 @@ const LitUtils = require('./LitUtils')
  * to look up the locale for a term's label at runtime if one is not specifically provided).
  */
 class LitVocabTerm extends rdf.defaults.NamedNode  {
-  constructor (iri, useLocalNameAsEnglishLabel, contextStorage) {
+  constructor (iri, contextStorage, useLocalNameAsEnglishLabel) {
     super(iri)
 
     this._litSessionContext = new LitContext('en', contextStorage)

@@ -16,14 +16,14 @@ describe('LitVocabTerm tests', () => {
 
     it('should flag local IRI name as English label', () => {
       const iri = 'test://iri#localTermName'
-      expect(new LitVocabTerm(iri, true).label('en')).to.equals('localTermName')
+      expect(new LitVocabTerm(iri, undefined, true).label('en')).to.equals('localTermName')
     })
   })
 
   describe('Supports labels and comments', () => {
     it('should process English label as localname', () => {
       const iri = 'test://iri#whatever'
-      const term = new LitVocabTerm(iri, true)
+      const term = new LitVocabTerm(iri, undefined, true)
       expect(term.label('en')).equals('whatever')
     })
 
@@ -53,7 +53,7 @@ describe('LitVocabTerm tests', () => {
       const iri = 'test://iri'
       const contextStorage = new LitContext.EmulateLocalStorage()
 
-      const term = new LitVocabTerm(iri, undefined, contextStorage)
+      const term = new LitVocabTerm(iri, contextStorage, undefined)
         .addLiteral('en', 'No params test')
         .addLiteral('es', 'Ninguna prueba de params')
 
@@ -66,7 +66,7 @@ describe('LitVocabTerm tests', () => {
     it('should use the locale from our LIT session context, with params', () => {
       const contextStorage = new LitContext.EmulateLocalStorage()
 
-      const term = new LitVocabTerm('test://iri', undefined, contextStorage)
+      const term = new LitVocabTerm('test://iri', contextStorage, undefined)
         .addLiteral('en', 'Params test {{0}} and {{1}}')
         .addLiteral('es', 'Prueba de parámetros {{0}} y {{1}}')
 
@@ -80,7 +80,7 @@ describe('LitVocabTerm tests', () => {
       const contextStorage = new LitContext.EmulateLocalStorage()
 
       const label = 'test label string'
-      const term = new LitVocabTerm('test://iri', undefined, contextStorage).addLabel('en', label)
+      const term = new LitVocabTerm('test://iri', contextStorage, undefined).addLabel('en', label)
       contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
       expect(term.labelContext).equals(label)
     })
@@ -89,9 +89,25 @@ describe('LitVocabTerm tests', () => {
       const contextStorage = new LitContext.EmulateLocalStorage()
 
       const comment = 'test label string'
-      const term = new LitVocabTerm('test://iri', undefined, contextStorage).addComment('en', comment)
+      const term = new LitVocabTerm('test://iri', contextStorage, undefined).addComment('en', comment)
       contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
       expect(term.commentContext).equals(comment)
+    })
+
+    it('should use the literal context', () => {
+      const contextStorage = new LitContext.EmulateLocalStorage()
+
+      const literalEnglish = 'test label string'
+      const literalSpanish = '<Something in Spanish>'
+      const term = new LitVocabTerm('test://iri', contextStorage, undefined)
+        .addLiteral('en', literalEnglish)
+        .addLiteral('es', literalSpanish)
+
+      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
+      expect(term.useContext).equals(literalEnglish)
+
+      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
+      expect(term.useContext).equals(literalSpanish)
     })
   })
 
