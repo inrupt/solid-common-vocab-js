@@ -275,4 +275,21 @@ describe ('LIT utils tests', () => {
       expect(LitUtils.prefixForHttpHeader()).to.startsWith(LitUtils.LIT_CORE_NAMESPACE)
     })
   })
+
+  describe ('Dataset util function tests', () => {
+    it('should read the first value from a given dataset', () => {
+
+      const aliceDataset = rdf.dataset().addAll([
+        rdf.quad(alice, SCHEMA.name, rdf.literal('Alice')),
+        rdf.quad(alice, SCHEMA.email, rdf.literal('alice@hotmail.com')),
+        rdf.quad(alice, SCHEMA.requiredMaxAge, rdf.literal('21'))
+      ]);
+
+      const emptyDataset = rdf.dataset();
+
+      expect(LitUtils.firstDatasetValue(aliceDataset)).to.equal('Alice')
+      expect(LitUtils.firstDatasetValue(emptyDataset)).to.equal(undefined)
+      expect(LitUtils.firstDatasetValue(emptyDataset, 'default value')).to.equal('default value')
+    })
+  })
 })
