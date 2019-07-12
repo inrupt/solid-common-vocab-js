@@ -1,6 +1,6 @@
 {
   "name": "@lit/vocab-term",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Utility library for working with RDF vocabulary terms (e.g. IRI's or literals (including multi-lingual literals)). Wraps rdf-ext.",
   "main": "index.js",
   "repository": {
