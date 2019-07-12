@@ -3,9 +3,6 @@
   "version": "1.0.7",
   "description": "Utility library for working with RDF vocabulary terms (e.g. IRI's or literals (including multi-lingual literals)). Wraps rdf-ext.",
   "main": "index.js",
-  "publishConfig": {
-    "registry": "http://localhost:4873/"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/inrupt/lit-vocab-term-js"
