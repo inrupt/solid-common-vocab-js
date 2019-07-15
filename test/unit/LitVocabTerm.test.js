@@ -20,6 +20,15 @@ describe('LitVocabTerm tests', () => {
     })
   })
 
+  describe('Context messages', () => {
+    it('should report context on failure', () => {
+      const iri = 'test://iri'
+      const term = new LitVocabTerm(iri)
+
+      expect(() => term.message(new LitContext('en'))).to.throw(iri, 'skos:definition')
+    })
+  })
+
   describe('Supports labels and comments', () => {
     it('should process English label as localname', () => {
       const iri = 'test://iri#whatever'
@@ -38,15 +47,25 @@ describe('LitVocabTerm tests', () => {
     })
   })
 
-  describe('Supports literals', () => {
+  describe('Supports messages (rdfs:literals)', () => {
+    it('should access literal definition without params', () => {
+      const iri = 'test://iri'
+      const term = new LitVocabTerm(iri)
+        .addMessage('en', 'whatever test')
+        .addMessage('es', 'test whatever in Spanish')
+
+      expect(term.messageContext).equals('whatever test')
+      // expect(term.message).equals('test whatever in Spanish')
+    })
+
     it('should process params on literals', () => {
       const iri = 'test://iri'
       const term = new LitVocabTerm(iri)
-          .addLiteral('en', 'whatever {{0}} comment - for user {{1}}')
-          .addLiteral('es', 'User {{1}} has whatever comment: {{0}}')
+        .addMessage('en', 'whatever {{0}} comment - for user {{1}}')
+        .addMessage('es', 'User {{1}} has whatever comment: {{0}}')
 
-      expect(term.literal(new LitContext('en'), 'example', 'tommy')).equals('whatever example comment - for user tommy')
-      expect(term.literal(new LitContext('es'), 'example', 'tommy')).equals('User tommy has whatever comment: example')
+      expect(term.message(new LitContext('en'), 'example', 'tommy')).equals('whatever example comment - for user tommy')
+      expect(term.message(new LitContext('es'), 'example', 'tommy')).equals('User tommy has whatever comment: example')
     })
 
     it('should use the locale from our LIT session context', () => {
@@ -54,8 +73,8 @@ describe('LitVocabTerm tests', () => {
       const contextStorage = new LitContext.EmulateLocalStorage()
 
       const term = new LitVocabTerm(iri, contextStorage, undefined)
-        .addLiteral('en', 'No params test')
-        .addLiteral('es', 'Ninguna prueba de params')
+        .addMessage('en', 'No params test')
+        .addMessage('es', 'Ninguna prueba de params')
 
       contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
       expect(term.useContext).equals('No params test')
@@ -67,8 +86,8 @@ describe('LitVocabTerm tests', () => {
       const contextStorage = new LitContext.EmulateLocalStorage()
 
       const term = new LitVocabTerm('test://iri', contextStorage, undefined)
-        .addLiteral('en', 'Params test {{0}} and {{1}}')
-        .addLiteral('es', 'Prueba de parámetros {{0}} y {{1}}')
+        .addMessage('en', 'Params test {{0}} and {{1}}')
+        .addMessage('es', 'Prueba de parámetros {{0}} y {{1}}')
 
       contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
       expect(term.useContextParams('first', 'second')).equals('Params test first and second')
@@ -100,8 +119,8 @@ describe('LitVocabTerm tests', () => {
       const literalEnglish = 'test label string'
       const literalSpanish = '<Something in Spanish>'
       const term = new LitVocabTerm('test://iri', contextStorage, undefined)
-        .addLiteral('en', literalEnglish)
-        .addLiteral('es', literalSpanish)
+        .addMessage('en', literalEnglish)
+        .addMessage('es', literalSpanish)
 
       contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
       expect(term.useContext).equals(literalEnglish)
@@ -120,7 +139,7 @@ describe('LitVocabTerm tests', () => {
   //
   //     // Create our inputs with a HTTP accept-language header of French.
   //     const inputs = {httpHeaders: new LitBuild().quad('https://example.com/test', `${LitQueryInstance.prefixForHttpHeader()}accept-language`, 'fr')}
-  //     expect(literal.inputs(inputs).literal).to.deep.equal(rdf.literal('whatever in French', 'fr'))
+  //     expect(literal.inputs(inputs).message).to.deep.equal(rdf.literal('whatever in French', 'fr'))
   //   })
   //
   //   it('should get language tag from HTTP header, but if none default to English', () => {
@@ -129,13 +148,13 @@ describe('LitVocabTerm tests', () => {
   //
   //     // With no HTTP headers, should default to English
   //     const inputs = { httpHeaders: LitBuild.empty()}
-  //     expect(literal.inputs(inputs).literal).to.deep.equal(rdf.literal('whatever', 'en'))
+  //     expect(literal.inputs(inputs).message).to.deep.equal(rdf.literal('whatever', 'en'))
   //   })
   //
   //   it('should fail if requesting string but no language', () => {
   //     const iri = 'test://iri'
   //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addLiteral('en', 'whatever ${1} in English ${2}')
+  //       .addMessage('en', 'whatever ${1} in English ${2}')
   //
   //     expect(() => literal.string).to.throw(iri, 'no language was specified')
   //   })
@@ -143,7 +162,7 @@ describe('LitVocabTerm tests', () => {
   //   it('should fail if requesting string with language no params', () => {
   //     const iri = 'test://iri'
   //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addLiteral('en', 'whatever ${1} in English ${2}')
+  //       .addMessage('en', 'whatever ${1} in English ${2}')
   //
   //     expect(() => literal.english.string).to.throw(iri, 'contains unexpanded parameter placeholders')
   //   })
@@ -151,7 +170,7 @@ describe('LitVocabTerm tests', () => {
   //   it('should fail if remaining unexpanded param placeholders', () => {
   //     const iri = 'test://iri'
   //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addLiteral('en', 'whatever ${1} in English ${2}')
+  //       .addMessage('en', 'whatever ${1} in English ${2}')
   //
   //     expect(() => literal.english.params('example').string).to.throw(iri, 'en', 'require [2]', 'we only received [1]')
   //   })
@@ -159,12 +178,12 @@ describe('LitVocabTerm tests', () => {
   //   it('should lookup correctly', () => {
   //     const iri = 'test://iri'
   //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addLiteral('en', 'whatever ${1} in English')
-  //       .addLiteral('ga', 'whatever ${2} in Irish is backwards ${1}')
+  //       .addMessage('en', 'whatever ${1} in English')
+  //       .addMessage('ga', 'whatever ${2} in Irish is backwards ${1}')
   //
-  //     expect(literal.english.params('example').literal).to.deep.equal(rdf.literal('whatever example in English', 'en'))
+  //     expect(literal.english.params('example').message).to.deep.equal(rdf.literal('whatever example in English', 'en'))
   //
-  //     expect(literal.language('ga').params('example', 'two').literal).to.deep.equal(rdf.literal('whatever two in Irish is backwards example', 'ga'))
+  //     expect(literal.language('ga').params('example', 'two').message).to.deep.equal(rdf.literal('whatever two in Irish is backwards example', 'ga'))
   //
   //     expect(literal.language('ga').params('example', 'two').string).to.equal('whatever two in Irish is backwards example')
   //   })
@@ -172,29 +191,29 @@ describe('LitVocabTerm tests', () => {
   //   it('should lookup with no params', () => {
   //     const iri = 'test://iri'
   //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addLiteral('en', 'whatever in English')
-  //       .addLiteral('ga', 'whatever in Irish')
+  //       .addMessage('en', 'whatever in English')
+  //       .addMessage('ga', 'whatever in Irish')
   //
-  //     expect(literal.english.literal).to.deep.equal(rdf.literal('whatever in English', 'en'))
+  //     expect(literal.english.message).to.deep.equal(rdf.literal('whatever in English', 'en'))
   //     expect(literal.language('ga').string).equals('whatever in Irish')
   //   })
   //
   //   it('should use English default if requested language not found', () => {
   //     const iri = 'test://iri'
   //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addLiteral('en', 'whatever in English')
-  //       .addLiteral('ga', 'whatever in Irish')
+  //       .addMessage('en', 'whatever in English')
+  //       .addMessage('ga', 'whatever in Irish')
   //
   //     // NOTE: our result will have an 'en' tag, even though we asked for 'fr' (since we don't have a 'fr' message!).
-  //     expect(literal.language('fr').literal).to.deep.equal(rdf.literal('whatever in English', 'en'))
+  //     expect(literal.language('fr').message).to.deep.equal(rdf.literal('whatever in English', 'en'))
   //   })
   //
   //   it('should use English default with params if requested language not found', () => {
   //     const iri = 'test://iri'
   //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addLiteral('en', 'whatever ${1} in English')
+  //       .addMessage('en', 'whatever ${1} in English')
   //
-  //     expect(literal.language('fr').params('use default').literal).to.deep.equal(rdf.literal('whatever use default in English', 'en'))
+  //     expect(literal.language('fr').params('use default').message).to.deep.equal(rdf.literal('whatever use default in English', 'en'))
   //   })
   // })
 })

@@ -2,15 +2,17 @@
 
 const rdf = require('rdf-ext')
 
-// TODO: Looked at extending this class, but I think it makes more sense to define a whole new class instead...
-// class LitMultiLingualLiteral extends rdf.defaults.NamedNode {
-//   constructor (iri, values) {
-//     super(iri)
-
+/**
+ * Class that defines the concept of a multi-lingual literal (as in a String literal). We can add multiple values in
+ * different languages, and look them up again.
+ * Also supports parameterized string values (using {{0}} placeholders), for which we can provide values when looking
+ * them up.
+ */
 class LitMultiLingualLiteral {
-  constructor (iri, values) {
+  constructor (iri, values, contextMessage) {
     this._iri = iri
     this._values = values ? values : new Map()
+    this._contextMessage = contextMessage ? contextMessage : '<None provided>'
   
     this._language = undefined
     this._expandedMessage = undefined
@@ -18,7 +20,7 @@ class LitMultiLingualLiteral {
     Object.defineProperty(this, 'string', {
       get () {
         if (!this._language) {
-          throw new Error(`Requested RifMultiLingualLiteral with IRI [${iri}], but no language was specified.`)
+          throw new Error(`Requested LitMultiLingualLiteral with IRI [${iri}], but no language was specified (Context: [${this._contextMessage}]).`)
         }
         
         let result
@@ -26,7 +28,7 @@ class LitMultiLingualLiteral {
           const message = this.lookupButDefaultToEnglish(this._language)
           
           if (message.indexOf('{{') !== -1) {
-            throw new Error(`Requested RifMultiLingualLiteral with IRI [${iri}] in language [${this._language}], but it still contains unexpanded parameter placeholders (please use the .params() method to provide *all* required parameter values).`)
+            throw new Error(`Requested LitMultiLingualLiteral with IRI [${iri}] in language [${this._language}], but it still contains unexpanded parameter placeholders (please use the .params() method to provide *all* required parameter values) (Context: [${this._contextMessage}]).`)
           }
           
           result = message
@@ -39,7 +41,7 @@ class LitMultiLingualLiteral {
     })
 
     // Returns an RDF literal based on our current criteria.
-    Object.defineProperty(this, 'literal', {
+    Object.defineProperty(this, 'value', {
       get () {
         const message = this.string
         return rdf.literal(message, this._language)
@@ -49,7 +51,7 @@ class LitMultiLingualLiteral {
     // Sets the language to 'English', but returns our current instance.
     Object.defineProperty(this, 'english', {
       get () {
-        this.language('en')
+        this.setLanguage('en')
         return this
       }
     })
@@ -66,8 +68,8 @@ class LitMultiLingualLiteral {
     return this._iri
   }
   
-  addLiteral (locale, literal) {
-    this._values.set(locale, literal)
+  addValue (locale, value) {
+    this._values.set(locale, value)
     return this
   }
 
@@ -75,7 +77,7 @@ class LitMultiLingualLiteral {
     return this._values.get(locale)
   }
   
-  language (tag) {
+  setLanguage (tag) {
     this._language = tag
     return this
   }
@@ -93,7 +95,7 @@ class LitMultiLingualLiteral {
    * @param inputs
    * @returns {LitMultiLingualLiteral}
    */
-  // TODO: Remove this for now, as it depends on RifBuild and RifQuery functionality, which are now 'above' this library...
+  // TODO: Remove this for now, as it depends on LitBuild and LitQuery functionality, which are now 'above' this library...
   // inputs (inputs) {
   //   const acceptLanguage = inputs.httpHeaders.query.lookupHttpHeader('accept-language')
   //   if (acceptLanguage) {
@@ -119,6 +121,10 @@ class LitMultiLingualLiteral {
     let result = this.lookupLanguage(language)
     if (!result) {
       result = this.lookupLanguage('en')
+      if (!result) {
+        throw new Error(`MultiLingualLiteral lookup on term [${this._iri}] for language [${language}], but no values at all (even English) (Context: [${this._contextMessage}]).`)
+      }
+
       this._language = 'en'
     }
     
@@ -139,7 +145,7 @@ class LitMultiLingualLiteral {
     
     const paramsRequired = (message.split('{{').length - 1)
     if (paramsRequired !== arguments.length) {
-      throw new Error(`Setting parameters on RifMultiLingualLiteral with IRI [${this._iri}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${arguments.length}].`)
+      throw new Error(`Setting parameters on LitMultiLingualLiteral with IRI [${this._iri}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${arguments.length}] (Context: [${this._contextMessage}]).`)
     }
     
     for (let i = 0; i < arguments.length; i++) {

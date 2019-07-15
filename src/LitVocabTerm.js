@@ -20,33 +20,20 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
 
     this._litSessionContext = new LitContext('en', contextStorage)
 
-    const CODE_CONTEXT = 'LitVocabTerm.js'
+    // Create holders for meta-data on this vocabulary term (we could probably lazily create these only if values
+    // are actually provided!).
+    this._label = new LitMultiLingualLiteral(iri, undefined, 'rdfs:label')
+    this._comment = new LitMultiLingualLiteral(iri, undefined, 'rdfs:comment')
+    this._message = new LitMultiLingualLiteral(iri, undefined, 'message (should be defined in RDF vocab using: skos:definition)')
 
-    this._label = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT))
     if (useLocalNameAsEnglishLabel) {
-      this._label.addLiteral('en', LitUtils.extractIriLocalName(iri))
+      this._label.addValue('en', LitUtils.extractIriLocalName(iri))
     }
-
-    this._comment = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT))
-
-    this._literal = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT))
-
-    // this._label = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT), label)
-    // if (! this._label.lookupEnglish) {
-    //   throw new Error(`No English label provided for LIT vocabulary term [${iri}]`)
-    // }
-    //
-    // this._comment = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT), comment)
-    // if (! this._comment.lookupEnglish) {
-    //   throw new Error(`No English comment provided for LIT vocabulary term [${iri}]`)
-    // }
-    //
-    // this._shape = shape
 
     Object.defineProperty(this, 'useContext', {
       label: 'Accessor that uses our LitSessionContext instance',
       get () {
-        return this.literal(this._litSessionContext)
+        return this.message(this._litSessionContext)
       }
     })
 
@@ -63,24 +50,31 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
         return this.comment(this._litSessionContext.getLocale())
       }
     })
+
+    Object.defineProperty(this, 'messageContext', {
+      label: 'Accessor that uses our LitSessionContext instance',
+      get () {
+        return this.message(this._litSessionContext)
+      }
+    })
   }
 
   useContextParams (...rest) {
-    return this.literal(this._litSessionContext, ...rest)
+    return this.message(this._litSessionContext, ...rest)
   }
 
   addLabel (language, value) {
-    this._label.addLiteral(language, value)
+    this._label.addValue(language, value)
     return this
   }
 
   addComment (language, value) {
-    this._comment.addLiteral(language, value)
+    this._comment.addValue(language, value)
     return this
   }
 
-  addLiteral (language, value) {
-    this._literal.addLiteral(language, value)
+  addMessage (language, value) {
+    this._message.addValue(language, value)
     return this
   }
 
@@ -92,8 +86,8 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
     return this._comment.lookupLanguage(language)
   }
 
-  literal (context, ...rest) {
-    return this._literal.language(context.getLocale()).params(...rest).string
+  message (context, ...rest) {
+    return this._message.setLanguage(context.getLocale()).params(...rest).string
   }
 
   // /**

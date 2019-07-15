@@ -36,7 +36,7 @@ describe('MultiLingualLiteral tests', () => {
     it('should add message, no constructor values', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-      literal.addLiteral('es', 'whatever in Spanish').addLiteral('ie', 'whatever in Irish')
+      literal.addValue('es', 'whatever in Spanish').addValue('ie', 'whatever in Irish')
       expect(literal.lookupLanguage('es')).equals('whatever in Spanish')
       expect(literal.lookupLanguage('ie')).equals('whatever in Irish')
     })
@@ -47,7 +47,7 @@ describe('MultiLingualLiteral tests', () => {
       expect(literal.lookupEnglish).equals('whatever')
       expect(literal.lookupLanguage('es')).to.be.undefined
       
-      literal.addLiteral('es', 'whatever in Spanish').addLiteral('ga', 'whatever in Irish')
+      literal.addValue('es', 'whatever in Spanish').addValue('ga', 'whatever in Irish')
       expect(literal.lookupLanguage('es')).equals('whatever in Spanish')
       expect(literal.lookupLanguage('ga')).equals('whatever in Irish')
     })
@@ -61,7 +61,7 @@ describe('MultiLingualLiteral tests', () => {
   //
   //     // Create our inputs with a HTTP accept-language header of French.
   //     const inputs = {httpHeaders: new RifBuild().quad('https://example.com/test', `${LitUtils.prefixForHttpHeader()}accept-language`, 'fr')}
-  //     expect(literal.inputs(inputs).literal).to.deep.equal(rdf.literal('whatever in French', 'fr'))
+  //     expect(literal.inputs(inputs).value).to.deep.equal(rdf.literal('whatever in French', 'fr'))
   //   })
   //
   //   it('should get language tag from HTTP header, but if none default to English', () => {
@@ -70,7 +70,7 @@ describe('MultiLingualLiteral tests', () => {
   //
   //     // With no HTTP headers, should default to English
   //     const inputs = { httpHeaders: RifBuild.empty()}
-  //     expect(literal.inputs(inputs).literal).to.deep.equal(rdf.literal('whatever', 'en'))
+  //     expect(literal.inputs(inputs).value).to.deep.equal(rdf.literal('whatever', 'en'))
   //   })
   // })
 
@@ -81,21 +81,29 @@ describe('MultiLingualLiteral tests', () => {
       expect(literal.lookupEnglish).equals('whatever')
       expect(literal.lookupLanguage('fr')).equals('whatever in French')
 
-      expect(literal.lookupLanguage('es')).to.be.undefined
+      expect(literal.lookupButDefaultToEnglish('es')).equals('whatever')
     })
-  
+
     it('should fail if requesting string but no language', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-        .addLiteral('en', 'whatever {{0}} in English {{1}}')
-      
+        .addValue('en', 'whatever {{0}} in English {{1}}')
+
       expect(() => literal.string).to.throw(iri, 'no language was specified')
     })
-  
+
+    it('should fail if no values at all!', () => {
+      const iri = 'test://iri'
+      const literal = new RifMultiLingualLiteral(iri)
+
+      expect(() => literal.string).to.throw(iri, 'no values at all')
+      expect(() => literal.lookupButDefaultToEnglish('es')).to.throw(iri, '[es]', 'no values at all')
+    })
+
     it('should fail if requesting string with language no params', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-        .addLiteral('en', 'whatever {{0}} in English {{1}}')
+        .addValue('en', 'whatever {{0}} in English {{1}}')
   
       expect(() => literal.english.string).to.throw(iri, 'contains unexpanded parameter placeholders')
     })
@@ -103,7 +111,7 @@ describe('MultiLingualLiteral tests', () => {
     it('should fail if remaining unexpanded param placeholders', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-        .addLiteral('en', 'whatever {{0}} in English {{1}}')
+        .addValue('en', 'whatever {{0}} in English {{1}}')
   
       expect(() => literal.english.params('example').string).to.throw(iri, 'en', 'require [2]', 'we only received [1]')
     })
@@ -111,42 +119,42 @@ describe('MultiLingualLiteral tests', () => {
     it('should lookup correctly', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-        .addLiteral('en', 'whatever {{0}} in English')
-        .addLiteral('ga', 'whatever {{1}} in Irish is backwards {{0}}')
+        .addValue('en', 'whatever {{0}} in English')
+        .addValue('ga', 'whatever {{1}} in Irish is backwards {{0}}')
 
-      expect(literal.english.params('example').literal).to.deep.equal(rdf.literal('whatever example in English', 'en'))
+      expect(literal.english.params('example').value).to.deep.equal(rdf.literal('whatever example in English', 'en'))
   
-      expect(literal.language('ga').params('example', 'two').literal).to.deep.equal(rdf.literal('whatever two in Irish is backwards example', 'ga'))
+      expect(literal.setLanguage('ga').params('example', 'two').value).to.deep.equal(rdf.literal('whatever two in Irish is backwards example', 'ga'))
 
-      expect(literal.language('ga').params('example', 'two').string).to.equal('whatever two in Irish is backwards example')
+      expect(literal.setLanguage('ga').params('example', 'two').string).to.equal('whatever two in Irish is backwards example')
     })
   
     it('should lookup with no params', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-        .addLiteral('en', 'whatever in English')
-        .addLiteral('ga', 'whatever in Irish')
+        .addValue('en', 'whatever in English')
+        .addValue('ga', 'whatever in Irish')
     
-      expect(literal.english.literal).to.deep.equal(rdf.literal('whatever in English', 'en'))
-      expect(literal.language('ga').string).equals('whatever in Irish')
+      expect(literal.english.value).to.deep.equal(rdf.literal('whatever in English', 'en'))
+      expect(literal.setLanguage('ga').string).equals('whatever in Irish')
     })
   
     it('should use English default if requested language not found', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-        .addLiteral('en', 'whatever in English')
-        .addLiteral('ga', 'whatever in Irish')
+        .addValue('en', 'whatever in English')
+        .addValue('ga', 'whatever in Irish')
     
       // NOTE: our result will have an 'en' tag, even though we asked for 'fr' (since we don't have a 'fr' message!).
-      expect(literal.language('fr').literal).to.deep.equal(rdf.literal('whatever in English', 'en'))
+      expect(literal.setLanguage('fr').value).to.deep.equal(rdf.literal('whatever in English', 'en'))
     })
   
     it('should use English default with params if requested language not found', () => {
       const iri = 'test://iri'
       const literal = new RifMultiLingualLiteral(iri)
-        .addLiteral('en', 'whatever {{0}} in English')
+        .addValue('en', 'whatever {{0}} in English')
     
-      expect(literal.language('fr').params('use default').literal).to.deep.equal(rdf.literal('whatever use default in English', 'en'))
+      expect(literal.setLanguage('fr').params('use default').value).to.deep.equal(rdf.literal('whatever use default in English', 'en'))
     })
   })
 })
