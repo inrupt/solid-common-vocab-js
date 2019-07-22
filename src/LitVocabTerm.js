@@ -79,11 +79,11 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
   }
 
   label (language) {
-    return this._label.lookupLanguage(language)
+    return this._label.lookupButDefaultToEnglish(language)
   }
 
   comment (language) {
-    return this._comment.lookupLanguage(language)
+    return this._comment.lookupButDefaultToEnglish(language)
   }
 
   message (context, ...rest) {
