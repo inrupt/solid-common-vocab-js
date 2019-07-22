@@ -11,7 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\"",
+    "test": "mkdir -p test/resources/output && nyc mocha --require mock-local-storage \"./test/**/*.test.js\"",
     "test-explicitly-exclude-node-modules": "mkdir -p test/resources/output && nyc mocha \"./{,!(node_modules)/**/}*.test.js\""
   },
   "publishConfig": {
@@ -51,6 +51,7 @@
     "chai": "^4.2.0",
     "chai-string": "^1.5.0",
     "mocha": "^6.1.4",
+    "mock-local-storage": "^1.1.8",
     "nyc": "^14.1.1",
     "standard": "^12.0.1"
   }

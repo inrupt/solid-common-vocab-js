@@ -1,13 +1,13 @@
 'use strict'
 
-const RifContext = require('../../src/LitContext.js')
-const RifContextError = require('../../src/LitContextError.js')
+const LitContext = require('../../src/LitContext.js')
+const LitContextError = require('../../src/LitContextError.js')
 
 const chai = require('chai')
 const expect = chai.expect
 
 describe('Context error tests', () => {
-  const context = new RifContext('en')
+  const context = new LitContext('en', localStorage)
 
   beforeEach(() => {
     delete process.env.NODE_ENV
@@ -15,7 +15,7 @@ describe('Context error tests', () => {
 
   it('should fail if wrapped exception is not an Error', function () {
     try {
-      new RifContextError(context, 'test', 'Not an error!')
+      new LitContextError(context, 'test', 'Not an error!')
       expect.fail()
     } catch (error) {
       expect(error.message).to.include('test', 'Not an error!')
@@ -23,7 +23,7 @@ describe('Context error tests', () => {
   })
 
   it('should create', function () {
-    expect(new RifContextError(context, 'test')).to.not.be.null
+    expect(new LitContextError(context, 'test')).to.not.be.null
   })
 
   it('should wrap standard error', function () {
@@ -32,7 +32,7 @@ describe('Context error tests', () => {
       throw new Error(message)
     } catch (error) {
       const wrapMessage = 'Wrap error message'
-      const wrapError = new RifContextError(context, wrapMessage, error)
+      const wrapError = new LitContextError(context, wrapMessage, error)
       expect(wrapError.countLevels()).to.equal(2)
 
       const fullReport = wrapError.unwrapException()
@@ -45,12 +45,12 @@ describe('Context error tests', () => {
     try {
       try {
         try {
-          throw new RifContextError(context, 'Error message Level1')
+          throw new LitContextError(context, 'Error message Level1')
         } catch (error) {
-          throw new RifContextError(context, 'Error message Level2', error)
+          throw new LitContextError(context, 'Error message Level2', error)
         }
       } catch (error) {
-        throw new RifContextError(context, 'Error message Level3', error)
+        throw new LitContextError(context, 'Error message Level3', error)
       }
     } catch (error) {
       expect(error.countLevels()).to.equal(3)
@@ -65,15 +65,15 @@ describe('Context error tests', () => {
     try {
       try {
         try {
-          throw new RifContextError(context, 'Error message Level1')
+          throw new LitContextError(context, 'Error message Level1')
         } catch (error) {
           throw new Error('Standard Error message Level2')
         }
       } catch (error) {
         try {
-          throw new RifContextError(context, 'Error message Level3', error)
+          throw new LitContextError(context, 'Error message Level3', error)
         } catch (error) {
-          throw new RifContextError(context, 'Error message Level4', error)
+          throw new LitContextError(context, 'Error message Level4', error)
         }
       }
     } catch (error) {
@@ -93,12 +93,12 @@ describe('Context error tests', () => {
     try {
       try {
         try {
-          throw new RifContextError(context, 'Error message Level1')
+          throw new LitContextError(context, 'Error message Level1')
         } catch (error) {
-          throw new RifContextError(context, 'Error message Level2', error)
+          throw new LitContextError(context, 'Error message Level2', error)
         }
       } catch (error) {
-        throw new RifContextError(context, 'Error message Level3', error)
+        throw new LitContextError(context, 'Error message Level3', error)
       }
     } catch (error) {
       expect(error.countLevels()).to.equal(3)
@@ -118,7 +118,7 @@ describe('Context error tests', () => {
       throw new Error(message)
     } catch (error) {
       const wrapMessage = 'Wrap error message'
-      const wrapError = new RifContextError(context, wrapMessage, error)
+      const wrapError = new LitContextError(context, wrapMessage, error)
       expect(wrapError.countLevels()).to.equal(2)
     
       const fullReport = wrapError.toString()
@@ -130,7 +130,7 @@ describe('Context error tests', () => {
   it('should check if our erorr contains specified values', function() {
     const message = 'Error occurred'
     try {
-      throw new RifContextError(context, message)
+      throw new LitContextError(context, message)
     } catch (error) {
       expect(error.contains('Error', 'occurred')).to.be.true
       expect(error.contains('Error', 'does not', 'occurred')).to.be.false
@@ -140,7 +140,7 @@ describe('Context error tests', () => {
   it('should return true if we don\'t actually check for any arguments', function() {
     const message = 'Error occurred'
     try {
-      throw new RifContextError(context, message)
+      throw new LitContextError(context, message)
     } catch (error) {
       expect(error.contains()).to.be.true
     }

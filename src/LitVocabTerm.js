@@ -30,37 +30,26 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
       this._label.addValue('en', LitUtils.extractIriLocalName(iri))
     }
 
-    Object.defineProperty(this, 'useContext', {
-      label: 'Accessor that uses our LitSessionContext instance',
-      get () {
-        return this.message(this._litSessionContext)
-      }
-    })
-
-    Object.defineProperty(this, 'labelContext', {
+    Object.defineProperty(this, 'label', {
       label: 'Accessor for label that uses our LitSessionContext instance',
       get () {
-        return this.label(this._litSessionContext.getLocale())
+        return this.labelInLang(this._litSessionContext.getLocale())
       }
     })
 
-    Object.defineProperty(this, 'commentContext', {
+    Object.defineProperty(this, 'comment', {
       label: 'Accessor for comment that uses our LitSessionContext instance',
       get () {
-        return this.comment(this._litSessionContext.getLocale())
+        return this.commentInLang(this._litSessionContext.getLocale())
       }
     })
 
-    Object.defineProperty(this, 'messageContext', {
+    Object.defineProperty(this, 'message', {
       label: 'Accessor that uses our LitSessionContext instance',
       get () {
-        return this.message(this._litSessionContext)
+        return this.messageInLang(this._litSessionContext.getLocale())
       }
     })
-  }
-
-  useContextParams (...rest) {
-    return this.message(this._litSessionContext, ...rest)
   }
 
   addLabel (language, value) {
@@ -78,16 +67,24 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
     return this
   }
 
-  label (language) {
+  labelInLang (language) {
     return this._label.lookupButDefaultToEnglish(language)
   }
 
-  comment (language) {
+  commentInLang (language) {
     return this._comment.lookupButDefaultToEnglish(language)
   }
 
-  message (context, ...rest) {
-    return this._message.setLanguage(context.getLocale()).params(...rest).string
+  messageInLang (language) {
+    return this._message.lookupButDefaultToEnglish(language)
+  }
+
+  messageParams (...rest) {
+    return this._message.paramsInLang(this._litSessionContext.getLocale(), ...rest)
+  }
+
+  messageParamsInLang (language, ...rest) {
+    return this._message.paramsInLang(language, ...rest)
   }
 
   // /**
@@ -125,9 +122,9 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
   //  * @returns {*}
   //  */
   // lookupButDefaultToEnglish (language) {
-  //   let result = this.lookupLanguage(language)
+  //   let result = this.lookupInLang(language)
   //   if (!result) {
-  //     result = this.lookupLanguage('en')
+  //     result = this.lookupInLang('en')
   //     this._language = 'en'
   //   }
   //

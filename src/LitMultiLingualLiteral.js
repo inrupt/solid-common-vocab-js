@@ -13,43 +13,48 @@ class LitMultiLingualLiteral {
     this._iri = iri
     this._values = values ? values : new Map()
     this._contextMessage = contextMessage ? contextMessage : '<None provided>'
-  
-    this._language = undefined
-    this._expandedMessage = undefined
-  
-    Object.defineProperty(this, 'string', {
-      get () {
-        if (!this._language) {
-          throw new Error(`Requested LitMultiLingualLiteral with IRI [${iri}], but no language was specified (Context: [${this._contextMessage}]).`)
-        }
-        
-        let result
-        if (!this._expandedMessage) {
-          const message = this.lookupButDefaultToEnglish(this._language)
-          
-          if (message.indexOf('{{') !== -1) {
-            throw new Error(`Requested LitMultiLingualLiteral with IRI [${iri}] in language [${this._language}], but it still contains unexpanded parameter placeholders (please use the .params() method to provide *all* required parameter values) (Context: [${this._contextMessage}]).`)
-          }
-          
-          result = message
-        } else {
-          result = this._expandedMessage
-        }
-        
-        return result
-      }
-    })
 
-    // Returns an RDF literal based on our current criteria.
-    Object.defineProperty(this, 'value', {
+    // Default to English.
+    this._language = 'en'
+
+    this._expandedMessage = undefined
+
+    // Used to flag if we want result as an RDF Literal (otherwise we get back a string!).
+    this._valueAsRdfLiteral = false
+
+    // Object.defineProperty(this, 'string', {
+    //   get () {
+    //     if (!this._language) {
+    //       throw new Error(`Requested LitMultiLingualLiteral with IRI [${iri}], but no language was specified (Context: [${this._contextMessage}]).`)
+    //     }
+    //
+    //     let result
+    //     if (!this._expandedMessage) {
+    //       const message = this.lookupButDefaultToEnglish(this._language)
+    //
+    //       if (message.indexOf('{{') !== -1) {
+    //         throw new Error(`Requested LitMultiLingualLiteral with IRI [${iri}] in language [${this._language}], but it still contains unexpanded parameter placeholders (please use the .params() method to provide *all* required parameter values) (Context: [${this._contextMessage}]).`)
+    //       }
+    //
+    //       result = message
+    //     } else {
+    //       result = this._expandedMessage
+    //     }
+    //
+    //     return result
+    //   }
+    // })
+
+    // Sets our flag to say we want our value as an RDF literal.
+    Object.defineProperty(this, 'asRdfLiteral', {
       get () {
-        const message = this.string
-        return rdf.literal(message, this._language)
+        this._valueAsRdfLiteral = true
+        return this
       }
     })
 
     // Sets the language to 'English', but returns our current instance.
-    Object.defineProperty(this, 'english', {
+    Object.defineProperty(this, 'setToEnglish', {
       get () {
         this.setLanguage('en')
         return this
@@ -59,7 +64,14 @@ class LitMultiLingualLiteral {
     // Looks up our values for English.
     Object.defineProperty(this, 'lookupEnglish', {
       get () {
-        return this._values.get('en')
+        return this.getResult(this._values.get('en'))
+      }
+    })
+
+    // Looks up our values for English.
+    Object.defineProperty(this, 'lookup', {
+      get () {
+        return this.lookupButDefaultToEnglish(this._language)
       }
     })
   }
@@ -73,8 +85,8 @@ class LitMultiLingualLiteral {
     return this
   }
 
-  lookupLanguage (locale) {
-    return this._values.get(locale)
+  lookupInLang (language) {
+    return this.getResult(this._values.get(language))
   }
   
   setLanguage (tag) {
@@ -118,44 +130,57 @@ class LitMultiLingualLiteral {
    * @returns {*}
    */
   lookupButDefaultToEnglish (language) {
-    let result = this.lookupLanguage(language)
+    return this.getResult(this.lookupStringButDefaultToEnglish(language))
+  }
+
+  lookupStringButDefaultToEnglish (language) {
+    let result = this._values.get(language)
     if (!result) {
-      result = this.lookupLanguage('en')
+      result = this._values.get('en')
       if (!result) {
         throw new Error(`MultiLingualLiteral lookup on term [${this._iri}] for language [${language}], but no values at all (even English) (Context: [${this._contextMessage}]).`)
       }
 
       this._language = 'en'
     }
-    
+
     return result
   }
-  
-  /**
+
+  params () {
+    return this.paramsInLang(this._language, ...arguments)
+  }
+
+    /**
    * TODO: Won't yet handle replacing multiple uses of say {{1}} in a single string, which I guess it should...!?
    *
    * @returns {*}
    */
-  params () {
-    if (!this._language) {
-      throw new Error(`MultiLingualLiteral called with params [${arguments}] but no language specified.`)
+  paramsInLang (language, ...rest) {
+    if (!language) {
+      throw new Error(`MultiLingualLiteral with IRI [${this._iri}] called expecting params but no language specified (Context: [${this._contextMessage}]).`)
     }
-  
-    let message = this.lookupButDefaultToEnglish(this._language)
-    
+    //
+    let message = this.lookupStringButDefaultToEnglish(language)
+
     const paramsRequired = (message.split('{{').length - 1)
-    if (paramsRequired !== arguments.length) {
-      throw new Error(`Setting parameters on LitMultiLingualLiteral with IRI [${this._iri}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${arguments.length}] (Context: [${this._contextMessage}]).`)
+    if (paramsRequired !== rest.length) {
+      throw new Error(`Setting parameters on LitMultiLingualLiteral with IRI [${this._iri}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`)
     }
     
-    for (let i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < rest.length; i++) {
       const marker = `{{${i}}}`
-      message = message.replace(marker, arguments[i])
+      message = message.replace(marker, rest[i])
     }
 
+    return this.getResult(message)
+  }
+
+  getResult (message) {
+    const result = this._valueAsRdfLiteral ? rdf.literal(message, this._language) : message
     this._expandedMessage = message
-    
-    return this
+    this._valueAsRdfLiteral = false // Reset our flag!
+    return result
   }
 }
 

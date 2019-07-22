@@ -18,14 +18,15 @@ class LitContext {
       throw new Error('A new context *MUST* be provided a locale, but none was provided.')
     }
 
-    // if (!storage) {
-    //   throw new Error(`A new context *MUST* be provided a storage instance (in browsers we expect 'localStorage', in NodeJS we expect a local file-based implementation), but none was provided.`)
-    // }
-    // this._storage = (typeof storage === 'undefined') ? new EmulateLocalStorage() : storage
-    this._storage = (storage || new EmulateLocalStorage())
+    if (!storage) {
+      throw new Error(`A new context *MUST* be provided storage (we except 'localStorage').`)
+    }
 
-    this._storage.setItem(CONTEXT_KEY_LOCALE, locale)
     this._initialLocale = locale
+
+    this._storage = storage
+    this._storage.setItem(CONTEXT_KEY_LOCALE, locale)
+
     this._createdAt = moment().valueOf()
   }
 
@@ -47,20 +48,5 @@ class LitContext {
   }
 }
 
-class EmulateLocalStorage {
-  constructor () {
-    this._data = { }
-  }
-
-  setItem (key, value) {
-    this._data[key] = value
-  }
-
-  getItem (key) {
-    return this._data[key]
-  }
-}
-
 module.exports = LitContext
-module.exports.EmulateLocalStorage = EmulateLocalStorage
 module.exports.CONTEXT_KEY_LOCALE = CONTEXT_KEY_LOCALE

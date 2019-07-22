@@ -1,7 +1,6 @@
 'use strict'
 
 const LitContext = require('../../src/LitContext')
-// const LitSessionContext = require('../../src/LitSessionContext')
 const LitVocabTerm = require('../../src/LitVocabTerm')
 
 const chai = require('chai')
@@ -11,209 +10,88 @@ describe('LitVocabTerm tests', () => {
   describe('Constructor', () => {
     it('should behave as an IRI', () => {
       const iri = 'test://iri'
-      expect(new LitVocabTerm(iri).value).to.equals(iri)
+      expect(new LitVocabTerm(iri, localStorage).value).to.equals(iri)
     })
 
     it('should flag local IRI name as English label', () => {
       const iri = 'test://iri#localTermName'
-      expect(new LitVocabTerm(iri, undefined, true).label('en')).to.equals('localTermName')
-    })
-  })
-
-  describe('Context messages', () => {
-    it('should report context on failure', () => {
-      const iri = 'test://iri'
-      const term = new LitVocabTerm(iri)
-
-      expect(() => term.message(new LitContext('en'))).to.throw(iri, 'skos:definition')
+      expect(new LitVocabTerm(iri, localStorage, true).labelInLang('en')).to.equals('localTermName')
     })
   })
 
   describe('Supports labels and comments', () => {
     it('should process English label as localname', () => {
       const iri = 'test://iri#whatever'
-      const term = new LitVocabTerm(iri, undefined, true)
-      expect(term.label('en')).equals('whatever')
+      const term = new LitVocabTerm(iri, localStorage, true)
+      expect(term.labelInLang('en')).equals('whatever')
     })
 
     it('should process labels and comments', () => {
       const iri = 'test://iri#whatever'
-      const term = new LitVocabTerm(iri)
+      const term = new LitVocabTerm(iri, localStorage)
         .addLabel('en', 'whatever')
         .addComment('en', 'User comment')
 
-      expect(term.label('en')).equals('whatever')
-      expect(term.comment('en')).equals('User comment')
+      expect(term.labelInLang('en')).equals('whatever')
+      expect(term.commentInLang('en')).equals('User comment')
+    })
+  })
+
+  describe('Supports labels and comments', () => {
+    it('should fail if no messages', () => {
+      const iri = 'test://iri'
+      const term = new LitVocabTerm(iri, localStorage)
+
+      expect(() => term.messageInLang('en')).to.throw(iri, 'skos:definition')
+    })
+
+    it('should use the label context', () => {
+      const label = 'test label string'
+      const term = new LitVocabTerm('test://iri', localStorage, undefined).addLabel('en', label)
+      localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
+      expect(term.label).equals(label)
+    })
+
+    it('should use the comment context', () => {
+      const comment = 'test label string'
+      const term = new LitVocabTerm('test://iri', localStorage, undefined).addComment('en', comment)
+      localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
+      expect(term.comment).equals(comment)
     })
   })
 
   describe('Supports messages (rdfs:literals)', () => {
-    it('should access literal definition without params', () => {
+    it('should access literal definition with language from context without params', () => {
       const iri = 'test://iri'
-      const term = new LitVocabTerm(iri)
+      const term = new LitVocabTerm(iri, localStorage)
         .addMessage('en', 'whatever test')
         .addMessage('es', 'test whatever in Spanish')
 
-      expect(term.messageContext).equals('whatever test')
-      // expect(term.message).equals('test whatever in Spanish')
+      expect(term.message).equals('whatever test')
+      localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
+      expect(term.message).equals('test whatever in Spanish')
     })
 
-    it('should process params on literals', () => {
-      const iri = 'test://iri'
-      const term = new LitVocabTerm(iri)
-        .addMessage('en', 'whatever {{0}} comment - for user {{1}}')
-        .addMessage('es', 'User {{1}} has whatever comment: {{0}}')
-
-      expect(term.message(new LitContext('en'), 'example', 'tommy')).equals('whatever example comment - for user tommy')
-      expect(term.message(new LitContext('es'), 'example', 'tommy')).equals('User tommy has whatever comment: example')
-    })
-
-    it('should use the locale from our LIT session context', () => {
-      const iri = 'test://iri'
-      const contextStorage = new LitContext.EmulateLocalStorage()
-
-      const term = new LitVocabTerm(iri, contextStorage, undefined)
-        .addMessage('en', 'No params test')
-        .addMessage('es', 'Ninguna prueba de params')
-
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.useContext).equals('No params test')
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
-      expect(term.useContext).equals('Ninguna prueba de params')
-    })
-
-    it('should use the locale from our LIT session context, with params', () => {
-      const contextStorage = new LitContext.EmulateLocalStorage()
-
-      const term = new LitVocabTerm('test://iri', contextStorage, undefined)
+    it('should ignore locale from our context if explicit language, with params', () => {
+      const term = new LitVocabTerm('test://iri', localStorage)
         .addMessage('en', 'Params test {{0}} and {{1}}')
         .addMessage('es', 'Prueba de parámetros {{0}} y {{1}}')
 
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.useContextParams('first', 'second')).equals('Params test first and second')
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
-      expect(term.useContextParams('first', 'second')).equals('Prueba de parámetros first y second')
+      localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
+      expect(term.messageParams('first', 'second')).equals('Prueba de parámetros first y second')
+      localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
+      expect(term.messageParams('first', 'second')).equals('Params test first and second')
     })
 
-    it('should use the label context', () => {
-      const contextStorage = new LitContext.EmulateLocalStorage()
+    it('should ignore locale from our context if explicit language, with params', () => {
+      const term = new LitVocabTerm('test://iri', localStorage)
+        .addMessage('en', 'Params test {{0}} and {{1}}')
+        .addMessage('es', 'Prueba de parámetros {{0}} y {{1}}')
 
-      const label = 'test label string'
-      const term = new LitVocabTerm('test://iri', contextStorage, undefined).addLabel('en', label)
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.labelContext).equals(label)
-    })
-
-    it('should use the comment context', () => {
-      const contextStorage = new LitContext.EmulateLocalStorage()
-
-      const comment = 'test label string'
-      const term = new LitVocabTerm('test://iri', contextStorage, undefined).addComment('en', comment)
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.commentContext).equals(comment)
-    })
-
-    it('should use the literal context', () => {
-      const contextStorage = new LitContext.EmulateLocalStorage()
-
-      const literalEnglish = 'test label string'
-      const literalSpanish = '<Something in Spanish>'
-      const term = new LitVocabTerm('test://iri', contextStorage, undefined)
-        .addMessage('en', literalEnglish)
-        .addMessage('es', literalSpanish)
-
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.useContext).equals(literalEnglish)
-
-      contextStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
-      expect(term.useContext).equals(literalSpanish)
+      localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
+      expect(term.messageParamsInLang('en', 'first', 'second')).equals('Params test first and second')
+      localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
+      expect(term.messageParamsInLang('es', 'first', 'second')).equals('Prueba de parámetros first y second')
     })
   })
-
-  //
-  //
-  // describe('Supports language from context', () => {
-  //   it('should get language tag from HTTP header', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri, new Map([['en', 'whatever'], ['fr', 'whatever in French']]))
-  //
-  //     // Create our inputs with a HTTP accept-language header of French.
-  //     const inputs = {httpHeaders: new LitBuild().quad('https://example.com/test', `${LitQueryInstance.prefixForHttpHeader()}accept-language`, 'fr')}
-  //     expect(literal.inputs(inputs).message).to.deep.equal(rdf.literal('whatever in French', 'fr'))
-  //   })
-  //
-  //   it('should get language tag from HTTP header, but if none default to English', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri, new Map([['en', 'whatever'], ['fr', 'whatever in French']]))
-  //
-  //     // With no HTTP headers, should default to English
-  //     const inputs = { httpHeaders: LitBuild.empty()}
-  //     expect(literal.inputs(inputs).message).to.deep.equal(rdf.literal('whatever', 'en'))
-  //   })
-  //
-  //   it('should fail if requesting string but no language', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addMessage('en', 'whatever ${1} in English ${2}')
-  //
-  //     expect(() => literal.string).to.throw(iri, 'no language was specified')
-  //   })
-  //
-  //   it('should fail if requesting string with language no params', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addMessage('en', 'whatever ${1} in English ${2}')
-  //
-  //     expect(() => literal.english.string).to.throw(iri, 'contains unexpanded parameter placeholders')
-  //   })
-  //
-  //   it('should fail if remaining unexpanded param placeholders', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addMessage('en', 'whatever ${1} in English ${2}')
-  //
-  //     expect(() => literal.english.params('example').string).to.throw(iri, 'en', 'require [2]', 'we only received [1]')
-  //   })
-  //
-  //   it('should lookup correctly', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addMessage('en', 'whatever ${1} in English')
-  //       .addMessage('ga', 'whatever ${2} in Irish is backwards ${1}')
-  //
-  //     expect(literal.english.params('example').message).to.deep.equal(rdf.literal('whatever example in English', 'en'))
-  //
-  //     expect(literal.language('ga').params('example', 'two').message).to.deep.equal(rdf.literal('whatever two in Irish is backwards example', 'ga'))
-  //
-  //     expect(literal.language('ga').params('example', 'two').string).to.equal('whatever two in Irish is backwards example')
-  //   })
-  //
-  //   it('should lookup with no params', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addMessage('en', 'whatever in English')
-  //       .addMessage('ga', 'whatever in Irish')
-  //
-  //     expect(literal.english.message).to.deep.equal(rdf.literal('whatever in English', 'en'))
-  //     expect(literal.language('ga').string).equals('whatever in Irish')
-  //   })
-  //
-  //   it('should use English default if requested language not found', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addMessage('en', 'whatever in English')
-  //       .addMessage('ga', 'whatever in Irish')
-  //
-  //     // NOTE: our result will have an 'en' tag, even though we asked for 'fr' (since we don't have a 'fr' message!).
-  //     expect(literal.language('fr').message).to.deep.equal(rdf.literal('whatever in English', 'en'))
-  //   })
-  //
-  //   it('should use English default with params if requested language not found', () => {
-  //     const iri = 'test://iri'
-  //     const literal = new LitMultiLingualLiteral(iri)
-  //       .addMessage('en', 'whatever ${1} in English')
-  //
-  //     expect(literal.language('fr').params('use default').message).to.deep.equal(rdf.literal('whatever use default in English', 'en'))
-  //   })
-  // })
 })

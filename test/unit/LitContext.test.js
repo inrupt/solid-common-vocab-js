@@ -1,30 +1,29 @@
 'use strict'
 
-const RifContext = require('../../src/LitContext.js')
+const LitContext = require('../../src/LitContext.js')
 
 const moment = require('moment')
 
 const chai = require('chai')
 const expect = chai.expect
 
-describe ('RifContext tests', () => {
+describe ('LitContext tests', () => {
   it ('should fail if no locale provided', function () {
-    expect(() => new RifContext()).to.throw('none was provided')
+    expect(() => new LitContext()).to.throw('*MUST* be provided a locale')
   })
 
   it ('should fail if no storage provided', function () {
-    // Use an local emulator instead!
-    // expect(() => new RifContext('en')).to.throw('none was provided')
+    expect(() => new LitContext('en')).to.throw('*MUST* be provided storage')
   })
 
   it ('should create Ok', function () {
-    const context = new RifContext('en')
+    const context = new LitContext('en', localStorage)
     expect(context).is.not.null
     expect(context.getLocale()).equals('en')
   })
 
   it ('should change locale Ok', function () {
-    const context = new RifContext('en')
+    const context = new LitContext('en', localStorage)
     expect(context.getLocale()).equals('en')
     context.setLocale('es')
     expect(context.getLocale()).equals('es')
@@ -35,19 +34,7 @@ describe ('RifContext tests', () => {
 
   it ('should be created now', function () {
     const now = moment().valueOf()
-    const context = new RifContext('en')
+    const context = new LitContext('en', localStorage)
     expect(context.getCreatedAt() >= now).to.be.true
-  })
-
-  it ('should use specific local storage', function () {
-    const context = new RifContext('en', new RifContext.EmulateLocalStorage())
-    expect(context.getLocale()).equals('en')
-  })
-
-  it ('should create using GLOBAL local storage', function () {
-    global.localStorage = new RifContext.EmulateLocalStorage()
-    const context = new RifContext('en')
-    expect(context.getLocale()).equals('en')
-    global.localStorage = undefined
   })
 })
