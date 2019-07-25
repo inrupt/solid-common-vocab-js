@@ -1,5 +1,7 @@
 'use strict'
 
+require('mock-local-storage')
+
 const LitContext = require('../../src/LitContext')
 const LitVocabTerm = require('../../src/LitVocabTerm')
 

@@ -1,5 +1,7 @@
 'use strict'
 
+require('mock-local-storage')
+
 const rdf = require('rdf-ext')
 
 const LitMultiLingualLiteral = require('../../src/LitMultiLingualLiteral')

@@ -1,6 +1,6 @@
 {
   "name": "@lit/vocab-term",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Utility library for working with RDF vocabulary terms (e.g. IRI's or literals (including multi-lingual literals)). Wraps rdf-ext.",
   "main": "index.js",
   "repository": {
@@ -11,11 +11,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mkdir -p test/resources/output && nyc mocha --require mock-local-storage \"./test/**/*.test.js\"",
+    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\"",
     "test-explicitly-exclude-node-modules": "mkdir -p test/resources/output && nyc mocha \"./{,!(node_modules)/**/}*.test.js\""
-  },
-  "publishConfig": {
-    "registry": "https://verdaccio.inrupt.com/"
   },
   "dependencies": {
     "moment": "^2.24.0",

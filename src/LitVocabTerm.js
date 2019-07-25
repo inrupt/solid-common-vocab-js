@@ -3,6 +3,7 @@
 const rdf = require('rdf-ext')
 
 const LitContext = require('./LitContext')
+const LitTermRegistry = require('./LitTermRegistry')
 const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
 const LitUtils = require('./LitUtils')
 
@@ -25,6 +26,8 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
     this._label = new LitMultiLingualLiteral(iri, undefined, 'rdfs:label')
     this._comment = new LitMultiLingualLiteral(iri, undefined, 'rdfs:comment')
     this._message = new LitMultiLingualLiteral(iri, undefined, 'message (should be defined in RDF vocab using: skos:definition)')
+
+    LitTermRegistry.addTerm(iri, this)
 
     if (useLocalNameAsEnglishLabel) {
       this._label.addValue('en', LitUtils.extractIriLocalName(iri))
@@ -54,16 +57,19 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
 
   addLabel (language, value) {
     this._label.addValue(language, value)
+    LitTermRegistry.updateLabel(this.value, language, value)
     return this
   }
 
   addComment (language, value) {
     this._comment.addValue(language, value)
+    LitTermRegistry.updateComment(this.value, language, value)
     return this
   }
 
   addMessage (language, value) {
     this._message.addValue(language, value)
+    LitTermRegistry.updateMessage(this.value, language, value)
     return this
   }
 

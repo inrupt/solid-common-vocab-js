@@ -19,7 +19,7 @@ class LitContext {
     }
 
     if (!storage) {
-      throw new Error(`A new context *MUST* be provided storage (we except 'localStorage').`)
+      throw new Error(`A new context *MUST* be provided storage (we expect 'localStorage').`)
     }
 
     this._initialLocale = locale
