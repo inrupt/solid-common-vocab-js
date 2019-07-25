@@ -1,7 +1,10 @@
 'use strict'
 
 /**
- * Simple registry of terms (and their associated meta-data (like labels, comment, message) in mutliple languages.
+ * Simple registry of terms (and their associated meta-data (like labels, comment, message)) in multiple languages.
+ *
+ * We use localStorage to store all term meta-data, which can only store strings (so we need to expand out the
+ * meta-data for each term).
  */
 class LitTermRegistry {
   static addTerm (termIri, term) {
@@ -10,7 +13,7 @@ class LitTermRegistry {
   }
 
   static lookupLabel (termIri, language) {
-    return localStorage.getItem(`${termIri}-label-${language}`)
+    return LitTermRegistry.lookupFullTerm(`${termIri}-label-${language}`)
   }
 
   static updateLabel (termIri, language, label) {
@@ -18,7 +21,7 @@ class LitTermRegistry {
   }
 
   static lookupComment (termIri, language) {
-    return localStorage.getItem(`${termIri}-comment-${language}`)
+    return LitTermRegistry.lookupFullTerm(`${termIri}-comment-${language}`)
   }
 
   static updateComment (termIri, language, label) {
@@ -26,11 +29,20 @@ class LitTermRegistry {
   }
 
   static lookupMessage (termIri, language) {
-    return localStorage.getItem(`${termIri}-message-${language}`)
+    return LitTermRegistry.lookupFullTerm(`${termIri}-message-${language}`)
   }
 
   static updateMessage (termIri, language, label) {
     localStorage.setItem(`${termIri}-message-${language}`,label)
+  }
+
+  static lookupFullTerm(value) {
+    const result = localStorage.getItem(value)
+    if (!result) {
+      console.log(`Vocab term lookup not found: [${value}].`)
+    }
+
+    return result;
   }
 }
 
