@@ -3,6 +3,7 @@
 const rdf = require('rdf-ext')
 
 const LitContext = require('./LitContext')
+const LitTermRegistry = require('./LitTermRegistry')
 const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
 const LitUtils = require('./LitUtils')
 
@@ -20,80 +21,76 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
 
     this._litSessionContext = new LitContext('en', contextStorage)
 
-    const CODE_CONTEXT = 'LitVocabTerm.js'
+    // Create holders for meta-data on this vocabulary term (we could probably lazily create these only if values
+    // are actually provided!).
+    this._label = new LitMultiLingualLiteral(iri, undefined, 'rdfs:label')
+    this._comment = new LitMultiLingualLiteral(iri, undefined, 'rdfs:comment')
+    this._message = new LitMultiLingualLiteral(iri, undefined, 'message (should be defined in RDF vocab using: skos:definition)')
 
-    this._label = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT))
+    LitTermRegistry.addTerm(iri, this)
+
     if (useLocalNameAsEnglishLabel) {
-      this._label.addLiteral('en', LitUtils.extractIriLocalName(iri))
+      this._label.addValue('en', LitUtils.extractIriLocalName(iri))
     }
 
-    this._comment = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT))
-
-    this._literal = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT))
-
-    // this._label = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT), label)
-    // if (! this._label.lookupEnglish) {
-    //   throw new Error(`No English label provided for LIT vocabulary term [${iri}]`)
-    // }
-    //
-    // this._comment = new LitMultiLingualLiteral(LitUtils.generateWellKnownIri(CODE_CONTEXT), comment)
-    // if (! this._comment.lookupEnglish) {
-    //   throw new Error(`No English comment provided for LIT vocabulary term [${iri}]`)
-    // }
-    //
-    // this._shape = shape
-
-    Object.defineProperty(this, 'useContext', {
-      label: 'Accessor that uses our LitSessionContext instance',
-      get () {
-        return this.literal(this._litSessionContext)
-      }
-    })
-
-    Object.defineProperty(this, 'labelContext', {
+    Object.defineProperty(this, 'label', {
       label: 'Accessor for label that uses our LitSessionContext instance',
       get () {
-        return this.label(this._litSessionContext.getLocale())
+        return this.labelInLang(this._litSessionContext.getLocale())
       }
     })
 
-    Object.defineProperty(this, 'commentContext', {
+    Object.defineProperty(this, 'comment', {
       label: 'Accessor for comment that uses our LitSessionContext instance',
       get () {
-        return this.comment(this._litSessionContext.getLocale())
+        return this.commentInLang(this._litSessionContext.getLocale())
       }
     })
-  }
 
-  useContextParams (...rest) {
-    return this.literal(this._litSessionContext, ...rest)
+    Object.defineProperty(this, 'message', {
+      label: 'Accessor that uses our LitSessionContext instance',
+      get () {
+        return this.messageInLang(this._litSessionContext.getLocale())
+      }
+    })
   }
 
   addLabel (language, value) {
-    this._label.addLiteral(language, value)
+    this._label.addValue(language, value)
+    LitTermRegistry.updateLabel(this.value, language, value)
     return this
   }
 
   addComment (language, value) {
-    this._comment.addLiteral(language, value)
+    this._comment.addValue(language, value)
+    LitTermRegistry.updateComment(this.value, language, value)
     return this
   }
 
-  addLiteral (language, value) {
-    this._literal.addLiteral(language, value)
+  addMessage (language, value) {
+    this._message.addValue(language, value)
+    LitTermRegistry.updateMessage(this.value, language, value)
     return this
   }
 
-  label (language) {
-    return this._label.lookupLanguage(language)
+  labelInLang (language) {
+    return this._label.lookupButDefaultToEnglish(language)
   }
 
-  comment (language) {
-    return this._comment.lookupLanguage(language)
+  commentInLang (language) {
+    return this._comment.lookupButDefaultToEnglish(language)
   }
 
-  literal (context, ...rest) {
-    return this._literal.language(context.getLocale()).params(...rest).string
+  messageInLang (language) {
+    return this._message.lookupButDefaultToEnglish(language)
+  }
+
+  messageParams (...rest) {
+    return this._message.paramsInLang(this._litSessionContext.getLocale(), ...rest)
+  }
+
+  messageParamsInLang (language, ...rest) {
+    return this._message.paramsInLang(language, ...rest)
   }
 
   // /**
@@ -131,9 +128,9 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
   //  * @returns {*}
   //  */
   // lookupButDefaultToEnglish (language) {
-  //   let result = this.lookupLanguage(language)
+  //   let result = this.lookupLang(language)
   //   if (!result) {
-  //     result = this.lookupLanguage('en')
+  //     result = this.lookupLang('en')
   //     this._language = 'en'
   //   }
   //

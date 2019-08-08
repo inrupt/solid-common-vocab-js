@@ -395,14 +395,13 @@ module.exports.mismatchingIris = (messagePrefix, first, second) => {
   return `${messagePrefix} - first IRI was [${first}], second was [${second}] - they *must* be the same${explain}.`
 }
 
-
-  /**
-   * Reads the first object value from the given Dataset.
-   *
-   * @param dataset The input Dataset that will be read.
-   * @param defaultValue A default value if there is no first term found (empty dataset).
-   * @returns {*} The value of the first object value, else return the defaultValue.
-   */
+/**
+ * Reads the first object value from the given Dataset.
+ *
+ * @param dataset The input Dataset that will be read.
+ * @param defaultValue A default value if there is no first term found (empty dataset).
+ * @returns {*} The value of the first object value, else return the defaultValue.
+ */
 module.exports.firstDatasetValue = (dataset, defaultValue) => {
   const first = dataset.toArray().shift();
   return first ? first.object.value : defaultValue;
