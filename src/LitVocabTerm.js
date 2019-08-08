@@ -128,9 +128,9 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
   //  * @returns {*}
   //  */
   // lookupButDefaultToEnglish (language) {
-  //   let result = this.lookupInLang(language)
+  //   let result = this.lookupLang(language)
   //   if (!result) {
-  //     result = this.lookupInLang('en')
+  //     result = this.lookupLang('en')
   //     this._language = 'en'
   //   }
   //

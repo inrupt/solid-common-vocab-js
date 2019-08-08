@@ -32,19 +32,19 @@ describe('MultiLingualLiteral tests', () => {
       literal.addValue('es', 'whatever in Spanish')
         .addValue('ga', 'whatever in Irish')
 
-      expect(literal.lookupInLang('es')).equals('whatever in Spanish')
-      expect(literal.lookupInLang('ga')).equals('whatever in Irish')
+      expect(literal.lookupLang('es')).equals('whatever in Spanish')
+      expect(literal.lookupLang('ga')).equals('whatever in Irish')
     })
   
       it('should add message, including constructor values', () => {
       const iri = 'test://iri'
       const literal = new LitMultiLingualLiteral(iri, new Map([ [ 'en', 'whatever' ] ]))
       expect(literal.lookupEnglish).equals('whatever')
-      expect(literal.lookupInLang('es')).to.be.undefined
+      expect(literal.lookupLang('es')).to.be.undefined
       
       literal.addValue('es', 'whatever in Spanish').addValue('ga', 'whatever in Irish')
-      expect(literal.lookupInLang('es')).equals('whatever in Spanish')
-      expect(literal.lookupInLang('ga')).equals('whatever in Irish')
+      expect(literal.lookupLang('es')).equals('whatever in Spanish')
+      expect(literal.lookupLang('ga')).equals('whatever in Irish')
     })
   })
 
@@ -53,7 +53,7 @@ describe('MultiLingualLiteral tests', () => {
       const iri = 'test://iri'
       const literal = new LitMultiLingualLiteral(iri, new Map([ [ 'en', 'whatever' ], [ 'fr', 'whatever in French' ] ]))
       expect(literal.lookupEnglish).equals('whatever')
-      expect(literal.lookupInLang('fr')).equals('whatever in French')
+      expect(literal.lookupLang('fr')).equals('whatever in French')
 
       expect(literal.lookupButDefaultToEnglish('es')).equals('whatever')
     })
@@ -90,7 +90,7 @@ describe('MultiLingualLiteral tests', () => {
       expect(() => literal.setToEnglish.params('example')).to.throw(iri, 'en', 'require [2]', 'we only received [1]')
     })
   
-    it('should lookup correctly', () => {
+    it('should lookup literal correctly', () => {
       const iri = 'test://iri'
       const literal = new LitMultiLingualLiteral(iri)
         .addValue('en', 'whatever {{0}} in English')

@@ -4,6 +4,12 @@ const moment = require('moment')
 
 const CONTEXT_KEY_LOCALE = 'i18nextLng'
 
+// Key that specifies a preferred fallback language - e.g. if the user selects
+// 'French' as the language for the current page, but there is no French, then
+// we'll check if the user has a preferred fallback language, e.g. maybe in
+// their profile they have selected 'Spanish' as their preferred fallback.
+const CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE = 'lang_preferred_fallback'
+
 /**
  * Simple class to hold 'context', which could include things like a chosen language, localization settings, process
  * details (like the credentials of the process, time the process started, the process ID, etc.).
@@ -50,3 +56,4 @@ class LitContext {
 
 module.exports = LitContext
 module.exports.CONTEXT_KEY_LOCALE = CONTEXT_KEY_LOCALE
+module.exports.CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE = CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE
