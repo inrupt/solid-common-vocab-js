@@ -1,7 +1,7 @@
 {
-  "name": "@lit/vocab-term",
+  "name": "@lit/vocab-term-base",
   "version": "0.1.0",
-  "description": "Utility library for working with RDF vocabulary terms (e.g. IRI's or literals (including multi-lingual literals)). Wraps rdf-ext.",
+  "description": "Base utility library for working with RDF vocabulary terms (e.g. IRI's or literals (including multi-lingual literals)). Wraps rdf-ext.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,11 +15,8 @@
     "test-explicitly-exclude-node-modules": "mkdir -p test/resources/output && nyc mocha \"./{,!(node_modules)/**/}*.test.js\""
   },
   "dependencies": {
-    "@rdfjs/formats-common": "^2.0.1",
     "debug": "^4.1.1",
-    "moment": "^2.24.0",
-    "stream-to-string": "^1.2.0",
-    "string-to-stream": "^3.0.1"
+    "moment": "^2.24.0"
   },
   "author": "Pat McBennett",
   "license": "MIT",
