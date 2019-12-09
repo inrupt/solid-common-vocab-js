@@ -1,12 +1,13 @@
-'use strict'
+const debug = require('debug')('lit-vocab-term:LitTermRegistry');
 
 const LitContext = require('./LitContext')
 
 /**
- * Simple registry of terms (and their associated meta-data (like labels, comment, message)) in multiple languages.
+ * Simple registry of terms (and their associated meta-data (like labels,
+ * comment, message)) in multiple languages.
  *
- * We use localStorage to store all term meta-data, which can only store strings (so we need to expand out the
- * meta-data for each term).
+ * We use localStorage to store all term meta-data, which can only store
+ * strings (so we need to expand out the meta-data for each term).
  */
 class LitTermRegistry {
   static addTerm (termIri, term) {
@@ -39,8 +40,10 @@ class LitTermRegistry {
   }
 
   /**
-   * Looks up the specified vocabulary term in the specified language. If no value found, will lookup again using the
-   * fallback language (as set in our context). If not found again, will fallback to looking up the term in English.
+   * Looks up the specified vocabulary term in the specified language. If no
+   * value found, will lookup again using the fallback language (as set in our
+   * context). If not found again, will fallback to looking up the term in
+   * English.
    *
    * @param term
    * @param language
@@ -55,16 +58,16 @@ class LitTermRegistry {
       }
 
       if (result) {
-        console.log(`Vocab term [${term}] found value [${result}] using preferred fallback language [${fallbackLanguage}].`)
+        debug(`Vocab term [${term}] found value [${result}] using preferred fallback language [${fallbackLanguage}].`)
       } else {
         result = localStorage.getItem(`${term}en`)
         if (result) {
-          console.log(`Vocab term [${term}] found value [${result}] using English instead of explicitly requested [${language}].`)
+          debug(`Vocab term [${term}] found value [${result}] using English instead of explicitly requested [${language}].`)
         } else {
           result = localStorage.getItem(`${term}`)
 
           if (!result) {
-            console.log(`Vocab term lookup not found: [${term}] for explicit language [${language}], nor fallback [${fallbackLanguage}], English, or no specific language!.`)
+            debug(`Vocab term lookup not found: [${term}] for explicit language [${language}], nor fallback [${fallbackLanguage}], English, or no specific language!.`)
           }
         }
       }

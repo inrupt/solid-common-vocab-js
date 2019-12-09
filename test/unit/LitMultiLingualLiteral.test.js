@@ -1,7 +1,4 @@
-'use strict'
-
 require('mock-local-storage')
-
 const rdf = require('rdf-ext')
 
 const LitMultiLingualLiteral = require('../../src/LitMultiLingualLiteral')
@@ -16,19 +13,19 @@ describe('MultiLingualLiteral tests', () => {
   describe('Get IRI', () => {
     it('should return correct IRI', () => {
       const iri = 'test://iri'
-      expect(new LitMultiLingualLiteral(iri).getIri()).equals(iri)
+      expect(new LitMultiLingualLiteral(rdf, iri).getIri()).equals(iri)
     })
   })
   
   describe('Adding messages', () => {
     it('should fail if no language', () => {
       const iri = 'test://iri'
-      expect(() => new LitMultiLingualLiteral(iri).paramsInLang()).to.throw('no language')
+      expect(() => new LitMultiLingualLiteral(rdf, iri).paramsInLang()).to.throw('no language')
     })
   
     it('should add message, no constructor values', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
       literal.addValue('es', 'whatever in Spanish')
         .addValue('ga', 'whatever in Irish')
 
@@ -38,7 +35,7 @@ describe('MultiLingualLiteral tests', () => {
   
       it('should add message, including constructor values', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri, new Map([ [ 'en', 'whatever' ] ]))
+      const literal = new LitMultiLingualLiteral(rdf, iri, new Map([ [ 'en', 'whatever' ] ]))
       expect(literal.lookupEnglish).equals('whatever')
       expect(literal.lookupLang('es')).to.be.undefined
       
@@ -51,7 +48,7 @@ describe('MultiLingualLiteral tests', () => {
   describe('Looking up messages', () => {
     it('should return correct IRI', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri, new Map([ [ 'en', 'whatever' ], [ 'fr', 'whatever in French' ] ]))
+      const literal = new LitMultiLingualLiteral(rdf, iri, new Map([ [ 'en', 'whatever' ], [ 'fr', 'whatever in French' ] ]))
       expect(literal.lookupEnglish).equals('whatever')
       expect(literal.lookupLang('fr')).equals('whatever in French')
 
@@ -60,7 +57,7 @@ describe('MultiLingualLiteral tests', () => {
 
     it('should default to English if no language', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever in English')
 
       expect(literal.lookup).to.equal('whatever in English')
@@ -68,7 +65,7 @@ describe('MultiLingualLiteral tests', () => {
 
     it('should fail if no values at all!', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
 
       expect(() => literal.lookup).to.throw(iri, '[es]', 'no values at all')
       expect(() => literal.lookupButDefaultToEnglish('es')).to.throw(iri, '[es]', 'no values at all')
@@ -76,7 +73,7 @@ describe('MultiLingualLiteral tests', () => {
 
     it('should return string with param markers', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever {{0}} in English {{1}}')
   
       expect(literal.lookup).to.equal('whatever {{0}} in English {{1}}')
@@ -84,7 +81,7 @@ describe('MultiLingualLiteral tests', () => {
   
     it('should fail if remaining unexpanded param placeholders', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever {{0}} in English {{1}}')
   
       expect(() => literal.setToEnglish.params('example')).to.throw(iri, 'en', 'require [2]', 'we only received [1]')
@@ -92,7 +89,7 @@ describe('MultiLingualLiteral tests', () => {
   
     it('should lookup literal correctly', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever {{0}} in English')
         .addValue('ga', 'whatever {{1}} in Irish is backwards {{0}}')
 
@@ -105,7 +102,7 @@ describe('MultiLingualLiteral tests', () => {
   
     it('should lookup with no params', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever in English')
         .addValue('ga', 'whatever in Irish')
     
@@ -115,7 +112,7 @@ describe('MultiLingualLiteral tests', () => {
   
     it('should use English default if requested language not found', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever in English')
         .addValue('ga', 'whatever in Irish')
     
@@ -125,7 +122,7 @@ describe('MultiLingualLiteral tests', () => {
 
     it('should use English default with params if requested language not found', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever {{0}} in English')
 
       expect(literal.setLanguage('fr').asRdfLiteral.params('use default')).to.deep.equal(rdf.literal('whatever use default in English', 'en'))
@@ -133,7 +130,7 @@ describe('MultiLingualLiteral tests', () => {
 
     it('should return RDF literal using current language', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever {{0}} in English')
         .addValue('fr', 'whatever {{0}} in French')
 
@@ -144,7 +141,7 @@ describe('MultiLingualLiteral tests', () => {
 
     it('should use language and params', () => {
       const iri = 'test://iri'
-      const literal = new LitMultiLingualLiteral(iri)
+      const literal = new LitMultiLingualLiteral(rdf, iri)
         .addValue('en', 'whatever {{0}} in English')
         .addValue('fr', 'whatever {{0}} in French')
 

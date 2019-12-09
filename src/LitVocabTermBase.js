@@ -1,37 +1,73 @@
-'use strict'
-
-const rdf = require('rdf-ext')
-
 const LitContext = require('./LitContext')
 const LitTermRegistry = require('./LitTermRegistry')
 const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
-const LitUtils = require('./LitUtils')
 
 /**
- * Class to represent vocabulary terms. We simply extend an IRI (i.e. a NamedNode in rdf-ext) to also provide commonly
- * expected meta-data associated with terms in a vocabulary, like a label and a comment (in multiple-languages).
+ * Class to represent vocabulary terms. We simply extend an IRI (e.g. a
+ * NamedNode in rdf-ext) to also provide commonly expected meta-data
+ * associated with terms in a vocabulary, like a label and a comment (in
+ * multiple-languages).
  *
- * We can also take a reference to a context storage instance, which can contain various contextual information, such
- * as the current locale, or language settings for an interaction that can be used to lookup context at runtime (e.g.
- * to look up the locale for a term's label at runtime if one is not specifically provided).
+ * We can also take a reference to a context storage instance, which can
+ * contain various contextual information, such as the current locale, or
+ * language settings for an interaction that can be used to lookup context at
+ * runtime (e.g. to look up the locale for a term's label at runtime if one is
+ * not specifically provided).
  */
-class LitVocabTerm extends rdf.defaults.NamedNode  {
-  constructor (iri, contextStorage, useLocalNameAsEnglishLabel) {
-    super(iri)
+class LitVocabTermBase {
+  // We expect classes that extend this class to override these methods, and
+  // quite possibly with NOOP methods, since those derived classes may
+  // provide their own storage (e.g. Rdf-Ext or riflib.js). Therefore these
+  // methods allow those instances to avoid duplicating this storage.
+  setIri(iri) {
+    this._iri = iri
+  }
+
+  getIri() {
+    return this._iri
+  }
+
+  constructor (iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel) {
+    this.initializer(iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel)
+  }
+
+  initializer(iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel) {
+    this.setIri(iri)
 
     this._litSessionContext = new LitContext('en', contextStorage)
 
-    // Create holders for meta-data on this vocabulary term (we could probably lazily create these only if values
-    // are actually provided!).
-    this._label = new LitMultiLingualLiteral(iri, undefined, 'rdfs:label')
-    this._comment = new LitMultiLingualLiteral(iri, undefined, 'rdfs:comment')
-    this._message = new LitMultiLingualLiteral(iri, undefined, 'message (should be defined in RDF vocab using: skos:definition)')
+    // Create holders for meta-data on this vocabulary term (we could probably
+    // lazily create these only if values are actually provided!).
+    this._label = new LitMultiLingualLiteral(
+        rdfFactory,
+        iri,
+        undefined,
+        'rdfs:label')
+
+    this._comment = new LitMultiLingualLiteral(
+        rdfFactory,
+        iri,
+        undefined,
+        'rdfs:comment')
+
+    this._message = new LitMultiLingualLiteral(
+        rdfFactory,
+        iri,
+        undefined,
+        'message (should be defined in RDF vocab using: skos:definition)')
 
     LitTermRegistry.addTerm(iri, this)
 
     if (useLocalNameAsEnglishLabel) {
-      this._label.addValue('en', LitUtils.extractIriLocalName(iri))
+      this._label.addValue('en', LitVocabTermBase.extractIriLocalName(iri))
     }
+
+    Object.defineProperty(this, 'iri', {
+      label: 'Accessor for label that uses our LitSessionContext instance',
+      get () {
+        return this.getIri()
+      }
+    })
 
     Object.defineProperty(this, 'label', {
       label: 'Accessor for label that uses our LitSessionContext instance',
@@ -57,19 +93,19 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
 
   addLabel (language, value) {
     this._label.addValue(language, value)
-    LitTermRegistry.updateLabel(this.value, language, value)
+    LitTermRegistry.updateLabel(this.iri, language, value)
     return this
   }
 
   addComment (language, value) {
     this._comment.addValue(language, value)
-    LitTermRegistry.updateComment(this.value, language, value)
+    LitTermRegistry.updateComment(this.iri, language, value)
     return this
   }
 
   addMessage (language, value) {
     this._message.addValue(language, value)
-    LitTermRegistry.updateMessage(this.value, language, value)
+    LitTermRegistry.updateMessage(this.iri, language, value)
     return this
   }
 
@@ -91,6 +127,58 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
 
   messageParamsInLang (language, ...rest) {
     return this._message.paramsInLang(language, ...rest)
+  }
+
+  /**
+   * Extract the local name from the specified IRI (can be a primitive string or
+   * a NamedNode).
+   *
+   * @param stringOrNamedNode The IRI to extract from.
+   * @returns {string}
+   */
+  static extractIriLocalName (stringOrNamedNode) {
+    const iri = this.isString(stringOrNamedNode)
+      ? stringOrNamedNode : stringOrNamedNode.getIri()
+
+    const hashPos = iri.lastIndexOf('#')
+    if (hashPos === -1) {
+      const lastSlashPos = iri.lastIndexOf('/')
+      if ((lastSlashPos === -1) ||
+        (iri.toLowerCase().startsWith('http') &&
+          (lastSlashPos < (iri.toLowerCase().startsWith('https') ? 8 : 7)))) {
+        throw Error(`Expected hash fragment ('#') or slash ('/') (other than 'https://...') in IRI [${iri}]`)
+      }
+
+      return iri.substring(lastSlashPos + 1)
+    }
+
+    return iri.substring(hashPos + 1)
+  }
+
+  /**
+   * Simple method to determine if the specified value is a primitive String.
+
+   * @param value The value to evaluate.
+   * @returns {boolean} true if String, else false.
+   */
+  static isString (value) {
+    return ((typeof value === 'string') || (value instanceof String))
+  }
+
+  /**
+   * Simply treat the value as an IRI if it starts with 'http://' or 'https://'
+   * (case-insensitive).
+   *
+   * @param value
+   * @returns {boolean}
+   */
+  static isStringIri (value) {
+    if (! this.isString(value)) {
+      return false;
+    }
+
+    const valueLower = value.toLowerCase()
+    return (valueLower.startsWith('http://') || valueLower.startsWith('https://'))
   }
 
   // /**
@@ -165,4 +253,4 @@ class LitVocabTerm extends rdf.defaults.NamedNode  {
   // }
 }
 
-module.exports = LitVocabTerm
+module.exports = LitVocabTermBase

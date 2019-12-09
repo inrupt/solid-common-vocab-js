@@ -1,15 +1,22 @@
-'use strict'
-
-const rdf = require('rdf-ext')
-
 /**
- * Class that defines the concept of a multi-lingual literal (as in a String literal). We can add multiple values in
- * different languages, and look them up again.
- * Also supports parameterized string values (using {{0}} placeholders), for which we can provide values when looking
- * them up.
+ * Class that defines the concept of a multi-lingual literal (as in a String
+ * literal). We can add multiple values in different languages, and look them
+ * up again.
+ * Also supports parameterized string values (using {{0}} placeholders), for
+ * which we can provide values when looking them up.
  */
 class LitMultiLingualLiteral {
-  constructor (iri, values, contextMessage) {
+  /**
+   *
+   * @param rdfFactory Expected to provide RDF primitives (e.g. named nodes,
+   * literals, etc.).
+   * @param iri The IRI for this instance
+   * @param values The values (if any) to initialise this instance
+   * @param contextMessage Context information (helpful for debugging)
+   * @returns {LitMultiLingualLiteral|*}
+   */
+  constructor (rdfFactory, iri, values, contextMessage) {
+    this._rdfFactory = rdfFactory
     this._iri = iri
     this._values = values ? values : new Map()
     this._contextMessage = contextMessage ? contextMessage : '<None provided>'
@@ -19,7 +26,8 @@ class LitMultiLingualLiteral {
 
     this._expandedMessage = undefined
 
-    // Used to flag if we want result as an RDF Literal (otherwise we get back a string!).
+    // Used to flag if we want result as an RDF Literal (otherwise we get back
+    // a string!).
     this._valueAsRdfLiteral = false
 
     // Sets our flag to say we want our value as an RDF literal.
@@ -68,7 +76,8 @@ class LitMultiLingualLiteral {
   }
 
   /**
-   * Looks up the specific language *ONLY* - i.e. it  will *NOT* fallback to English.
+   * Looks up the specific language *ONLY* - i.e. it  will *NOT* fallback to
+   * English.
    *
    * @param language
    * @returns {*}
@@ -78,13 +87,16 @@ class LitMultiLingualLiteral {
   }
 
   /**
-   * Looks up a message in the requested language, but if none found we use the English message (which our
-   * code-generator enforces, so we should always have at least an English message for LIT-generated vocabs).
+   * Looks up a message in the requested language, but if none found we use the
+   * English message (which our code-generator enforces, so we should always
+   * have at least an English message for LIT-generated vocabs).
    *
-   * NOTE: If we do use the English default, then we also reset our language tag so that if we are returning an RDF
-   * literal it will contain the correct language tag (i.e. 'en'), and not the requested language that didn't exist!
+   * NOTE: If we do use the English default, then we also reset our language
+   * tag so that if we are returning an RDF literal it will contain the correct
+   * language tag (i.e. 'en'), and not the requested language that didn't exist!
    *
-   * @param language The requested language (but if not found we use English and reset our language tag to 'en').
+   * @param language The requested language (but if not found we use English
+   * and reset our language tag to 'en').
    * @returns {*}
    */
   lookupButDefaultToEnglish (language) {
@@ -92,7 +104,8 @@ class LitMultiLingualLiteral {
   }
 
   /**
-   * Private method that only looks up the string itself (i.e. will not attempt to wrap in an RDF literal).
+   * Private method that only looks up the string itself (i.e. will not attempt
+   * to wrap in an RDF literal).
    *
    * @param language
    * @returns {*}
@@ -116,7 +129,8 @@ class LitMultiLingualLiteral {
   }
 
     /**
-   * TODO: Won't yet handle replacing multiple uses of say {{1}} in a single string, which I guess it should...!?
+   * TODO: Won't yet handle replacing multiple uses of say {{1}} in a single
+   *  string, which I guess it should...!?
    *
    * @returns {*}
    */
@@ -141,7 +155,9 @@ class LitMultiLingualLiteral {
   }
 
   returnAsStringOrRdfLiteral (message) {
-    const result = this._valueAsRdfLiteral ? rdf.literal(message, this._language) : message
+    const result = this._valueAsRdfLiteral
+        ? this._rdfFactory.literal(message, this._language) : message
+
     this._expandedMessage = message
     this._valueAsRdfLiteral = false // Reset our flag!
     return result

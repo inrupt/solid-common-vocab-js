@@ -1,5 +1,3 @@
-'use strict'
-
 const moment = require('moment')
 
 const CONTEXT_KEY_LOCALE = 'i18nextLng'
