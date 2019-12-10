@@ -1,6 +1,6 @@
 {
   "name": "@lit/vocab-term-rdfext",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Extends the base LIT Vocab Term library to wrap rdf-ext.",
   "main": "index.js",
   "repository": {
@@ -11,9 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\"",
-    "testX": "mkdir -p test/resources/output && nyc mocha \"../../test/**/*.test.js\" \"./test/**/*.test.js\"",
-    "test-explicitly-exclude-node-modules": "mkdir -p test/resources/output && nyc mocha \"../../{,!(node_modules)/**/}*.test.js\" \"./{,!(node_modules)/**/}*.test.js\""
+    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\""
   },
   "dependencies": {
     "@rdfjs/formats-common": "^2.0.1",

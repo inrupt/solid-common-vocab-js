@@ -18,7 +18,12 @@ class LitVocabTermBase {
   // We expect classes that extend this class to override these methods, and
   // quite possibly with NOOP methods, since those derived classes may
   // provide their own storage (e.g. Rdf-Ext or riflib.js). Therefore these
-  // methods allow those instances to avoid duplicating this storage.
+  // methods allow those instances to avoid duplicating this storage (e.g. a
+  // derived class could override the set method here with a NOOP (and
+  // therefore not store the IRI value anywhere), and then override the get
+  // method here to retrieve the value from it's own storage - therefore
+  // this class won't ever have a member variable to represent the IRI value
+  // at all!
   setIri(iri) {
     this._iri = iri
   }
@@ -27,10 +32,29 @@ class LitVocabTermBase {
     return this._iri
   }
 
+  /**
+   * Constructor.
+   *
+   * @param iri the IRI for this vocabulary term
+   * @param rdfFactory an underlying RDF library that can create IRI's
+   * @param contextStorage context for this term
+   * @param useLocalNameAsEnglishLabel flag if we should use local name as
+   * English label or not.
+   */
   constructor (iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel) {
     this.initializer(iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel)
   }
 
+  /**
+   * Called from the 'aggregator' implementation as if it were a constructor...
+   *
+   * @param iri the IRI for this vocabulary term
+   * @param rdfFactory an underlying RDF library that can create IRI's
+   * @param contextStorage context for this term
+   * @param useLocalNameAsEnglishLabel flag if we should use local name as
+   * English label or not.
+   * @returns {*}
+   */
   initializer(iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel) {
     this.setIri(iri)
 
