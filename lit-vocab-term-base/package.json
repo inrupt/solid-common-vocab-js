@@ -1,7 +1,7 @@
 {
   "name": "@lit/vocab-term-base",
   "version": "0.2.0",
-  "description": "Base utility library for working with RDF vocabulary terms (e.g. IRI's or literals (including multi-lingual literals)). Wraps rdf-ext.",
+  "description": "Very basic implementation of LIT Vocab Term with no RDF library dependencies at all.",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\""
+    "test": "nyc mocha \\\"./test/**/*.test.js\\\""
   },
   "dependencies": {
     "debug": "^4.1.1",

@@ -1,3 +1,5 @@
+'use strict'
+
 const debug = require('debug')('lit-vocab-term:LitUtil');
 
 const rdf = require('rdf-ext')
@@ -8,8 +10,8 @@ const streamToString = require('stream-to-string')
 const fs = require('fs')
 const uuidv1 = require('uuid/v1')
 
-const LitContextError = require('../../../src/LitContextError')
-const LitVocabTermBase = require('../../../src/LitVocabTermBase')
+const LitContextError = require('../../src/LitContextError')
+const LitVocabTermBase = require('../../src/LitVocabTermBase')
 
 module.exports.generateUuid = uuidv1
 

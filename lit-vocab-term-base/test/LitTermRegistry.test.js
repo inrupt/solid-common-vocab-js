@@ -1,9 +1,11 @@
+'use strict'
+
 require('mock-local-storage')
 const rdf = require('rdf-ext')
 
-const LitContext = require('../../src/LitContext')
-const LitTermRegistry = require('../../src/LitTermRegistry')
-const LitVocabTermBase = require('../../src/LitVocabTermBase')
+const LitContext = require('../src/LitContext')
+const LitTermRegistry = require('../src/LitTermRegistry')
+const LitVocabTermBasic = require('../src/basic/LitVocabTermBasic')
 
 const chai = require('chai')
 const expect = chai.expect
@@ -13,7 +15,7 @@ describe('LitTermRegistry tests', () => {
 
   it('should lookup registry correctly', () => {
     const iri = 'test://iri'
-    const term = new LitVocabTermBase(iri, rdf, localStorage)
+    const term = new LitVocabTermBasic(iri, localStorage)
       .addLabel('es', 'Hola!')
       .addComment('es', 'Hola comment!')
       .addMessage('es', 'Hola message!')
@@ -30,7 +32,7 @@ describe('LitTermRegistry tests', () => {
 
   it('should lookup using fallback language', () => {
     const iri = 'test://iri'
-    const term = new LitVocabTermBase(iri, rdf, localStorage)
+    const term = new LitVocabTermBasic(iri, localStorage)
         .addLabel('es', 'Hola!')
 
     localStorage.setItem(LitContext.CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, 'es')
@@ -39,7 +41,7 @@ describe('LitTermRegistry tests', () => {
 
   it('should lookup, but fail using fallback language and fine English', () => {
     const iri = 'test://iri'
-    const term = new LitVocabTermBase(iri, rdf, localStorage)
+    const term = new LitVocabTermBasic(iri, localStorage)
         .addLabel('es', 'Hola!')
         .addLabel('en', 'Hello there!')
 
@@ -49,7 +51,7 @@ describe('LitTermRegistry tests', () => {
 
   it('should fail lookup in requested language, in English, and in fallback language', () => {
     const iri = 'test://iri'
-    const term = new LitVocabTermBase(iri, rdf, localStorage)
+    const term = new LitVocabTermBasic(iri, localStorage)
         .addLabel('es', 'Hola!')
 
     localStorage.setItem(LitContext.CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, 'de')

@@ -1,3 +1,5 @@
+'use strict'
+
 const debug = require('debug')('lit-vocab-term:LitTermRegistry');
 
 const LitContext = require('./LitContext')

@@ -1,3 +1,5 @@
+'use strict'
+
 const rdf = require('rdf-ext')
 
 const LitUtil = require('../src/LitUtil.js')

@@ -1,37 +1,29 @@
+'use strict'
+
 const LitContext = require('./LitContext')
 const LitTermRegistry = require('./LitTermRegistry')
 const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
 
 /**
- * Class to represent vocabulary terms. We simply extend an IRI (e.g. a
- * NamedNode in rdf-ext) to also provide commonly expected meta-data
- * associated with terms in a vocabulary, like a label and a comment (in
- * multiple-languages).
+ * Class to represent vocabulary terms. We expect derived classes to extend
+ * an IRI (e.g. a NamedNode in RDFJS), but we just provide effectively an
+ * abstract base class providing meta-data associated with terms in a
+ * vocabulary, like labels and comments (in multiple-languages).
  *
  * We can also take a reference to a context storage instance, which can
  * contain various contextual information, such as the current locale, or
  * language settings for an interaction that can be used to lookup context at
  * runtime (e.g. to look up the locale for a term's label at runtime if one is
- * not specifically provided).
+ * not explicitly asked for).
+ *
+ * NOTE: Since this class does NOT actually store the IRI value for vocab
+ * term (since we expect derived classes to provide that), testing this
+ * class in isolation will result in strange looking (i.e. 'undefined-'
+ * prefixed) key values in 'localStorage' since we create those keys based on
+ * the term IRI (that we don't store!). Currently this doesn't cause any
+ * problems, but it's just something to be aware of!
  */
 class LitVocabTermBase {
-  // We expect classes that extend this class to override these methods, and
-  // quite possibly with NOOP methods, since those derived classes may
-  // provide their own storage (e.g. Rdf-Ext or riflib.js). Therefore these
-  // methods allow those instances to avoid duplicating this storage (e.g. a
-  // derived class could override the set method here with a NOOP (and
-  // therefore not store the IRI value anywhere), and then override the get
-  // method here to retrieve the value from it's own storage - therefore
-  // this class won't ever have a member variable to represent the IRI value
-  // at all!
-  setIri(iri) {
-    this._iri = iri
-  }
-
-  getIri() {
-    return this._iri
-  }
-
   /**
    * Constructor.
    *
@@ -56,8 +48,6 @@ class LitVocabTermBase {
    * @returns {*}
    */
   initializer(iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel) {
-    this.setIri(iri)
-
     this._litSessionContext = new LitContext('en', contextStorage)
 
     // Create holders for meta-data on this vocabulary term (we could probably
@@ -83,74 +73,129 @@ class LitVocabTermBase {
     LitTermRegistry.addTerm(iri, this)
 
     if (useLocalNameAsEnglishLabel) {
-      this._label.addValue('en', LitVocabTermBase.extractIriLocalName(iri))
+      // This can be overwritten if we get an actual English label later, which
+      // would be fine.
+      this._label.addValue('', LitVocabTermBase.extractIriLocalName(iri))
     }
 
-    Object.defineProperty(this, 'iri', {
-      label: 'Accessor for label that uses our LitSessionContext instance',
+    this.resetState();
+
+    Object.defineProperty(this, 'dontThrow', {
+      label: 'Set a flag to return undefined instread of any exceptions',
       get () {
-        return this.getIri()
+        this._dontThrow = true
+        return this
+      }
+    })
+
+    Object.defineProperty(this, 'mandatory', {
+      label: 'Set our mandatory flag - i.e. throws if not as expected',
+      get () {
+        this._mandatory = true
+        return this
+      }
+    })
+
+    Object.defineProperty(this, 'asEnglish', {
+      label: 'Simple convenience accessor for requesting English',
+      get () {
+        return this.asLanguage('en')
       }
     })
 
     Object.defineProperty(this, 'label', {
       label: 'Accessor for label that uses our LitSessionContext instance',
       get () {
-        return this.labelInLang(this._litSessionContext.getLocale())
+        try {
+          const result = this.labelInLang(this._litSessionContext.getLocale())
+          return result
+        } finally {
+          this.resetState()
+        }
       }
     })
 
     Object.defineProperty(this, 'comment', {
       label: 'Accessor for comment that uses our LitSessionContext instance',
       get () {
-        return this.commentInLang(this._litSessionContext.getLocale())
+        const result = this.commentInLang(this._litSessionContext.getLocale())
+        this.resetState()
+        return result
       }
     })
 
     Object.defineProperty(this, 'message', {
-      label: 'Accessor that uses our LitSessionContext instance',
+      label: 'Accessor for message that uses our LitSessionContext instance',
       get () {
-        return this.messageInLang(this._litSessionContext.getLocale())
+        const result = this.messageInLang(this._litSessionContext.getLocale())
+        this.resetState()
+        return result
       }
     })
   }
 
+  resetState() {
+    this._languageOverride = undefined
+    this._mandatory = false
+    this._dontThrow = false
+  }
+
   addLabel (language, value) {
     this._label.addValue(language, value)
-    LitTermRegistry.updateLabel(this.iri, language, value)
+    LitTermRegistry.updateLabel(this.value, language, value)
     return this
   }
 
   addComment (language, value) {
     this._comment.addValue(language, value)
-    LitTermRegistry.updateComment(this.iri, language, value)
+    LitTermRegistry.updateComment(this.value, language, value)
     return this
   }
 
   addMessage (language, value) {
     this._message.addValue(language, value)
-    LitTermRegistry.updateMessage(this.iri, language, value)
+    LitTermRegistry.updateMessage(this.value, language, value)
+    return this
+  }
+
+  useLanguageOverrideOrGetFromContext () {
+    return this._languageOverride === undefined
+      ? this._litSessionContext.getLocale() : this._languageOverride
+  }
+
+  asLanguage(language) {
+    this._languageOverride = language
     return this
   }
 
   labelInLang (language) {
-    return this._label.lookupButDefaultToEnglish(language)
+    const lookupLanguage = this.useLanguageOverrideOrGetFromContext(language)
+    return this._mandatory
+      ? this._label.lookupLanguageMandatory(lookupLanguage)
+      : this._label.lookupButDefaultToEnglish(lookupLanguage)
   }
 
   commentInLang (language) {
-    return this._comment.lookupButDefaultToEnglish(language)
+    const lookupLanguage = this.useLanguageOverrideOrGetFromContext(language)
+    return this._mandatory
+      ? this._comment.lookupLanguageMandatory(lookupLanguage)
+      : this._comment.lookupButDefaultToEnglish(lookupLanguage)
   }
 
   messageInLang (language) {
-    return this._message.lookupButDefaultToEnglish(language)
+    const lookupLanguage = this.useLanguageOverrideOrGetFromContext(language)
+    return this._mandatory
+      ? this._message.lookupLanguageMandatory(lookupLanguage)
+      : this._message.lookupButDefaultToEnglish(lookupLanguage)
   }
 
   messageParams (...rest) {
-    return this._message.paramsInLang(this._litSessionContext.getLocale(), ...rest)
+    return this._message.paramsInLang(
+      this._mandatory, this._litSessionContext.getLocale(), ...rest)
   }
 
   messageParamsInLang (language, ...rest) {
-    return this._message.paramsInLang(language, ...rest)
+    return this._message.paramsInLang(this._mandatory, language, ...rest)
   }
 
   /**
@@ -162,7 +207,7 @@ class LitVocabTermBase {
    */
   static extractIriLocalName (stringOrNamedNode) {
     const iri = this.isString(stringOrNamedNode)
-      ? stringOrNamedNode : stringOrNamedNode.getIri()
+      ? stringOrNamedNode : stringOrNamedNode.value
 
     const hashPos = iri.lastIndexOf('#')
     if (hashPos === -1) {
@@ -240,9 +285,9 @@ class LitVocabTermBase {
   //  * @returns {*}
   //  */
   // lookupButDefaultToEnglish (language) {
-  //   let result = this.lookupLang(language)
+  //   let result = this.lookupLanguageMandatory(language)
   //   if (!result) {
-  //     result = this.lookupLang('en')
+  //     result = this.lookupLanguageMandatory('en')
   //     this._language = 'en'
   //   }
   //

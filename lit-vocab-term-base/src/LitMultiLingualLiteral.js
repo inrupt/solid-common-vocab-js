@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * Class that defines the concept of a multi-lingual literal (as in a String
  * literal). We can add multiple values in different languages, and look them
@@ -82,8 +84,9 @@ class LitMultiLingualLiteral {
    * @param language
    * @returns {*}
    */
-  lookupLang (language) {
-    return this.returnAsStringOrRdfLiteral(this._values.get(language))
+  lookupLanguageMandatory (language) {
+    const message = this.lookupMandatoryLanguage(language)
+    return this.returnAsStringOrRdfLiteral(message)
   }
 
   /**
@@ -100,7 +103,7 @@ class LitMultiLingualLiteral {
    * @returns {*}
    */
   lookupButDefaultToEnglish (language) {
-    return this.returnAsStringOrRdfLiteral(this.lookupStringDefaultToEnglish(language));
+    return this.returnAsStringOrRdfLiteral(this.lookupStringDefaultToEnglishOrNoLanguage(language));
   }
 
   /**
@@ -110,36 +113,57 @@ class LitMultiLingualLiteral {
    * @param language
    * @returns {*}
    */
-  lookupStringDefaultToEnglish(language) {
+  lookupStringDefaultToEnglishOrNoLanguage(language) {
     let message = this._values.get(language)
     if (!message) {
       message = this._values.get('en')
-      if (!message) {
-        throw new Error(`MultiLingualLiteral lookup on term [${this._iri}] for language [${language}], but no values at all (even English) (Context: [${this._contextMessage}]).`)
-      }
+      if (message) {
+        this._language = 'en'
+      } else {
+        message = this._values.get('')
+        if (!message) {
+          throw new Error(`MultiLingualLiteral lookup on term [${this._iri}] for language [${language}], but no values at all (even English, or no language tag at all) (Context: [${this._contextMessage}]).`)
+        }
 
-      this._language = 'en'
+        this._language = ''
+      }
     }
 
     return message
   }
 
-  params (...rest) {
-    return this.paramsInLang(this._language, ...rest)
+  params (mandatory, ...rest) {
+    return this.paramsInLang(mandatory, this._language, ...rest)
   }
 
-    /**
+  lookupMandatoryLanguage(language) {
+    const result = this._values.get(language)
+    if (!result) {
+      throw new Error(`MultiLingualLiteral message with IRI [${this._iri}] required value in language [${language}], but none found (Context: [${this._contextMessage}]).`)
+    }
+
+    return result
+  }
+
+  /**
    * TODO: Won't yet handle replacing multiple uses of say {{1}} in a single
    *  string, which I guess it should...!?
    *
    * @returns {*}
    */
-  paramsInLang (language, ...rest) {
+  paramsInLang (mandatory, language, ...rest) {
     if (!language) {
       throw new Error(`MultiLingualLiteral with IRI [${this._iri}] called expecting params but no language specified (Context: [${this._contextMessage}]).`)
     }
+
     //
-    let message = this.lookupStringDefaultToEnglish(language)
+    let message
+    if (mandatory) {
+      message = this.lookupMandatoryLanguage(language)
+
+    } else {
+      message = this.lookupStringDefaultToEnglishOrNoLanguage(language)
+    }
 
     const paramsRequired = (message.split('{{').length - 1)
     if (paramsRequired !== rest.length) {

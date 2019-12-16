@@ -1,6 +1,8 @@
+'use strict'
+
 const rdf = require('rdf-ext')
 
-const LitVocabTermBase = require('../../../src/LitVocabTermBase')
+const LitVocabTermBase = require('../lit-vocab-term-base/src/LitVocabTermBase')
 
 const aggregation = require("aggregation/es6")
 
@@ -8,7 +10,7 @@ const aggregation = require("aggregation/es6")
  * Provides an Rdf-Ext-specific LIT Vocab Term implementation.
  * This class uses aggregation as a form of multiple-inheritance to allow it
  * be used both as a LIT Vocab Term (that has awareness of rdfs:label,
- * rdfs:comment and context-awarenes of local storage to retrieve current
+ * rdfs:comment and context-awareness of local storage to retrieve current
  * user language settings, for instance), and also to be a fundamental Named
  * Node that allows us use it directly in methods from our underlying RDF
  * library.

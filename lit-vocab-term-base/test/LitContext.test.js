@@ -1,6 +1,8 @@
+'use strict'
+
 require('mock-local-storage')
 
-const LitContext = require('../../src/LitContext.js')
+const LitContext = require('../src/LitContext.js')
 
 const moment = require('moment')
 
