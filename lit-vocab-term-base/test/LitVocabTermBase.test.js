@@ -13,6 +13,28 @@ describe('LitVocabTermBase tests', () => {
   const TEST_IRI_LOCAL_NAME = 'localName'
   const TEST_IRI = `test://iri#${TEST_IRI_LOCAL_NAME}`
 
+  describe('Strict support', () => {
+    it('Should not use IRI local name if no label and strict', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true, true)
+
+      expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
+    })
+
+    it('Should require English label and comment if strict', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true, true)
+        .addLabel('', `No language label isn't enough for 'strict'...`)
+        .addComment('', `No language comment isn't enough for 'strict'...`)
+
+      expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
+      expect(() => term.comment).to.throw(TEST_IRI, 'en', 'no values')
+    })
+
+    it('Calling mandatory on strict term is unnecessary', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true, true)
+      expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
+    })
+  })
+
   describe('Supports labels and comments', () => {
     it('Should use the label context', () => {
       const label = 'Irish label string'

@@ -1,5 +1,7 @@
 'use strict'
 
+const debug = require('debug')('lit-vocab-term:LitVocabTermBase');
+
 const LitContext = require('./LitContext')
 const LitTermRegistry = require('./LitTermRegistry')
 const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
@@ -32,9 +34,23 @@ class LitVocabTermBase {
    * @param contextStorage context for this term
    * @param useLocalNameAsEnglishLabel flag if we should use local name as
    * English label or not.
+   * @param strict flag if we should be strict in throwing exceptions on
+   * errors, requiring at least an English label and comment, or returning
+   * 'undefined'
    */
-  constructor (iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel) {
-    this.initializer(iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel)
+  constructor (
+    iri,
+    rdfFactory,
+    contextStorage,
+    useLocalNameAsEnglishLabel,
+    strict) {
+
+    this.initializer(
+      iri,
+      rdfFactory,
+      contextStorage,
+      useLocalNameAsEnglishLabel,
+      strict)
   }
 
   /**
@@ -45,10 +61,21 @@ class LitVocabTermBase {
    * @param contextStorage context for this term
    * @param useLocalNameAsEnglishLabel flag if we should use local name as
    * English label or not.
+   * @param strict flag if we should be strict in throwing exceptions on
+   * errors, requiring at least an English label and comment, or returning
+   * 'undefined'
    * @returns {*}
    */
-  initializer(iri, rdfFactory, contextStorage, useLocalNameAsEnglishLabel) {
+  initializer(
+    iri,
+    rdfFactory,
+    contextStorage,
+    useLocalNameAsEnglishLabel,
+    strict) {
+
     this._litSessionContext = new LitContext('en', contextStorage)
+
+    this._strict = strict
 
     // Create holders for meta-data on this vocabulary term (we could probably
     // lazily create these only if values are actually provided!).
@@ -72,7 +99,7 @@ class LitVocabTermBase {
 
     LitTermRegistry.addTerm(iri, this)
 
-    if (useLocalNameAsEnglishLabel) {
+    if (!strict && useLocalNameAsEnglishLabel) {
       // This can be overwritten if we get an actual English label later, which
       // would be fine.
       this._label.addValue('', LitVocabTermBase.extractIriLocalName(iri))
@@ -99,6 +126,10 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'mandatory', {
       label: 'Set our mandatory flag - i.e. throws if not as expected',
       get () {
+        if (this._strict) {
+          debug(`LIT Vocab term [${this._label.getIri()}] was created as 'strict', meaning there's no need to also call 'mandatory'.`)
+        }
+
         this._mandatory = true
         return this
       }
@@ -145,8 +176,11 @@ class LitVocabTermBase {
   resetState() {
     this._asRdfLiteral = false
     this._languageOverride = undefined
-    this._mandatory = false
     this._throwOnError = true
+
+    // This might be a hack, but if we're constructed with 'strict', it's
+    // effectively the same as setting our 'mandatory' flag...
+    this._mandatory = this._strict ? true : false
   }
 
   addLabel (language, value) {

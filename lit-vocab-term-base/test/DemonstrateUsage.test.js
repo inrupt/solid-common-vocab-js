@@ -26,12 +26,14 @@ describe('Demonstrate LIT Vocab Term usage', () => {
   // with no language tag at all, such as for instance a 'username', for
   // which translations don't really make sense (i.e. a string of datatype
   // 'xsd:string').
-  describe('Vocab Term label usage', () => {
+  describe('LIT Vocab Term label usage', () => {
     it('Label handling allowing local part of IRI as fallback English value', () => {
       // We explicitly want our term to allow the use of the local part of
       // the IRI as the English label if no English label explicitly provided,
-      // so we pass 'true' to the constructor.
-      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
+      // so we pass 'true' for 'useLocalNameAsEnglishLabel', and 'false' for
+      // the 'strict' flag (as 'strict' enforces an explicit English label!).
+      const term = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, true, false)
 
       // Simply requesting the label without an explicit language assumes
       // English, but since we haven't provided any labels at all yet we can
@@ -88,14 +90,15 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       // can enforce that all terms must have at least English labels and
       // comments (this is something the LIT Artifact Generator can enforce
       // today for example).
-      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+      const term = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, false, false)
 
       // Simply requesting the label without an explicit language assumes
       // English, but since we haven't provided any labels at all yet we
       // throw an exception.
       expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
 
-      // But explicitly saying 'do not throw' returned 'undefined' instead.
+      // But explicitly saying 'do not throw' returns 'undefined' instead.
       expect(term.dontThrow.label).to.be.undefined
 
       // Asking for mandatory label still throws if none specified at all.
@@ -122,7 +125,8 @@ describe('Demonstrate LIT Vocab Term usage', () => {
     it('Show language coming from context', () => {
       // Create a vocab term with a non-English language label.
       const labelInIrish = 'Dia duit Domhanda!'
-      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+      const term = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, false, false)
         .addLabel('ga', labelInIrish)
 
       // First show that by default we can't find a label value...
@@ -137,9 +141,11 @@ describe('Demonstrate LIT Vocab Term usage', () => {
   })
 
   // Comments and messages do not fallback to using the IRI's local name.
-  describe('Vocab Term comment or message usage', () => {
+  describe('LIT Vocab Term comment or message usage', () => {
     it('Comment and message handling do not use local part of IRI as fallback', () => {
-      const termUseLocalName = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
+      const termUseLocalName = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, true, false)
+
       expect(() => termUseLocalName.comment).to.throw(TEST_IRI, 'en', 'no values')
       expect(() => termUseLocalName.message).to.throw(TEST_IRI, 'en', 'no values')
 
@@ -151,11 +157,46 @@ describe('Demonstrate LIT Vocab Term usage', () => {
 
   // Giving the programmer control over throwing exceptions.
   describe('Return undefined instead of throwing exceptions', () => {
-    it('Should return undefined', () => {
-      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
+    it('Should return undefined instead of throwing', () => {
+      const term = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, true, false)
 
       expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
       expect(term.mandatory.dontThrow.label).to.be.undefined
+    })
+  })
+
+  /**
+   * Here we use the 'strict' flag on our vocab terms, which enforces the
+   * expectation that the term will have at least an English label and
+   * comment, and therefore will never use the IRI's local name as the label
+   * for instance (it'll throw an exception instead!).
+   * Effectively, setting the 'strict' flag in the constructor is like always
+   * stipulating the 'mandatory' flag in subsequent calls.
+   */
+  describe('Strict support', () => {
+    it('Should not use IRI local name if no label and strict', () => {
+      const term = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, true, true)
+
+      expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
+    })
+
+    it('Should require English label and comment if strict', () => {
+      const term = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, true, true)
+        .addLabel('', `No language label isn't enough for 'strict'...`)
+        .addComment('', `No language comment isn't enough for 'strict'...`)
+
+      expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
+      expect(() => term.comment).to.throw(TEST_IRI, 'en', 'no values')
+    })
+
+    it('Calling mandatory on strict term is unnecessary', () => {
+      const term = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, true, true)
+
+      expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
     })
   })
 })
