@@ -93,11 +93,19 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       // Simply requesting the label without an explicit language assumes
       // English, but since we haven't provided any labels at all yet we
       // throw an exception.
-      // TODO: Should this return 'undefined' instead!?
       expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
+
+      // But explicitly saying 'do not throw' returned 'undefined' instead.
+      expect(term.dontThrow.label).to.be.undefined
 
       // Asking for mandatory label still throws if none specified at all.
       expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
+
+      // Currently 'do not throw' overrides 'mandatory', so we still get back
+      // 'undefined' if we stipulate both.
+      // TODO: Should we throw an exception here instead (i.e. seems like a
+      //  developer error if both flags set!)...?
+      expect(term.dontThrow.mandatory.label).to.be.undefined
 
       // Now add a non-English language label...
       const labelInIrish = 'Dia duit Domhanda!'
@@ -130,12 +138,14 @@ describe('Demonstrate LIT Vocab Term usage', () => {
 
   // Comments and messages do not fallback to using the IRI's local name.
   describe('Vocab Term comment or message usage', () => {
-    it('Label handling allowing local part of IRI as fallback English value', () => {
+    it('Comment and message handling do not use local part of IRI as fallback', () => {
       const termUseLocalName = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
       expect(() => termUseLocalName.comment).to.throw(TEST_IRI, 'en', 'no values')
+      expect(() => termUseLocalName.message).to.throw(TEST_IRI, 'en', 'no values')
 
       const termDoNotUseLocalName = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
       expect(() => termDoNotUseLocalName.comment).to.throw(TEST_IRI, 'en', 'no values')
+      expect(() => termDoNotUseLocalName.message).to.throw(TEST_IRI, 'en', 'no values')
     })
   })
 
