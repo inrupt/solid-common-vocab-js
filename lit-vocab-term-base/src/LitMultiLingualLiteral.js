@@ -1,5 +1,7 @@
 'use strict'
 
+const debug = require('debug')('lit-vocab-term:LitMultiLingualLiteral');
+
 /**
  * Class that defines the concept of a multi-lingual literal (as in a String
  * literal). We can add multiple values in different languages, and look them
@@ -28,46 +30,24 @@ class LitMultiLingualLiteral {
 
     this._expandedMessage = undefined
 
-    // Used to flag if we want result as an RDF Literal (otherwise we get back
-    // a string!).
-    this._valueAsRdfLiteral = false
-
-    // Sets our flag to say we want our value as an RDF literal.
-    Object.defineProperty(this, 'asRdfLiteral', {
-      get () {
-        this._valueAsRdfLiteral = true
-        return this
-      }
-    })
-
     // Sets the language to 'English', but returns our current instance.
     Object.defineProperty(this, 'setToEnglish', {
       get () {
-        this.setLanguage('en')
+        this.asLanguage('en')
         return this
       }
     })
-
-    // Looks up our values for English.
-    Object.defineProperty(this, 'lookupEnglish', {
-      get () {
-        return this.returnAsStringOrRdfLiteral(this._values.get('en'))
-      }
-    })
-
-    // Looks up our values for English.
-    Object.defineProperty(this, 'lookup', {
-      get () {
-        return this.lookupButDefaultToEnglish(this._language)
-      }
-    })
   }
-  
+
+  lookupEnglish(asRdfLiteral, throwOnError) {
+    return this.lookupButDefaultToEnglish(asRdfLiteral, throwOnError, 'en')
+  }
+
   getIri () {
     return this._iri
   }
 
-  setLanguage (tag) {
+  asLanguage (tag) {
     this._language = tag
     return this
   }
@@ -77,6 +57,12 @@ class LitMultiLingualLiteral {
     return this
   }
 
+  lookup (asRdfLiteral, mandatory, throwOnError, language) {
+    return mandatory
+      ? this.lookupLanguageMandatory(asRdfLiteral, throwOnError, language)
+      : this.lookupButDefaultToEnglish(asRdfLiteral, throwOnError, language)
+  }
+
   /**
    * Looks up the specific language *ONLY* - i.e. it  will *NOT* fallback to
    * English.
@@ -84,9 +70,9 @@ class LitMultiLingualLiteral {
    * @param language
    * @returns {*}
    */
-  lookupLanguageMandatory (language) {
-    const message = this.lookupMandatoryLanguage(language)
-    return this.returnAsStringOrRdfLiteral(message)
+  lookupLanguageMandatory (asRdfLiteral, throwOnError, language) {
+    const message = this.lookupMandatory(throwOnError, language)
+    return this.returnAsStringOrRdfLiteral(asRdfLiteral, message)
   }
 
   /**
@@ -102,8 +88,30 @@ class LitMultiLingualLiteral {
    * and reset our language tag to 'en').
    * @returns {*}
    */
-  lookupButDefaultToEnglish (language) {
-    return this.returnAsStringOrRdfLiteral(this.lookupStringDefaultToEnglishOrNoLanguage(language));
+  lookupButDefaultToEnglish (asRdfLiteral, throwOnError, language) {
+    return this.returnAsStringOrRdfLiteral(
+      asRdfLiteral,
+      this.lookupButDefaultToEnglishOrNoLanguage(throwOnError, language)
+    );
+  }
+
+  /**
+   * Handle errors - we'll throw an error (with the specified message) unless
+   * we're told not to throw an exception, in which case we return 'undefined'
+   * instead.
+   *
+   * @param throwOnError Flag if true we return undefined, else we throw an error
+   * @param message the message to throw (we also write to 'debug')
+   * @returns {undefined} an Error or undefined if no exceptions...
+   */
+  handleError(throwOnError, message) {
+    debug(message)
+
+    if (throwOnError) {
+      throw new Error(message)
+    }
+
+    return undefined
   }
 
   /**
@@ -113,7 +121,7 @@ class LitMultiLingualLiteral {
    * @param language
    * @returns {*}
    */
-  lookupStringDefaultToEnglishOrNoLanguage(language) {
+  lookupButDefaultToEnglishOrNoLanguage(throwOnError, language) {
     let message = this._values.get(language)
     if (!message) {
       message = this._values.get('en')
@@ -122,7 +130,9 @@ class LitMultiLingualLiteral {
       } else {
         message = this._values.get('')
         if (!message) {
-          throw new Error(`MultiLingualLiteral lookup on term [${this._iri}] for language [${language}], but no values at all (even English, or no language tag at all) (Context: [${this._contextMessage}]).`)
+          return this.handleError(
+            throwOnError,
+            `MultiLingualLiteral lookup on term [${this._iri}] for language [${language}], but no values at all (even English, or no language tag at all) (Context: [${this._contextMessage}]).`)
         }
 
         this._language = ''
@@ -132,14 +142,22 @@ class LitMultiLingualLiteral {
     return message
   }
 
-  params (mandatory, ...rest) {
-    return this.paramsInLang(mandatory, this._language, ...rest)
+  params (asRdfLiteral, throwOnError, mandatory, ...rest) {
+
+    return this.paramsInLang(
+      asRdfLiteral,
+      throwOnError,
+      mandatory,
+      this._language,
+      ...rest)
   }
 
-  lookupMandatoryLanguage(language) {
+  lookupMandatory(throwOnError, language) {
     const result = this._values.get(language)
     if (!result) {
-      throw new Error(`MultiLingualLiteral message with IRI [${this._iri}] required value in language [${language}], but none found (Context: [${this._contextMessage}]).`)
+      return this.handleError(
+        throwOnError,
+        `MultiLingualLiteral message with IRI [${this._iri}] required value in language [${language}], but none found (Context: [${this._contextMessage}]).`)
     }
 
     return result
@@ -151,23 +169,22 @@ class LitMultiLingualLiteral {
    *
    * @returns {*}
    */
-  paramsInLang (mandatory, language, ...rest) {
+  paramsInLang (asRdfLiteral, throwOnError, mandatory, language, ...rest) {
     if (!language) {
-      throw new Error(`MultiLingualLiteral with IRI [${this._iri}] called expecting params but no language specified (Context: [${this._contextMessage}]).`)
+      return this.handleError(
+        throwOnError,
+        `MultiLingualLiteral with IRI [${this._iri}] called expecting params but no language specified (Context: [${this._contextMessage}]).`)
     }
 
-    //
-    let message
-    if (mandatory) {
-      message = this.lookupMandatoryLanguage(language)
-
-    } else {
-      message = this.lookupStringDefaultToEnglishOrNoLanguage(language)
-    }
+    let message = mandatory
+      ? this.lookupMandatory(throwOnError, language)
+      : this.lookupButDefaultToEnglishOrNoLanguage(throwOnError, language)
 
     const paramsRequired = (message.split('{{').length - 1)
     if (paramsRequired !== rest.length) {
-      throw new Error(`Setting parameters on LitMultiLingualLiteral with IRI [${this._iri}] and value [${message}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`)
+      return this.handleError(
+        throwOnError,
+        `Setting parameters on LitMultiLingualLiteral with IRI [${this._iri}] and value [${message}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`)
     }
     
     for (let i = 0; i < rest.length; i++) {
@@ -175,15 +192,14 @@ class LitMultiLingualLiteral {
       message = message.replace(marker, rest[i])
     }
 
-    return this.returnAsStringOrRdfLiteral(message)
+    return this.returnAsStringOrRdfLiteral(asRdfLiteral, message)
   }
 
-  returnAsStringOrRdfLiteral (message) {
-    const result = this._valueAsRdfLiteral
+  returnAsStringOrRdfLiteral (asRdfLiteral, message) {
+    const result = asRdfLiteral
         ? this._rdfFactory.literal(message, this._language) : message
 
     this._expandedMessage = message
-    this._valueAsRdfLiteral = false // Reset our flag!
     return result
   }
 }

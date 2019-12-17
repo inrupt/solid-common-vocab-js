@@ -138,14 +138,8 @@ describe('Demonstrate usage', () => {
     it('Should return undefined', () => {
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
 
-      // Just call this at the moment for coverage...
-      expect(() => term.dontThrow.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
-      // expect(term.dontThrow.label).to.be.undefined
-      //
-      // const termDoNotUseLocalName = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
-      // expect(() => termDoNotUseLocalName.comment).to.throw(TEST_IRI, 'en', 'no values')
-      //
-      // expect(termDoNotUseLocalName.dontThrow.comment).to.be.undefined
+      expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
+      expect(term.mandatory.dontThrow.label).to.be.undefined
     })
   })
 })

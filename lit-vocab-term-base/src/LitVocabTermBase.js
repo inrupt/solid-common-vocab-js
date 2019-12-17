@@ -80,10 +80,18 @@ class LitVocabTermBase {
 
     this.resetState();
 
-    Object.defineProperty(this, 'dontThrow', {
-      label: 'Set a flag to return undefined instread of any exceptions',
+    // Sets our flag to say we want our value as an RDF literal.
+    Object.defineProperty(this, 'asRdfLiteral', {
       get () {
-        this._dontThrow = true
+        this._asRdfLiteral = true
+        return this
+      }
+    })
+
+    Object.defineProperty(this, 'dontThrow', {
+      label: 'Set a flag to return undefined instead of any exceptions',
+      get () {
+        this._throwOnError = false
         return this
       }
     })
@@ -107,7 +115,7 @@ class LitVocabTermBase {
       label: 'Accessor for label that uses our LitSessionContext instance',
       get () {
         try {
-          const result = this.labelInLang(this._litSessionContext.getLocale())
+          const result = this.labelInLang()
           return result
         } finally {
           this.resetState()
@@ -118,7 +126,7 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'comment', {
       label: 'Accessor for comment that uses our LitSessionContext instance',
       get () {
-        const result = this.commentInLang(this._litSessionContext.getLocale())
+        const result = this.commentInLang()
         this.resetState()
         return result
       }
@@ -127,7 +135,7 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'message', {
       label: 'Accessor for message that uses our LitSessionContext instance',
       get () {
-        const result = this.messageInLang(this._litSessionContext.getLocale())
+        const result = this.messageInLang()
         this.resetState()
         return result
       }
@@ -135,9 +143,10 @@ class LitVocabTermBase {
   }
 
   resetState() {
+    this._asRdfLiteral = false
     this._languageOverride = undefined
     this._mandatory = false
-    this._dontThrow = false
+    this._throwOnError = true
   }
 
   addLabel (language, value) {
@@ -168,34 +177,56 @@ class LitVocabTermBase {
     return this
   }
 
-  labelInLang (language) {
-    const lookupLanguage = this.useLanguageOverrideOrGetFromContext(language)
+  labelInLang () {
+    const language = this.useLanguageOverrideOrGetFromContext()
+
     return this._mandatory
-      ? this._label.lookupLanguageMandatory(lookupLanguage)
-      : this._label.lookupButDefaultToEnglish(lookupLanguage)
+      ? this._label.lookupLanguageMandatory(
+        this._asRdfLiteral,
+        this._throwOnError,
+        language)
+      : this._label.lookupButDefaultToEnglish(
+        this._asRdfLiteral,
+        this._throwOnError,
+        language)
   }
 
-  commentInLang (language) {
-    const lookupLanguage = this.useLanguageOverrideOrGetFromContext(language)
+  commentInLang () {
+    const language = this.useLanguageOverrideOrGetFromContext()
+
     return this._mandatory
-      ? this._comment.lookupLanguageMandatory(lookupLanguage)
-      : this._comment.lookupButDefaultToEnglish(lookupLanguage)
+      ? this._comment.lookupLanguageMandatory(
+        this._asRdfLiteral,
+        this._throwOnError,
+        language)
+      : this._comment.lookupButDefaultToEnglish(
+        this._asRdfLiteral,
+        this._throwOnError,
+        language)
   }
 
-  messageInLang (language) {
-    const lookupLanguage = this.useLanguageOverrideOrGetFromContext(language)
+  messageInLang () {
+    const language = this.useLanguageOverrideOrGetFromContext()
+
     return this._mandatory
-      ? this._message.lookupLanguageMandatory(lookupLanguage)
-      : this._message.lookupButDefaultToEnglish(lookupLanguage)
+      ? this._message.lookupLanguageMandatory(
+        this._asRdfLiteral,
+        this._throwOnError,
+        language)
+      : this._message.lookupButDefaultToEnglish(
+        this._asRdfLiteral,
+        this._throwOnError,
+        language)
   }
 
   messageParams (...rest) {
-    return this._message.paramsInLang(
-      this._mandatory, this._litSessionContext.getLocale(), ...rest)
+    const lookupLanguage = this.useLanguageOverrideOrGetFromContext()
+    return this.messageParamsInLang(lookupLanguage, ...rest)
   }
 
   messageParamsInLang (language, ...rest) {
-    return this._message.paramsInLang(this._mandatory, language, ...rest)
+    return this._message.paramsInLang(
+      this._asRdfLiteral, this._throwOnError, this._mandatory, language, ...rest)
   }
 
   /**

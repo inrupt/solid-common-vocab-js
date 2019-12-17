@@ -17,7 +17,13 @@ class BasicRdfFactory {
   literal(literalValue, languageOrDatatype) {
     // TODO: Only simple language tag support for now (i.e. no datatypes),
     //  and only returns a simple Javascript object, not an RDFJS 'Literal'...
-    return { value: literalValue, language: languageOrDatatype }
+    return {
+      value: literalValue,
+      datatype: {
+        value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString'
+      },
+      language: languageOrDatatype
+    }
   }
 }
 

@@ -114,7 +114,7 @@ describe('LitVocabTermBase tests', () => {
       expect(term.message).equals('test whatever in Spanish')
     })
 
-    it('Should ignore locale from our context if explicit language, with params', () => {
+    it('Should ignore locale from our context if explicit language, with one param', () => {
       const term = new LitVocabTermBase('test://iri', rdf, localStorage)
         .addMessage('en', 'Params test {{0}} and {{1}}')
         .addMessage('es', 'Prueba de parámetros {{0}} y {{1}}')

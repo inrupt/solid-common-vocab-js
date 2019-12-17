@@ -3,7 +3,6 @@
 require('mock-local-storage')
 
 const rdf = require('rdf-ext')
-const LitContext = require('../../src/LitContext')
 const LitVocabTermBase = require('../../src/LitVocabTermBase')
 const LitVocabTermBasic = require('../../src/basic/LitVocabTermBasic')
 
@@ -11,13 +10,16 @@ const chai = require('chai')
 const expect = chai.expect
 
 describe('LitVocabTermBasic tests', () => {
+  const TEST_IRI_LOCAL_NAME = 'localName'
+  const TEST_IRI = `test://iri#${TEST_IRI_LOCAL_NAME}`
+
   describe('Constructor', () => {
-    it('should behave as an IRI', () => {
-      const iri = 'test://iri'
-      expect(new LitVocabTermBasic(iri, localStorage).value).to.equals(iri)
+    it('Should behave as an IRI', () => {
+      expect(new LitVocabTermBasic(TEST_IRI, localStorage).value)
+        .to.equals(TEST_IRI)
     })
 
-    it('should flag local IRI name as English label', () => {
+    it('Should flag local IRI name as English label', () => {
       const iri = 'test://iri#localTermName'
       expect(new LitVocabTermBasic(iri, localStorage, true).label)
         .to.equals('localTermName')
@@ -40,28 +42,39 @@ describe('LitVocabTermBasic tests', () => {
   })
 
   describe('Supports labels and comments', () => {
-    it('should process English label as localname', () => {
-      const iri = 'test://iri#whatever'
-      const term = new LitVocabTermBasic(iri, localStorage, true)
-      expect(term.label).equals('whatever')
+    it('Should process English label as localname', () => {
+      const term = new LitVocabTermBasic(TEST_IRI, localStorage, true)
+
+      expect(term.label).equals(TEST_IRI_LOCAL_NAME)
     })
 
-    it('should process labels and comments', () => {
-      const iri = 'test://iri#whatever'
-      const term = new LitVocabTermBasic(iri, localStorage)
-        .addLabel('en', 'whatever')
-        .addComment('en', 'User comment')
+    it('Should process labels and comments', () => {
+      const term = new LitVocabTermBasic(TEST_IRI, localStorage)
+        .addLabel('en', 'whatever label...')
+        .addComment('en', 'whatever comment...')
 
-      expect(term.label).equals('whatever')
-      expect(term.comment).equals('User comment')
+      expect(term.label).equals('whatever label...')
+      expect(term.comment).equals('whatever comment...')
     })
 
-    it('should fail if no messages', () => {
-      const iri = 'test://iri'
-      const term = new LitVocabTermBasic(iri, localStorage)
+    it('Should fail if no messages', () => {
+      const term = new LitVocabTermBasic(TEST_IRI, localStorage)
 
-      expect(() => term.message('en'))
-        .to.throw(iri, 'skos:definition')
+      expect(() => term.message('en')).to.throw(TEST_IRI, 'skos:definition')
+    })
+  })
+
+  describe('Support basic implementation', () => {
+    it('Should use English with params if requested language not found', () => {
+      const term = new LitVocabTermBasic(TEST_IRI, localStorage, false)
+        .addMessage('en', 'whatever {{0}} in English')
+
+      const result = term.asRdfLiteral.messageParamsInLang('en', 'blah')
+      expect(result.value).to.equal('whatever blah in English')
+      expect(result.language).to.equal('en')
+
+      expect(() => term.asLanguage('fr').messageParams('<use default>')
+        .to.throw('whatever <use default> in English', 'en'))
     })
   })
 })
