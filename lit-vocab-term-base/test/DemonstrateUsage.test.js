@@ -34,31 +34,31 @@ describe('Demonstrate usage', () => {
       // English, but since haven't provided any labels at all yet we can
       // only return the local part of the IRI (which we explicitly said to
       // do in the term constructor above).
-      expect(term.label).to.equals(TEST_IRI_LOCAL_NAME)
+      expect(term.label).to.equal(TEST_IRI_LOCAL_NAME)
 
       // Making a value mandatory though will throw.
       expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
 
       // When we explicitly request French, but no labels at all, still just
       // return the IRI's local name.
-      expect(term.asLanguage('fr').label).to.equals(TEST_IRI_LOCAL_NAME)
+      expect(term.asLanguage('fr').label).to.equal(TEST_IRI_LOCAL_NAME)
 
       // Now we add an explicit label in French.
       term.addLabel('fr', 'Bonjour!')
 
       // But we still get back the local name if we don't request a specific
       // language, and there is no English or no-language tag at all label.
-      expect(term.label).to.equals(TEST_IRI_LOCAL_NAME)
+      expect(term.label).to.equal(TEST_IRI_LOCAL_NAME)
 
       // But we if explicitly ask for French, we now get the French one.
-      expect(term.asLanguage('fr').label).to.equals('Bonjour!')
+      expect(term.asLanguage('fr').label).to.equal('Bonjour!')
 
       // If we now add a label without any language at all...
       term.addLabel('', 'No language tag')
 
       // ... we'll get that no-language value now since there is still no
       // explicitly tagged value for English.
-      expect(term.label).to.equals('No language tag')
+      expect(term.label).to.equal('No language tag')
 
       // But requesting a mandatory value will still throw.
       expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
@@ -66,14 +66,14 @@ describe('Demonstrate usage', () => {
       // Finally, if we provide a value explicitly tagged as 'English',
       // then we'll get that back without providing a language at all...
       term.addLabel('en', 'English Hello!')
-      expect(term.label).to.equals('English Hello!')
+      expect(term.label).to.equal('English Hello!')
       // ...or if we explicitly request English...
-      expect(term.asLanguage('en').label).to.equals('English Hello!')
+      expect(term.asLanguage('en').label).to.equal('English Hello!')
       // ...or if we use our convenience English accessor.
-      expect(term.asEnglish.label).to.equals('English Hello!')
+      expect(term.asEnglish.label).to.equal('English Hello!')
 
       // And making it mandatory should be fine too...
-      expect(term.mandatory.label).to.equals('English Hello!')
+      expect(term.mandatory.label).to.equal('English Hello!')
     })
 
     it('Label handling WITHOUT allowing local part of IRI as fallback', () => {
@@ -102,7 +102,7 @@ describe('Demonstrate usage', () => {
       expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
 
       // But looking specifically for our language label works fine.
-      expect(term.asLanguage('ga').label).to.equals(labelInIrish)
+      expect(term.asLanguage('ga').label).to.equal(labelInIrish)
     })
 
     it('Show language coming from context', () => {

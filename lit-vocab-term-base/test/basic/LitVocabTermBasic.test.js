@@ -16,13 +16,13 @@ describe('LitVocabTermBasic tests', () => {
   describe('Constructor', () => {
     it('Should behave as an IRI', () => {
       expect(new LitVocabTermBasic(TEST_IRI, localStorage).value)
-        .to.equals(TEST_IRI)
+        .to.equal(TEST_IRI)
     })
 
     it('Should flag local IRI name as English label', () => {
       const iri = 'test://iri#localTermName'
       expect(new LitVocabTermBasic(iri, localStorage, true).label)
-        .to.equals('localTermName')
+        .to.equal('localTermName')
     })
   })
 

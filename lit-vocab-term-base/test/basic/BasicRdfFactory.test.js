@@ -11,7 +11,7 @@ describe('BasicRdfFactory tests', () => {
   it('should create literal', () => {
     const iri = 'test://iri'
     const literal = new BasicRdfFactory().literal(iri, 'ga');
-    expect(literal.value).to.equals(iri);
-    expect(literal.language).to.equals('ga');
+    expect(literal.value).to.equal(iri);
+    expect(literal.language).to.equal('ga');
   })
 })

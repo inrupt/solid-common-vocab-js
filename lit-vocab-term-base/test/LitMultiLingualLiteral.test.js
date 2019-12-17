@@ -118,9 +118,8 @@ describe('MultiLingualLiteral tests', () => {
         .addValue('en', 'whatever in English')
         .addValue('ga', 'whatever in Irish')
 
-      const result = literal.lookup(true, true, true, 'en')
-      expect(result.value).to.equal('whatever in English')
-      expect(result.language).to.equal('en')
+      expect(literal.lookup(true, true, true, 'en'))
+        .to.deep.equal(rdf.literal('whatever in English', 'en'))
 
       expect(literal.asLanguage('ga').lookup(false, true, true, 'ga'))
         .equals('whatever in Irish')
@@ -133,9 +132,8 @@ describe('MultiLingualLiteral tests', () => {
     
       // NOTE: our result will have an 'en' tag, even though we asked for 'fr'
       // (since we don't have a 'fr' message!).
-      const result = literal.lookup(true, false, true, 'fr')
-      expect(result.value).to.equal('whatever in English')
-      expect(result.language).to.equal('en')
+      expect(literal.lookup(true, false, true, 'fr'))
+        .to.deep.equal(rdf.literal('whatever in English', 'en'))
     })
 
     it('Should throw with params if requested language not found', () => {
