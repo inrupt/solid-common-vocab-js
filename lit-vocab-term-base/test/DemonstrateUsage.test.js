@@ -9,20 +9,23 @@ const LitVocabTermBase = require('../src/LitVocabTermBase')
 const chai = require('chai')
 const expect = chai.expect
 
-/** Test class intended to simple demonstrate by example how to use LIT Vocab
+/**
+ * Test class intended to simply demonstrate by example how to use LIT Vocab
  * Term instances.
  *
  * This class is not intended to contribute to test coverage, and duplicates
- * test conditions in our standard unit tests
+ * test conditions in our standard unit tests.
  */
-describe('Demonstrate usage', () => {
+describe('Demonstrate LIT Vocab Term usage', () => {
   const TEST_IRI_LOCAL_NAME = 'localName'
   const TEST_IRI = `test://iri#${TEST_IRI_LOCAL_NAME}`
 
   // Vocab Term labels can be configured (via a constructor parameter) to
   // fallback to using the IRI of the term as the English label if there is
   // no English value provided and no no-language value (e.g. a label string
-  // with no language tag at all (i.e. a string of datatype 'xsd:string').
+  // with no language tag at all, such as for instance a 'username', for
+  // which translations don't really make sense (i.e. a string of datatype
+  // 'xsd:string').
   describe('Vocab Term label usage', () => {
     it('Label handling allowing local part of IRI as fallback English value', () => {
       // We explicitly want our term to allow the use of the local part of
@@ -31,40 +34,41 @@ describe('Demonstrate usage', () => {
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
 
       // Simply requesting the label without an explicit language assumes
-      // English, but since haven't provided any labels at all yet we can
+      // English, but since we haven't provided any labels at all yet we can
       // only return the local part of the IRI (which we explicitly said to
       // do in the term constructor above).
       expect(term.label).to.equal(TEST_IRI_LOCAL_NAME)
 
-      // Making a value mandatory though will throw.
+      // Explicitly saying a value is mandatory though will throw...
       expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
 
-      // When we explicitly request French, but no labels at all, still just
-      // return the IRI's local name.
+      // When we explicitly request French, but we have no labels at all, still
+      // just return the IRI's local name.
       expect(term.asLanguage('fr').label).to.equal(TEST_IRI_LOCAL_NAME)
 
       // Now we add an explicit label in French.
       term.addLabel('fr', 'Bonjour!')
 
       // But we still get back the local name if we don't request a specific
-      // language, and there is no English or no-language tag at all label.
+      // language, and there is still no English or no-language tag label.
       expect(term.label).to.equal(TEST_IRI_LOCAL_NAME)
 
-      // But we if explicitly ask for French, we now get the French one.
+      // But if we now explicitly ask for French, we'll get the French label.
       expect(term.asLanguage('fr').label).to.equal('Bonjour!')
 
-      // If we now add a label without any language at all...
+      // Now we add a label without any language at all...
       term.addLabel('', 'No language tag')
 
-      // ... we'll get that no-language value now since there is still no
-      // explicitly tagged value for English.
+      // ... we'll get that no-language value back since there is still no
+      // explicitly English-tagged label.
       expect(term.label).to.equal('No language tag')
 
-      // But requesting a mandatory value will still throw.
+      // And requesting a mandatory value will still throw.
       expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
 
-      // Finally, if we provide a value explicitly tagged as 'English',
-      // then we'll get that back without providing a language at all...
+      // Finally, if we provide a value explicitly tagged as 'English', then
+      // we'll get that back without needing to provide an explicit language at
+      // all...
       term.addLabel('en', 'English Hello!')
       expect(term.label).to.equal('English Hello!')
       // ...or if we explicitly request English...
@@ -77,17 +81,19 @@ describe('Demonstrate usage', () => {
     })
 
     it('Label handling WITHOUT allowing local part of IRI as fallback', () => {
-      // We explicitly prevent our term from using the local part of the IRI
-      // as the English label if no English label explicitly provided.
-      // This is useful when we control the generation of a vocab term,
-      // since we can enforce that terms must have at least English labels
-      // and comments (this is something the LIT an enfroce for example).
+      // Here we explicitly prevent our term from using the local part of
+      // the IRI as the English label if no English label is explicitly
+      // provided.
+      // This is useful when we control the generation of vocab terms, since we
+      // can enforce that all terms must have at least English labels and
+      // comments (this is something the LIT Artifact Generator can enforce
+      // today for example).
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
 
       // Simply requesting the label without an explicit language assumes
-      // English, but since haven't provided any labels at all yet we can
-      // only return the local part of the IRI (which we explicitly said to
-      // do in the term constructor above).
+      // English, but since we haven't provided any labels at all yet we
+      // throw an exception.
+      // TODO: Should this return 'undefined' instead!?
       expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
 
       // Asking for mandatory label still throws if none specified at all.
