@@ -15,9 +15,9 @@ describe('LitVocabTermRdfExt tests', () => {
       const namedNode = rdf.namedNode(iri)
 
       const vocabTerm = new LitVocabTermRdfExt(iri, localStorage)
-      expect(vocabTerm.value).to.equals(iri)
-      expect(vocabTerm.value).to.equals(namedNode.value)
-      expect(vocabTerm.getIri()).to.equals(iri)
+      expect(vocabTerm.value).to.equal(iri)
+      expect(vocabTerm.value).to.equal(namedNode.value)
+      expect(vocabTerm.getIri()).to.equal(iri)
     })
 
     it('should behave as a LIT Vocab Term', () => {

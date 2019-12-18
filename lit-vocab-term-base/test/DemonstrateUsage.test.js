@@ -25,7 +25,10 @@ describe('Demonstrate LIT Vocab Term usage', () => {
   // no English value provided and no no-language value (e.g. a label string
   // with no language tag at all, such as for instance a 'username', for
   // which translations don't really make sense (i.e. a string of datatype
-  // 'xsd:string')).
+  // 'xsd:string')). We refer to this mode of operation as 'unstrict' mode,
+  // and it's very useful when generating LIT Vocab Terms from vocabularies
+  // you have no control over, and which do not already provide labels for
+  // their terms.
 
   describe('LIT Vocab Term label usage', () => {
     it('Label handling allowing local part of IRI as fallback English value', () => {

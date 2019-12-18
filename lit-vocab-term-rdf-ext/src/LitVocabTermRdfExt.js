@@ -24,11 +24,15 @@ class LitVocabTermRdfExt
      *
      * @param iri the IRI for this vocabulary term
      * @param contextStorage optional context storage (e.g. localStorage)
-     * @param useLocalNameAsEnglishLabel true if we should use the local
      * name part of the IRI as the English label.
+     * @param strict flag if we should be strict in throwing exceptions on
+     * errors, requiring at least an English label and comment, or returning
+     * 'undefined'. If not strict, we can also use the local name part of the
+     * IRI as the English label if no explicit English label (or no-language
+     * label) is provided
      */
-    constructor (iri, contextStorage, useLocalNameAsEnglishLabel) {
-        super(iri, rdf, contextStorage, useLocalNameAsEnglishLabel)
+    constructor (iri, contextStorage, strict) {
+        super(iri, rdf, contextStorage, strict)
     }
 
     /**
