@@ -39,7 +39,7 @@ describe('MultiLingualLiteral tests', () => {
       const literal = new LitMultiLingualLiteral(
         rdf, TEST_IRI, new Map([ [ 'en', 'whatever' ] ]))
 
-      expect(literal.lookupEnglish(false, true)).equals('whatever')
+      expect(literal.lookupEnglish(false, false, true)).equals('whatever')
       expect(() => literal.lookupLanguageMandatory(false, true, 'es'))
         .to.throw(TEST_IRI, 'es', 'no values')
 
@@ -55,7 +55,7 @@ describe('MultiLingualLiteral tests', () => {
   describe('Looking up messages', () => {
     it('Should return correct IRI', () => {
       const literal = new LitMultiLingualLiteral(rdf, TEST_IRI, new Map([ [ 'en', 'whatever' ], [ 'fr', 'whatever in French' ] ]))
-      expect(literal.lookupEnglish(false, true)).equals('whatever')
+      expect(literal.lookupEnglish(false, false, true)).equals('whatever')
       expect(literal.lookupLanguageMandatory(false, true, 'fr'))
         .equals('whatever in French')
 

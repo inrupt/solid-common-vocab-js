@@ -32,25 +32,14 @@ class LitVocabTermBase {
    * @param iri the IRI for this vocabulary term
    * @param rdfFactory an underlying RDF library that can create IRI's
    * @param contextStorage context for this term
-   * @param useLocalNameAsEnglishLabel flag if we should use local name as
-   * English label or not.
    * @param strict flag if we should be strict in throwing exceptions on
    * errors, requiring at least an English label and comment, or returning
-   * 'undefined'
+   * 'undefined'. If not strict, we can also use the local name part of the
+   * IRI as the English label if no explicit English label (or no-language
+   * label) is provided
    */
-  constructor (
-    iri,
-    rdfFactory,
-    contextStorage,
-    useLocalNameAsEnglishLabel,
-    strict) {
-
-    this.initializer(
-      iri,
-      rdfFactory,
-      contextStorage,
-      useLocalNameAsEnglishLabel,
-      strict)
+  constructor (iri, rdfFactory, contextStorage, strict) {
+    this.initializer(iri, rdfFactory, contextStorage, strict)
   }
 
   /**
@@ -59,20 +48,14 @@ class LitVocabTermBase {
    * @param iri the IRI for this vocabulary term
    * @param rdfFactory an underlying RDF library that can create IRI's
    * @param contextStorage context for this term
-   * @param useLocalNameAsEnglishLabel flag if we should use local name as
-   * English label or not.
    * @param strict flag if we should be strict in throwing exceptions on
    * errors, requiring at least an English label and comment, or returning
-   * 'undefined'
+   * 'undefined'. If not strict, we can also use the local name part of the
+   * IRI as the English label if no explicit English label (or no-language
+   * label) is provided
    * @returns {*}
    */
-  initializer(
-    iri,
-    rdfFactory,
-    contextStorage,
-    useLocalNameAsEnglishLabel,
-    strict) {
-
+  initializer(iri, rdfFactory, contextStorage, strict) {
     this._litSessionContext = new LitContext('en', contextStorage)
 
     this._strict = strict
@@ -99,7 +82,7 @@ class LitVocabTermBase {
 
     LitTermRegistry.addTerm(iri, this)
 
-    if (!strict && useLocalNameAsEnglishLabel) {
+    if (!strict) {
       // This can be overwritten if we get an actual English label later, which
       // would be fine.
       this._label.addValue('', LitVocabTermBase.extractIriLocalName(iri))
@@ -177,10 +160,7 @@ class LitVocabTermBase {
     this._asRdfLiteral = false
     this._languageOverride = undefined
     this._throwOnError = true
-
-    // This might be a hack, but if we're constructed with 'strict', it's
-    // effectively the same as setting our 'mandatory' flag...
-    this._mandatory = this._strict ? true : false
+    this._mandatory = false
   }
 
   addLabel (language, value) {
@@ -214,43 +194,31 @@ class LitVocabTermBase {
   labelInLang () {
     const language = this.useLanguageOverrideOrGetFromContext()
 
-    return this._mandatory
-      ? this._label.lookupLanguageMandatory(
-        this._asRdfLiteral,
-        this._throwOnError,
-        language)
-      : this._label.lookupButDefaultToEnglish(
-        this._asRdfLiteral,
-        this._throwOnError,
-        language)
+    return this._label.lookup(
+      this._asRdfLiteral,
+      this._mandatory,
+      this._throwOnError,
+      language)
   }
 
   commentInLang () {
     const language = this.useLanguageOverrideOrGetFromContext()
 
-    return this._mandatory
-      ? this._comment.lookupLanguageMandatory(
-        this._asRdfLiteral,
-        this._throwOnError,
-        language)
-      : this._comment.lookupButDefaultToEnglish(
-        this._asRdfLiteral,
-        this._throwOnError,
-        language)
+    return this._comment.lookup(
+      this._asRdfLiteral,
+      this._mandatory,
+      this._throwOnError,
+      language)
   }
 
   messageInLang () {
     const language = this.useLanguageOverrideOrGetFromContext()
 
-    return this._mandatory
-      ? this._message.lookupLanguageMandatory(
-        this._asRdfLiteral,
-        this._throwOnError,
-        language)
-      : this._message.lookupButDefaultToEnglish(
-        this._asRdfLiteral,
-        this._throwOnError,
-        language)
+    return this._message.lookup(
+      this._asRdfLiteral,
+      this._mandatory,
+      this._throwOnError,
+      language)
   }
 
   messageParams (...rest) {

@@ -39,10 +39,6 @@ class LitMultiLingualLiteral {
     })
   }
 
-  lookupEnglish(asRdfLiteral, throwOnError) {
-    return this.lookupButDefaultToEnglish(asRdfLiteral, throwOnError, 'en')
-  }
-
   getIri () {
     return this._iri
   }
@@ -61,6 +57,10 @@ class LitMultiLingualLiteral {
     return mandatory
       ? this.lookupLanguageMandatory(asRdfLiteral, throwOnError, language)
       : this.lookupButDefaultToEnglish(asRdfLiteral, throwOnError, language)
+  }
+
+  lookupEnglish (asRdfLiteral, mandatory, throwOnError) {
+    return this.lookup(asRdfLiteral, mandatory, throwOnError, 'en')
   }
 
   /**
@@ -89,29 +89,8 @@ class LitMultiLingualLiteral {
    * @returns {*}
    */
   lookupButDefaultToEnglish (asRdfLiteral, throwOnError, language) {
-    return this.returnAsStringOrRdfLiteral(
-      asRdfLiteral,
-      this.lookupButDefaultToEnglishOrNoLanguage(throwOnError, language)
-    );
-  }
-
-  /**
-   * Handle errors - we'll throw an error (with the specified message) unless
-   * we're told not to throw an exception, in which case we return 'undefined'
-   * instead.
-   *
-   * @param throwOnError Flag if true we return undefined, else we throw an error
-   * @param message the message to throw (we also write to 'debug')
-   * @returns {undefined} an Error or undefined if no exceptions...
-   */
-  handleError(throwOnError, message) {
-    debug(message)
-
-    if (throwOnError) {
-      throw new Error(message)
-    }
-
-    return undefined
+    const message = this.lookupButDefaultToEnglishOrNoLanguage(throwOnError, language)
+    return this.returnAsStringOrRdfLiteral(asRdfLiteral, message)
   }
 
   /**
@@ -142,16 +121,6 @@ class LitMultiLingualLiteral {
     return message
   }
 
-  params (asRdfLiteral, throwOnError, mandatory, ...rest) {
-
-    return this.paramsInLang(
-      asRdfLiteral,
-      throwOnError,
-      mandatory,
-      this._language,
-      ...rest)
-  }
-
   lookupMandatory(throwOnError, language) {
     const result = this._values.get(language)
     if (!result) {
@@ -161,6 +130,15 @@ class LitMultiLingualLiteral {
     }
 
     return result
+  }
+
+  params (asRdfLiteral, throwOnError, mandatory, ...rest) {
+    return this.paramsInLang(
+      asRdfLiteral,
+      throwOnError,
+      mandatory,
+      this._language,
+      ...rest)
   }
 
   /**
@@ -201,6 +179,25 @@ class LitMultiLingualLiteral {
 
     this._expandedMessage = message
     return result
+  }
+
+  /**
+   * Handle errors - we'll throw an error (with the specified message) unless
+   * we're told not to throw an exception, in which case we return 'undefined'
+   * instead.
+   *
+   * @param throwOnError Flag if true we return undefined, else we throw an error
+   * @param message the message to throw (we also write to 'debug')
+   * @returns {undefined} an Error or undefined if no exceptions...
+   */
+  handleError(throwOnError, message) {
+    debug(message)
+
+    if (throwOnError) {
+      throw new Error(message)
+    }
+
+    return undefined
   }
 }
 

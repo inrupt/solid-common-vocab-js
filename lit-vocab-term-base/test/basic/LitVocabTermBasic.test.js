@@ -21,7 +21,7 @@ describe('LitVocabTermBasic tests', () => {
 
     it('Should flag local IRI name as English label', () => {
       const iri = 'test://iri#localTermName'
-      expect(new LitVocabTermBasic(iri, localStorage, true).label)
+      expect(new LitVocabTermBasic(iri, localStorage, false).label)
         .to.equal('localTermName')
     })
   })
@@ -42,8 +42,8 @@ describe('LitVocabTermBasic tests', () => {
   })
 
   describe('Supports labels and comments', () => {
-    it('Should process English label as localname', () => {
-      const term = new LitVocabTermBasic(TEST_IRI, localStorage, true)
+    it('Should process English label as localname if unstrict', () => {
+      const term = new LitVocabTermBasic(TEST_IRI, localStorage, false)
 
       expect(term.label).equals(TEST_IRI_LOCAL_NAME)
     })
