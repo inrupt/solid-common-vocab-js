@@ -94,6 +94,7 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'asRdfLiteral', {
       get () {
         this._asRdfLiteral = true
+        this.validateState ()
         return this
       }
     })
@@ -101,7 +102,9 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'dontThrow', {
       label: 'Set a flag to return undefined instead of any exceptions',
       get () {
+        this._dontThrowCalled = true
         this._throwOnError = false
+        this.validateState ()
         return this
       }
     })
@@ -110,6 +113,7 @@ class LitVocabTermBase {
       label: 'Set our mandatory flag - i.e. throws if not as expected',
       get () {
         this._mandatory = true
+        this.validateState ()
         return this
       }
     })
@@ -117,7 +121,9 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'asEnglish', {
       label: 'Simple convenience accessor for requesting English',
       get () {
-        return this.asLanguage('en')
+        this.asLanguage('en')
+        this.validateState ()
+        return this
       }
     })
 
@@ -152,11 +158,19 @@ class LitVocabTermBase {
     })
   }
 
+  validateState () {
+    if (this._dontThrowCalled && this._mandatory) {
+      this.resetState()
+      throw new Error(`Internal error - calling both the 'dontThrow' and the 'mandatory' methods on a LIT Vocab Term is not allowed, since they conflict in intent.`)
+    }
+  }
+
   resetState() {
     this._asRdfLiteral = false
     this._languageOverride = undefined
     this._throwOnError = this._strict
     this._mandatory = false
+    this._dontThrowCalled = undefined
   }
 
   addLabel (language, value) {

@@ -72,6 +72,11 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       // And requesting a mandatory value will still return 'undefined'.
       expect(term.mandatory.label).to.be.undefined
 
+      // Currently we don't allow both 'do not throw' and 'mandatory' since
+      // they contradict one another (strict or not)...,
+      expect(() => term.dontThrow.mandatory.label)
+        .to.throw('Internal error', 'they conflict')
+
       // Finally, if we provide a value explicitly tagged as 'English', then
       // we'll get that back without needing to provide an explicit language at
       // all...
@@ -107,11 +112,10 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       // Asking for mandatory label still throws if none specified at all.
       expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
 
-      // Currently 'do not throw' overrides 'mandatory', so we still get back
-      // 'undefined' if we stipulate both.
-      // TODO: Should we throw an exception here instead (i.e. seems like a
-      //  developer error if both flags set!)...?
-      expect(term.dontThrow.mandatory.label).to.be.undefined
+      // Currently we don't allow both 'do not throw' and 'mandatory' since
+      // they contradict one another (strict or not)...,
+      expect(() => term.dontThrow.mandatory.label)
+        .to.throw('Internal error', 'they conflict')
 
       // Now add a non-English language label...
       const labelInIrish = 'Dia duit Domhanda!'
@@ -153,8 +157,7 @@ describe('Demonstrate LIT Vocab Term usage', () => {
   // Comments and messages do not fallback to using the IRI's local name.
   describe('LIT Vocab Term comment or message usage', () => {
     it('Comment and message do not use local part of IRI as fallback', () => {
-      const termStrict = new LitVocabTermBase(
-        TEST_IRI, rdf, localStorage, true, true)
+      const termStrict = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
 
       expect(() => termStrict.comment).to.throw(TEST_IRI, 'en', 'no values')
       expect(() => termStrict.message).to.throw(TEST_IRI, 'en', 'no values')
@@ -176,7 +179,8 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       const termUnstrict = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
 
       expect(termUnstrict.mandatory.label).to.be.undefined
-      expect(termUnstrict.mandatory.dontThrow.label).to.be.undefined
+      expect(() => termUnstrict.mandatory.dontThrow.label)
+        .to.throw('Internal error', 'they conflict')
     })
   })
 

@@ -124,6 +124,23 @@ describe('LitVocabTermBase tests', () => {
       expect(term.mandatory.message).to.be.undefined
     })
 
+    it('Should throw if both dontThrow and mandatory stipulated', () => {
+      const termStrict = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
+
+      // Currently we don't allow both 'do not throw' and 'mandatory' terms,
+      // since they contradict one another...,
+      expect(() => termStrict.dontThrow.mandatory.label)
+        .to.throw('Internal error', 'they conflict')
+
+      const termUnstrict = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+
+      // Currently we don't allow both 'do not throw' and 'mandatory' terms,
+      // since they contradict one another...,
+      expect(() => termUnstrict.dontThrow.mandatory.label)
+        .to.throw('Internal error', 'they conflict')
+    })
+
+
     it('Should find no language as mandatory', () => {
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
         .addLabel('', 'No language label...')
