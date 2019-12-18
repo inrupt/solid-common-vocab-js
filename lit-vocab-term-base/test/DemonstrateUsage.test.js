@@ -41,8 +41,9 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       // do in the term constructor above).
       expect(term.label).to.equal(TEST_IRI_LOCAL_NAME)
 
-      // Explicitly saying a value is mandatory though will throw...
-      expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
+      // Explicitly saying a value is mandatory will return 'undefined' (for
+      // unstrict terms)...
+      expect(term.mandatory.label).to.be.undefined
 
       // When we explicitly request French, but we have no labels at all, still
       // just return the IRI's local name.
@@ -65,8 +66,8 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       // explicitly English-tagged label.
       expect(term.label).to.equal('No language tag')
 
-      // And requesting a mandatory value will still throw.
-      expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
+      // And requesting a mandatory value will still return 'undefined'.
+      expect(term.mandatory.label).to.be.undefined
 
       // Finally, if we provide a value explicitly tagged as 'English', then
       // we'll get that back without needing to provide an explicit language at
@@ -148,27 +149,31 @@ describe('Demonstrate LIT Vocab Term usage', () => {
 
   // Comments and messages do not fallback to using the IRI's local name.
   describe('LIT Vocab Term comment or message usage', () => {
-    it('Comment and message handling do not use local part of IRI as fallback', () => {
-      const termUseLocalName = new LitVocabTermBase(
-        TEST_IRI, rdf, localStorage, true, false)
+    it('Comment and message do not use local part of IRI as fallback', () => {
+      const termStrict = new LitVocabTermBase(
+        TEST_IRI, rdf, localStorage, true, true)
 
-      expect(() => termUseLocalName.comment).to.throw(TEST_IRI, 'en', 'no values')
-      expect(() => termUseLocalName.message).to.throw(TEST_IRI, 'en', 'no values')
+      expect(() => termStrict.comment).to.throw(TEST_IRI, 'en', 'no values')
+      expect(() => termStrict.message).to.throw(TEST_IRI, 'en', 'no values')
 
-      const termDoNotUseLocalName = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
-      expect(() => termDoNotUseLocalName.comment).to.throw(TEST_IRI, 'en', 'no values')
-      expect(() => termDoNotUseLocalName.message).to.throw(TEST_IRI, 'en', 'no values')
+      const termUnstrict = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+      expect(termUnstrict.comment).to.be.undefined
+      expect(termUnstrict.message).to.be.undefined
     })
   })
 
   // Giving the programmer control over throwing exceptions.
   describe('Return undefined instead of throwing exceptions', () => {
     it('Should return undefined instead of throwing', () => {
-      const term = new LitVocabTermBase(
-        TEST_IRI, rdf, localStorage, false)
+      const termStrict = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
 
-      expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
-      expect(term.mandatory.dontThrow.label).to.be.undefined
+      expect(() => termStrict.label).to.throw(TEST_IRI, 'en', 'no values')
+      expect(termStrict.dontThrow.label).to.be.undefined
+
+      const termUnstrict = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+
+      expect(termUnstrict.mandatory.label).to.be.undefined
+      expect(termUnstrict.mandatory.dontThrow.label).to.be.undefined
     })
   })
 

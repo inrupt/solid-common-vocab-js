@@ -101,8 +101,8 @@ describe('LitVocabTermBase tests', () => {
       expect(term.asLanguage('').label).equals(englishLabel)
     })
 
-    it('Should throw if mandatory language not found', () => {
-      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+    it('Should throw if mandatory language not found and strict', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
         .addLabel('en', 'Test label in English...')
 
       expect(() => term.mandatory.asLanguage('fr').label)
@@ -113,6 +113,15 @@ describe('LitVocabTermBase tests', () => {
 
       expect(() => term.mandatory.message)
         .to.throw(TEST_IRI, 'fr', 'no values')
+    })
+
+    it('Should return undefined if mandatory language not found and unstrict', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+        .addLabel('en', 'Test label in English...')
+
+      expect(term.mandatory.asLanguage('fr').label).to.be.undefined
+      expect(term.mandatory.comment).to.be.undefined
+      expect(term.mandatory.message).to.be.undefined
     })
 
     it('Should find no language as mandatory', () => {

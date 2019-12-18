@@ -57,8 +57,8 @@ describe('LitVocabTermBasic tests', () => {
       expect(term.comment).equals('whatever comment...')
     })
 
-    it('Should fail if no messages', () => {
-      const term = new LitVocabTermBasic(TEST_IRI, localStorage)
+    it('Should fail if no messages and strict', () => {
+      const term = new LitVocabTermBasic(TEST_IRI, localStorage, true)
 
       expect(() => term.message('en')).to.throw(TEST_IRI, 'skos:definition')
     })

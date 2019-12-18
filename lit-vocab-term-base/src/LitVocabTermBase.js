@@ -18,7 +18,7 @@ const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
  * runtime (e.g. to look up the locale for a term's label at runtime if one is
  * not explicitly asked for).
  *
- * NOTE: Since this class does NOT actually store the IRI value for vocab
+ * NOTE: Since this class does NOT actually store the IRI value for the vocab
  * term (since we expect derived classes to provide that), testing this
  * class in isolation will result in strange looking (i.e. 'undefined-'
  * prefixed) key values in 'localStorage' since we create those keys based on
@@ -109,10 +109,6 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'mandatory', {
       label: 'Set our mandatory flag - i.e. throws if not as expected',
       get () {
-        if (this._strict) {
-          debug(`LIT Vocab term [${this._label.getIri()}] was created as 'strict', meaning there's no need to also call 'mandatory'.`)
-        }
-
         this._mandatory = true
         return this
       }
@@ -159,7 +155,7 @@ class LitVocabTermBase {
   resetState() {
     this._asRdfLiteral = false
     this._languageOverride = undefined
-    this._throwOnError = true
+    this._throwOnError = this._strict
     this._mandatory = false
   }
 
@@ -222,8 +218,8 @@ class LitVocabTermBase {
   }
 
   messageParams (...rest) {
-    const lookupLanguage = this.useLanguageOverrideOrGetFromContext()
-    return this.messageParamsInLang(lookupLanguage, ...rest)
+    const language = this.useLanguageOverrideOrGetFromContext()
+    return this.messageParamsInLang(language, ...rest)
   }
 
   messageParamsInLang (language, ...rest) {
