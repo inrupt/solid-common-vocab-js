@@ -32,6 +32,6 @@ ex:Person a rdfs:Class ;
 We would represent this as a LIT Vocab Term in Javascript like so:
 ```javascript
 const Person = new LitVocabTerm('https://example.com#Person', localStorage, true)
-  .addLabel('en', 'My Person class')
-  .addComment('en', 'Full description of my Person class...')
+  .addLabel('My Person class','en')
+  .addComment('Full description of my Person class...','en')
 ```

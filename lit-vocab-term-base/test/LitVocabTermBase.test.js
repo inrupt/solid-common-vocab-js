@@ -16,28 +16,59 @@ describe('LitVocabTermBase tests', () => {
   describe('Strict support', () => {
     it('Should not use IRI local name if no label and strict', () => {
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
+      expect(term.label).to.be.undefined
+    })
 
-      expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
+    it('Should throw if mandatory and no label and strict', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
+      expect(() => term.mandatory.label).to.throw(TEST_IRI)
+    })
+
+    it('Should fail to add values if no value or language provided', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
+
+      expect(() => term.addLabel()).to.throw('label', 'non-existent')
+        expect(() => term.addLabel('test value...'))
+            .to.throw('label', 'test value...', 'language')
+        expect(() => term.addLabel('test value...', ''))
+            .to.throw('label', 'test value...', 'language')
+
+      expect(() => term.addComment()).to.throw('comment', 'non-existent')
+        expect(() => term.addComment('test value...'))
+            .to.throw('comment', 'test value...', 'language')
+        expect(() => term.addComment('test value...', ''))
+            .to.throw('comment', 'test value...', 'language')
+
+      expect(() => term.addMessage()).to.throw('message', 'non-existent')
+        expect(() => term.addMessage('test value...'))
+            .to.throw('message', 'test value...', 'language')
+        expect(() => term.addMessage('test value...', ''))
+            .to.throw('message', 'test value...', 'language')
+    })
+
+    it('Should add no-language values', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+          .addLabelNoLanguage('test label...')
+          .addCommentNoLanguage('test comment...')
+          .addMessageNoLanguage('test message...')
+
+      expect(term.label.value).to.equal('test label...')
+      expect(term.label).deep.equal(rdf.literal('test label...', ''))
+
+      expect(term.comment.value).to.equal('test comment...')
+      expect(term.message.value).to.equal('test message...')
     })
 
     it('Should still fallback to English if language not found', () => {
       const term = new LitVocabTermBase(
         TEST_IRI, rdf, localStorage, true)
-        .addLabel('en', `English label...`)
-        .addComment('en', `English comment...`)
+        .addLabel(`English label...`, 'en')
+        .addComment(`English comment...`, 'en')
 
-      expect(term.asLanguage('fr').label).equals(`English label...`)
-      expect(term.asLanguage('fr').comment).equals(`English comment...`)
-    })
-
-    it('Should require explicitly English label and comment if mandatory', () => {
-      const term = new LitVocabTermBase(
-        TEST_IRI, rdf, localStorage, true)
-        .addLabel('', `No-language label isn't enough for 'mandatory'...`)
-        .addComment('', `No-language comment isn't enough for 'mandatory'...`)
-
-      expect(() => term.mandatory.label).to.throw(TEST_IRI, 'en', 'no values')
-      expect(() => term.mandatory.comment).to.throw(TEST_IRI, 'en', 'no values')
+      expect(term.asLanguage('fr').label)
+          .deep.equal(rdf.literal(`English label...`, 'en'))
+      expect(term.asLanguage('fr').comment)
+          .deep.equal(rdf.literal(`English comment...`, 'en'))
     })
 
     it('Calling mandatory on strict term is unnecessary', () => {
@@ -50,60 +81,58 @@ describe('LitVocabTermBase tests', () => {
     it('Should use the label context', () => {
       const label = 'Irish label string'
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
-        .addLabel('ga', label)
+        .addLabel(label, 'ga')
 
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'ga')
-      expect(term.label).equals(label)
+      expect(term.label).deep.equals(rdf.literal(label, 'ga'))
     })
 
     it('Should use the IRI local name as English label, if needed', () => {
-      const strictTerm = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
-      expect(() => strictTerm.label).to.throw(TEST_IRI, 'en', 'no values')
-
       const unStrictTerm = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
-      expect(unStrictTerm.label).equals('localName')
 
-      unStrictTerm.addLabel('', 'No language value')
-      expect(unStrictTerm.label).equals('No language value')
+      // NOTE: The returned literal has a 'No-Language' tag!
+      expect(unStrictTerm.label).deep.equals(rdf.literal(TEST_IRI_LOCAL_NAME, ''))
+      expect(unStrictTerm.label.value).equals(TEST_IRI_LOCAL_NAME)
 
-      unStrictTerm.addLabel('en', 'English language value')
-      expect(unStrictTerm.label).equals('English language value')
-
+      const englishLabel =  'English language value'
+      unStrictTerm.addLabel(englishLabel, 'en')
+      expect(unStrictTerm.label).deep.equals(rdf.literal(englishLabel, 'en'))
+      expect(unStrictTerm.label.value).equals(englishLabel)
+      expect(unStrictTerm.mandatory.label.value).equals(englishLabel)
     })
 
     it('Should default to English value language', () => {
       const englishLabel = 'English label...'
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
-        .addLabel('en', englishLabel)
+        .addLabel(englishLabel, 'en')
 
-      expect(term.asLanguage('ga').label).equals(englishLabel)
+      expect(term.asLanguage('ga').label.value).equals(englishLabel)
     })
 
     it('Should override language', () => {
       const irishLabel = 'Irish label...'
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
-        .addLabel('ga', irishLabel)
+        .addLabel(irishLabel, 'ga')
 
-      expect(() => term.label).to.throw(TEST_IRI, 'en', 'no values')
-      expect(() => term.asLanguage('fr').label)
-        .to.throw(TEST_IRI, 'fr', 'no values')
+      expect(term.label).to.be.undefined
+      expect(term.asLanguage('fr').label).to.be.undefined
 
       const englishLabel = 'English label...'
-      term.addLabel('en', englishLabel)
+      term.addLabel(englishLabel, 'en')
 
-      expect(term.label).equals(englishLabel)
-      expect(term.asLanguage('').label).equals(englishLabel)
-      expect(term.asLanguage('fr').label).equals(englishLabel)
-      expect(term.asLanguage('ga').label).equals(irishLabel)
+      expect(term.label.value).equals(englishLabel)
+      expect(term.asLanguage('').label.value).equals(englishLabel)
+      expect(term.asLanguage('fr').label.value).equals(englishLabel)
+      expect(term.asLanguage('ga').label.value).equals(irishLabel)
 
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'ga')
-      expect(term.label).equals(irishLabel)
-      expect(term.asLanguage('').label).equals(englishLabel)
+      expect(term.label.value).equals(irishLabel)
+      expect(term.asLanguage('').label.value).equals(englishLabel)
     })
 
     it('Should throw if mandatory language not found and strict', () => {
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, true)
-        .addLabel('en', 'Test label in English...')
+        .addLabel('Test label in English...', 'en')
 
       expect(() => term.mandatory.asLanguage('fr').label)
         .to.throw(TEST_IRI, 'fr', 'no values')
@@ -117,11 +146,11 @@ describe('LitVocabTermBase tests', () => {
 
     it('Should return undefined if mandatory language not found and unstrict', () => {
       const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
-        .addLabel('en', 'Test label in English...')
+        .addLabel('Test label in English...', 'en')
 
-      expect(term.mandatory.asLanguage('fr').label).to.be.undefined
-      expect(term.mandatory.comment).to.be.undefined
-      expect(term.mandatory.message).to.be.undefined
+      expect(() => term.mandatory.asLanguage('fr').label).to.throw(TEST_IRI, 'fr')
+      expect(() => term.mandatory.comment).to.throw(TEST_IRI, 'en')
+      expect(() => term.mandatory.message).to.throw(TEST_IRI, 'en')
     })
 
     it('Should throw if both dontThrow and mandatory stipulated', () => {
@@ -140,25 +169,16 @@ describe('LitVocabTermBase tests', () => {
         .to.throw('Internal error', 'they conflict')
     })
 
-
-    it('Should find no language as mandatory', () => {
-      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
-        .addLabel('', 'No language label...')
-
-      expect(term.mandatory.asLanguage('').label)
-        .equals('No language label...')
-    })
-
     it('Should use the comment context', () => {
       const comment = 'test label string'
       const term = new LitVocabTermBase(
         'test://iri',
         rdf,
         localStorage,
-        undefined).addComment('en', comment)
+        undefined).addComment(comment, 'en')
 
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.comment).equals(comment)
+      expect(term.comment.value).equals(comment)
     })
   })
 
@@ -166,39 +186,41 @@ describe('LitVocabTermBase tests', () => {
     it('Should access literal definition with language from context without params', () => {
       const iri = 'test://iri'
       const term = new LitVocabTermBase(iri, rdf, localStorage, false)
-        .addMessage('en', 'whatever test')
-        .addMessage('es', 'test whatever in Spanish')
+        .addMessage('whatever test', 'en')
+        .addMessage('test whatever in Spanish', 'es')
 
-      expect(term.message).equals('whatever test')
+      expect(term.message.value).equals('whatever test')
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
-      expect(term.message).equals('test whatever in Spanish')
+      expect(term.message.value).equals('test whatever in Spanish')
     })
 
     it('Should ignore locale from our context if explicit language, with one param', () => {
       const term = new LitVocabTermBase('test://iri', rdf, localStorage, false)
-        .addMessage('en', 'Params test {{0}} and {{1}}')
-        .addMessage('es', 'Prueba de parámetros {{0}} y {{1}}')
+        .addMessage('Params test {{0}} and {{1}}', 'en')
+        .addMessage('Prueba de parámetros {{0}} y {{1}}', 'es')
 
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
-      expect(term.messageParams('first', 'second'))
+      expect(term.messageParams('first', 'second').value)
         .equals('Prueba de parámetros first y second')
 
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.messageParams('first', 'second'))
+      expect(term.messageParams('first', 'second').value)
         .equals('Params test first and second')
     })
 
     it('Should ignore locale from our context if explicit language, with params', () => {
       const term = new LitVocabTermBase('test://iri', rdf, localStorage, false)
-        .addMessage('en', 'Params test {{0}} and {{1}}')
-        .addMessage('es', 'Prueba de parámetros {{0}} y {{1}}')
+        .addMessage('Params test {{0}} and {{1}}', 'en')
+        .addMessage('Prueba de parámetros {{0}} y {{1}}', 'es')
 
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
-      expect(term.messageParamsInLang('en', 'first', 'second'))
+      expect(term.asLanguage('en')
+          .messageParams('first', 'second').value)
         .equals('Params test first and second')
 
       localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'en')
-      expect(term.messageParamsInLang('es', 'first', 'second'))
+      expect(term.asLanguage('es')
+          .messageParams('first', 'second').value)
         .equals('Prueba de parámetros first y second')
     })
   })
@@ -233,6 +255,27 @@ describe('LitVocabTermBase tests', () => {
       expect(LitVocabTermBase.isStringIri('HTTPs//xyz')).to.be.false
 
       expect(LitVocabTermBase.isStringIri(1.99)).to.be.false
+    })
+  })
+
+  describe ('Using asRdfLiteral explicitly', () => {
+    it('Should return RDF literal', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+          .addLabel('test label...', 'en')
+
+      expect(term.label).deep.equal(rdf.literal('test label...', 'en'))
+      expect(term.asRdfLiteral.label)
+          .deep.equal(rdf.literal('test label...', 'en'))
+    })
+  })
+
+  describe ('Using asString explicitly', () => {
+    it('Should return simple string', () => {
+      const term = new LitVocabTermBase(TEST_IRI, rdf, localStorage, false)
+          .addLabelNoLanguage('test label...')
+
+        expect(term.label.value).equals('test label...')
+        expect(term.asString.label).equals('test label...')
     })
   })
 })

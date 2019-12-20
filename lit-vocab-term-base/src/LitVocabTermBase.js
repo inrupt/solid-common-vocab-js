@@ -18,6 +18,14 @@ const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
  * runtime (e.g. to look up the locale for a term's label at runtime if one is
  * not explicitly asked for).
  *
+ * We'll use this Turtle snippet to help illustrate some of the usage patterns
+ * below.
+ *
+ *   ex:name a rdf:Property ;
+ *     rdfs:label "Name" ;
+ *     rdfs:label "First name"@en ;
+ *     rdfs:label "Nombre"@es .
+ *
  * NOTE: Since this class does NOT actually store the IRI value for the vocab
  * term (since we expect derived classes to provide that), testing this
  * class in isolation will result in strange looking (i.e. 'undefined-'
@@ -83,23 +91,34 @@ class LitVocabTermBase {
     LitTermRegistry.addTerm(iri, this)
 
     if (!strict) {
-      // This can be overwritten if we get an actual English label later, which
-      // would be fine.
-      this._label.addValue('', LitVocabTermBase.extractIriLocalName(iri))
+      // This can be overwritten if we get an actual no-language label later,
+      // which would be perfectly fine.
+      this._label.addValue(
+          LitVocabTermBase.extractIriLocalName(iri),
+          LitMultiLingualLiteral.NO_LANGUAGE_TAG)
     }
 
     this.resetState();
 
-    // Sets our flag to say we want our value as an RDF literal.
-    Object.defineProperty(this, 'asRdfLiteral', {
-      get () {
-        this._asRdfLiteral = true
-        this.validateState ()
-        return this
-      }
-    })
+      // Sets our flag to say we want our value as a string.
+      Object.defineProperty(this, 'asString', {
+          get () {
+              this._asRdfLiteral = false
+              this.validateState ()
+              return this
+          }
+      })
 
-    Object.defineProperty(this, 'dontThrow', {
+      // Sets our flag to say we want our value as an RDF literal.
+      Object.defineProperty(this, 'asRdfLiteral', {
+          get () {
+              this._asRdfLiteral = true
+              this.validateState ()
+              return this
+          }
+      })
+
+      Object.defineProperty(this, 'dontThrow', {
       label: 'Set a flag to return undefined instead of any exceptions',
       get () {
         this._dontThrowCalled = true
@@ -131,8 +150,13 @@ class LitVocabTermBase {
       label: 'Accessor for label that uses our LitSessionContext instance',
       get () {
         try {
-          const result = this.labelInLang()
-          return result
+          const language = this.useLanguageOverrideOrGetFromContext()
+
+          return this._label.asLanguage(language).lookup(
+              this._asRdfLiteral,
+              this._mandatory,
+              this._throwOnError,
+              language)
         } finally {
           this.resetState()
         }
@@ -142,7 +166,14 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'comment', {
       label: 'Accessor for comment that uses our LitSessionContext instance',
       get () {
-        const result = this.commentInLang()
+        const language = this.useLanguageOverrideOrGetFromContext()
+
+        const result = this._comment.asLanguage(language).lookup(
+            this._asRdfLiteral,
+            this._mandatory,
+            this._throwOnError,
+            language)
+
         this.resetState()
         return result
       }
@@ -151,7 +182,14 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'message', {
       label: 'Accessor for message that uses our LitSessionContext instance',
       get () {
-        const result = this.messageInLang()
+        const language = this.useLanguageOverrideOrGetFromContext()
+
+        const result = this._message.asLanguage(language).lookup(
+            this._asRdfLiteral,
+            this._mandatory,
+            this._throwOnError,
+            language)
+
         this.resetState()
         return result
       }
@@ -166,28 +204,62 @@ class LitVocabTermBase {
   }
 
   resetState() {
-    this._asRdfLiteral = false
+    this._asRdfLiteral = true
     this._languageOverride = undefined
-    this._throwOnError = this._strict
     this._mandatory = false
+    this._throwOnError = false
     this._dontThrowCalled = undefined
   }
 
-  addLabel (language, value) {
-    this._label.addValue(language, value)
+  addLabelNoLanguage(value) {
+    return this.addLabel(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG)
+  }
+
+  addLabel(value, language) {
+    this.validateAddParams(value, language, 'label')
+    this._label.addValue(value, language)
     LitTermRegistry.updateLabel(this.value, language, value)
     return this
   }
 
-  addComment (language, value) {
-    this._comment.addValue(language, value)
+  addCommentNoLanguage(value) {
+    return this.addComment(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG)
+  }
+
+  addComment(value, language) {
+    this.validateAddParams(value, language, 'comment')
+    this._comment.addValue(value, language)
     LitTermRegistry.updateComment(this.value, language, value)
     return this
   }
 
-  addMessage (language, value) {
-    this._message.addValue(language, value)
+  addMessageNoLanguage(value) {
+    return this.addMessage(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG)
+  }
+
+  addMessage(value, language) {
+    this.validateAddParams(value, language, 'message')
+    this._message.addValue(value, language)
     LitTermRegistry.updateMessage(this.value, language, value)
+    return this
+  }
+
+  /**
+   * Ensure we always provide both a value and a lnaguage tag for that value.
+   *
+   * @param value the test of the value
+   * @param language the language tag for the value
+   * @param what what kind of value we are adding
+   */
+  validateAddParams(value, language, what) {
+    if (!value) {
+      throw new Error(`Attempted to add a non-existent [${what}] value to vocab term`)
+    }
+
+    if (!language) {
+      throw new Error(`Attempted to add the [${what}] value [${value}], but without specifying a language`)
+    }
+
     return this
   }
 
@@ -201,44 +273,15 @@ class LitVocabTermBase {
     return this
   }
 
-  labelInLang () {
-    const language = this.useLanguageOverrideOrGetFromContext()
-
-    return this._label.lookup(
-      this._asRdfLiteral,
-      this._mandatory,
-      this._throwOnError,
-      language)
-  }
-
-  commentInLang () {
-    const language = this.useLanguageOverrideOrGetFromContext()
-
-    return this._comment.lookup(
-      this._asRdfLiteral,
-      this._mandatory,
-      this._throwOnError,
-      language)
-  }
-
-  messageInLang () {
-    const language = this.useLanguageOverrideOrGetFromContext()
-
-    return this._message.lookup(
-      this._asRdfLiteral,
-      this._mandatory,
-      this._throwOnError,
-      language)
-  }
-
   messageParams (...rest) {
     const language = this.useLanguageOverrideOrGetFromContext()
-    return this.messageParamsInLang(language, ...rest)
-  }
 
-  messageParamsInLang (language, ...rest) {
-    return this._message.paramsInLang(
-      this._asRdfLiteral, this._throwOnError, this._mandatory, language, ...rest)
+    try {
+      return  this._message.asLanguage(language).params(
+          this._asRdfLiteral, this._throwOnError, this._mandatory, ...rest)
+    } finally {
+      this.resetState()
+    }
   }
 
   /**

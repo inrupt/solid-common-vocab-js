@@ -3,6 +3,7 @@
 const debug = require('debug')('lit-vocab-term:LitTermRegistry');
 
 const LitContext = require('./LitContext')
+const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
 
 /**
  * Simple registry of terms (and their associated meta-data (like labels,
@@ -66,7 +67,7 @@ class LitTermRegistry {
         if (result) {
           debug(`Vocab term [${term}] found value [${result}] using English instead of explicitly requested [${language}].`)
         } else {
-          result = localStorage.getItem(`${term}`)
+          result = localStorage.getItem(`${term}${LitMultiLingualLiteral.NO_LANGUAGE_TAG}`)
 
           if (!result) {
             debug(`Vocab term lookup not found: [${term}] for explicit language [${language}], nor fallback [${fallbackLanguage}], English, or no specific language!.`)
