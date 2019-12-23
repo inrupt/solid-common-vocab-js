@@ -1,7 +1,5 @@
 'use strict'
 
-const debug = require('debug')('lit-vocab-term:LitVocabTermBase');
-
 const LitContext = require('./LitContext')
 const LitTermRegistry = require('./LitTermRegistry')
 const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
@@ -48,11 +46,10 @@ class LitVocabTermBase {
    * @param iri the IRI for this vocabulary term
    * @param rdfFactory an underlying RDF library that can create IRI's
    * @param contextStorage context for this term
-   * @param strict flag if we should be strict in throwing exceptions on
-   * errors, requiring at least an English label and comment, or returning
-   * 'undefined'. If not strict, we can also use the local name part of the
-   * IRI as the English label if no explicit English label (or no-language
-   * label) is provided
+   * @param strict flag if we should be strict. If not strict, we can use the
+   * path component of the term's IRI as the English label if no explicit
+   * English label (or no-language label) is provided, e.g. 'name' for the
+   * term 'http://example.com/vocab#name'.
    */
   constructor (iri, rdfFactory, contextStorage, strict) {
     this.initializer(iri, rdfFactory, contextStorage, strict)
@@ -64,17 +61,14 @@ class LitVocabTermBase {
    * @param iri the IRI for this vocabulary term
    * @param rdfFactory an underlying RDF library that can create IRI's
    * @param contextStorage context for this term
-   * @param strict flag if we should be strict in throwing exceptions on
-   * errors, requiring at least an English label and comment, or returning
-   * 'undefined'. If not strict, we can also use the local name part of the
-   * IRI as the English label if no explicit English label (or no-language
-   * label) is provided
+   * @param strict flag if we should be strict. If not strict, we can use the
+   * path component of the term's IRI as the English label if no explicit
+   * English label (or no-language label) is provided, e.g. 'name' for the
+   * term 'http://example.com/vocab#name'.
    * @returns {*}
    */
   initializer(iri, rdfFactory, contextStorage, strict) {
     this._litSessionContext = new LitContext('en', contextStorage)
-
-    this._strict = strict
 
     // Create holders for meta-data on this vocabulary term (we could probably
     // lazily create these only if values are actually provided!).
@@ -112,7 +106,6 @@ class LitVocabTermBase {
       Object.defineProperty(this, 'asString', {
           get () {
               this._asRdfLiteral = false
-              this.validateState ()
               return this
           }
       })
@@ -121,27 +114,14 @@ class LitVocabTermBase {
       Object.defineProperty(this, 'asRdfLiteral', {
           get () {
               this._asRdfLiteral = true
-              this.validateState ()
               return this
           }
       })
-
-      Object.defineProperty(this, 'orUndefined', {
-      label: 'Set a flag to return undefined instead of any exceptions',
-      get () {
-        this._orUndefined = true
-        this._throwOnError = false
-        this.validateState ()
-        return this
-      }
-    })
 
     Object.defineProperty(this, 'mandatory', {
       label: 'Set our mandatory flag - i.e. throws if not as expected',
       get () {
         this._mandatory = true
-        this._throwOnError = true
-        this.validateState ()
         return this
       }
     })
@@ -149,9 +129,7 @@ class LitVocabTermBase {
     Object.defineProperty(this, 'asEnglish', {
       label: 'Simple convenience accessor for requesting English',
       get () {
-        this.asLanguage('en')
-        this.validateState ()
-        return this
+        return this.asLanguage('en')
       }
     })
 
@@ -163,8 +141,7 @@ class LitVocabTermBase {
 
           return this._label.asLanguage(language).lookup(
               this._asRdfLiteral,
-              this._mandatory,
-              this._throwOnError)
+              this._mandatory)
         } finally {
           this.resetState()
         }
@@ -178,8 +155,7 @@ class LitVocabTermBase {
 
         const result = this._comment.asLanguage(language).lookup(
             this._asRdfLiteral,
-            this._mandatory,
-            this._throwOnError)
+            this._mandatory)
 
         this.resetState()
         return result
@@ -193,8 +169,7 @@ class LitVocabTermBase {
 
         const result = this._message.asLanguage(language).lookup(
             this._asRdfLiteral,
-            this._mandatory,
-            this._throwOnError)
+            this._mandatory)
 
         this.resetState()
         return result
@@ -202,18 +177,10 @@ class LitVocabTermBase {
     })
   }
 
-  validateState () {
-    if (this._orUndefined && this._mandatory) {
-      this.resetState()
-      throw new Error(`Internal error - calling both the 'orUndefined' and the 'mandatory' methods on a LIT Vocab Term is not allowed, since they conflict in intent.`)
-    }
-  }
-
   resetState() {
     this._asRdfLiteral = true
     this._languageOverride = undefined
     this._mandatory = false
-    this._throwOnError = false
     this._orUndefined = undefined
   }
 
@@ -284,7 +251,7 @@ class LitVocabTermBase {
 
     try {
       return  this._message.asLanguage(language).params(
-          this._asRdfLiteral, this._throwOnError, this._mandatory, ...rest)
+          this._asRdfLiteral, this._mandatory, ...rest)
     } finally {
       this.resetState()
     }

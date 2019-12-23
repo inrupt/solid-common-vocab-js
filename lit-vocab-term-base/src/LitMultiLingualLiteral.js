@@ -59,9 +59,8 @@ class LitMultiLingualLiteral {
     return this
   }
 
-  lookupEnglish (asRdfLiteral, mandatory, throwOnError) {
-      return this.asLanguage('en')
-          .lookup(asRdfLiteral, mandatory, throwOnError)
+  lookupEnglish (asRdfLiteral, mandatory) {
+      return this.asLanguage('en').lookup(asRdfLiteral, mandatory)
   }
 
     /**
@@ -77,8 +76,8 @@ class LitMultiLingualLiteral {
      * and reset our language tag to 'en').
      * @returns {*}
      */
-  lookup (asRdfLiteral, mandatory, throwOnError) {
-    const message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory, throwOnError)
+  lookup (asRdfLiteral, mandatory) {
+    const message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory)
     return this.returnAsStringOrRdfLiteral(asRdfLiteral, message)
   }
 
@@ -89,7 +88,7 @@ class LitMultiLingualLiteral {
    * @param language
    * @returns {*}
    */
-  lookupButDefaultToEnglishOrNoLanguage(mandatory, throwOnError) {
+  lookupButDefaultToEnglishOrNoLanguage(mandatory) {
     let message = this._values.get(this._language)
     if (!message) {
       if (mandatory) {
@@ -106,7 +105,7 @@ class LitMultiLingualLiteral {
         message = this._values.get(NO_LANGUAGE_TAG)
         if (!message) {
           return this.handleError(
-            throwOnError,
+            mandatory,
             `MultiLingualLiteral lookup on term [${this._iri}] for language [${this._language}], but no values at all (even English, or no language tag at all) (Context: [${this._contextMessage}]).`)
         }
 
@@ -123,8 +122,8 @@ class LitMultiLingualLiteral {
    *
    * @returns {*}
    */
-  params (asRdfLiteral, throwOnError, mandatory, ...rest) {
-    let message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory, throwOnError)
+  params (asRdfLiteral, mandatory, ...rest) {
+    let message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory)
 
     // If we failed to find a value at all (and didn't throw!), then return
     // 'undefined'.
@@ -135,7 +134,7 @@ class LitMultiLingualLiteral {
     const paramsRequired = (message.split('{{').length - 1)
     if (paramsRequired !== rest.length) {
       return this.handleError(
-        throwOnError,
+          mandatory,
         `Setting parameters on LitMultiLingualLiteral with IRI [${this._iri}] and value [${message}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`)
     }
     
@@ -174,14 +173,14 @@ class LitMultiLingualLiteral {
    * we're told not to throw an exception, in which case we return 'undefined'
    * instead.
    *
-   * @param throwOnError Flag if true we return undefined, else we throw an error
+   * @param mandatory Flag if true we return undefined, else we throw an error
    * @param message the message to throw (we also write to 'debug')
    * @returns {undefined} an Error or undefined if no exceptions...
    */
-  handleError (throwOnError, message) {
+  handleError (mandatory, message) {
     debug(message)
 
-    if (throwOnError) {
+    if (mandatory) {
       throw new Error(message)
     }
 

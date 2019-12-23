@@ -24,9 +24,9 @@ describe('MultiLingualLiteral tests', () => {
       literal.addValue('whatever in Spanish', 'es')
         .addValue('whatever in Irish', 'ga')
 
-      expect(literal.asLanguage('es').lookup(false, true, 'es'))
+      expect(literal.asLanguage('es').lookup(false, true))
         .equals('whatever in Spanish')
-      expect(literal.asLanguage('ga').lookup(false, true, 'ga'))
+      expect(literal.asLanguage('ga').lookup(false, true))
         .equals('whatever in Irish')
     })
   
@@ -34,15 +34,15 @@ describe('MultiLingualLiteral tests', () => {
       const literal = new LitMultiLingualLiteral(
         rdf, TEST_IRI, new Map([ [ 'en', 'whatever' ] ]))
 
-      expect(literal.lookupEnglish(false, false, true)).equals('whatever')
-      expect(() => literal.asLanguage('es').lookup(false, true, true))
+      expect(literal.lookupEnglish(false, false)).equals('whatever')
+      expect(() => literal.asLanguage('es').lookup(false, true))
         .to.throw(TEST_IRI, 'es', 'no values')
 
       literal.addValue('whatever in Spanish', 'es').addValue('whatever in Irish', 'ga')
-      expect(literal.asLanguage('es').lookup(false, true, true))
+      expect(literal.asLanguage('es').lookup(false, true))
         .equals('whatever in Spanish')
 
-      expect(literal.asLanguage('ga').lookup(false, true, true))
+      expect(literal.asLanguage('ga').lookup(false, true))
         .equals('whatever in Irish')
     })
   })
@@ -54,11 +54,11 @@ describe('MultiLingualLiteral tests', () => {
             [ 'en', 'whatever' ],
             [ 'fr', 'whatever in French' ] ]))
 
-      expect(literal.lookupEnglish(false, false, true)).equals('whatever')
-      expect(literal.asLanguage('fr').lookup(false, true, true))
+      expect(literal.lookupEnglish(false, false)).equals('whatever')
+      expect(literal.asLanguage('fr').lookup(false, true))
         .equals('whatever in French')
 
-      expect(literal.asLanguage('es').lookup(true, false, true))
+      expect(literal.asLanguage('es').lookup(true, false))
           .to.deep.equal(rdf.literal('whatever', 'en'))
     })
 
@@ -66,17 +66,17 @@ describe('MultiLingualLiteral tests', () => {
       const literal = new LitMultiLingualLiteral(rdf, TEST_IRI)
         .addValue('whatever in English', 'en')
 
-      expect(literal.lookup(false, false, true, ''))
+      expect(literal.lookup(false, false))
         .to.equal('whatever in English')
     })
 
     it('Should fail if no values at all!', () => {
       const literal = new LitMultiLingualLiteral(rdf, TEST_IRI)
 
-      expect(() => literal.asLanguage('es').lookup(false, true, true))
+      expect(() => literal.asLanguage('es').lookup(false, true))
         .to.throw(TEST_IRI, '[es]', 'no values at all')
 
-      expect(literal.asLanguage('es').lookup(false, false, false))
+      expect(literal.asLanguage('es').lookup(false, false))
         .to.be.undefined
     })
 
@@ -84,7 +84,7 @@ describe('MultiLingualLiteral tests', () => {
       const literal = new LitMultiLingualLiteral(rdf, TEST_IRI)
         .addValue('whatever {{0}} in English {{1}}', 'en')
   
-      expect(literal.lookup(false, true, true, 'en'))
+      expect(literal.lookup(false, true))
         .to.equal('whatever {{0}} in English {{1}}')
     })
   
@@ -102,13 +102,13 @@ describe('MultiLingualLiteral tests', () => {
         .addValue('whatever {{1}} in Irish is backwards {{0}}', 'ga')
 
       literal.asLanguage('ga')
-      expect(literal.params(true, true, true, 'example', 'two'))
+      expect(literal.params(true, true, 'example', 'two'))
         .to.deep.equal(rdf.literal('whatever two in Irish is backwards example', 'ga'))
 
-      expect(literal.params(false, true, true, 'example', 'two'))
+      expect(literal.params(false, true, 'example', 'two'))
         .to.equal('whatever two in Irish is backwards example')
 
-      expect(literal.setToEnglish.params(true, true, true, 'example'))
+      expect(literal.setToEnglish.params(true, true, 'example'))
         .to.deep.equal(rdf.literal('whatever example in English', 'en'))
     })
   
@@ -117,10 +117,10 @@ describe('MultiLingualLiteral tests', () => {
         .addValue('whatever in English', 'en')
         .addValue('whatever in Irish', 'ga')
 
-      expect(literal.lookup(true, true, true, 'en'))
+      expect(literal.lookup(true, true))
         .to.deep.equal(rdf.literal('whatever in English', 'en'))
 
-      expect(literal.asLanguage('ga').lookup(false, true, true, 'ga'))
+      expect(literal.asLanguage('ga').lookup(false, true))
         .equals('whatever in Irish')
     })
   
@@ -131,7 +131,7 @@ describe('MultiLingualLiteral tests', () => {
     
       // NOTE: our result will have an 'en' tag, even though we asked for 'fr'
       // (since we don't have a 'fr' message!).
-      expect(literal.lookup(true, false, true, 'fr'))
+      expect(literal.lookup(true, false))
         .to.deep.equal(rdf.literal('whatever in English', 'en'))
     })
 
@@ -140,7 +140,7 @@ describe('MultiLingualLiteral tests', () => {
           .addValue('whatever {{0}} in English', 'en')
 
       expect(() => literal.asLanguage('fr')
-          .params(true, true, true, 'use default'))
+          .params(true, true, 'use default'))
           .to.throw(TEST_IRI, '[fr]', 'none found')
     })
 
@@ -148,7 +148,7 @@ describe('MultiLingualLiteral tests', () => {
       const literal = new LitMultiLingualLiteral(rdf, TEST_IRI)
 
       expect(literal.asLanguage('fr')
-          .params(true, false, false, 'use default'))
+          .params(true, false, 'use default'))
           .to.be.undefined
     })
 
@@ -157,11 +157,11 @@ describe('MultiLingualLiteral tests', () => {
         .addValue('whatever {{0}} in English', 'en')
         .addValue('whatever {{0}} in French', 'fr')
 
-      expect(literal.params(true, true, true, 'use default'))
+      expect(literal.params(true, true, 'use default'))
         .to.deep.equal(rdf.literal('whatever use default in English', 'en'))
 
       literal.asLanguage('fr')
-      expect(literal.params(true, true, true, 'La Vie!'))
+      expect(literal.params(true, true, 'La Vie!'))
         .to.deep.equal(rdf.literal('whatever La Vie! in French', 'fr'))
     })
 
@@ -170,10 +170,10 @@ describe('MultiLingualLiteral tests', () => {
         .addValue('whatever {{0}} in English', 'en')
         .addValue('whatever {{0}} in French', 'fr')
 
-      expect(literal.asLanguage('en').params(false, true, true, 'use default'))
+      expect(literal.asLanguage('en').params(false, true, 'use default'))
         .to.equal('whatever use default in English')
 
-      expect(literal.asLanguage('fr').params(false, true, true, 'La Vie!'))
+      expect(literal.asLanguage('fr').params(false, true, 'La Vie!'))
         .to.equal('whatever La Vie! in French')
     })
   })

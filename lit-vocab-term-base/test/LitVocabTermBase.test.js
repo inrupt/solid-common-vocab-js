@@ -166,22 +166,6 @@ describe('LitVocabTermBase tests', () => {
       expect(() => term.mandatory.message).to.throw(TEST_TERM_NAME, 'en')
     })
 
-    it('Should throw if both dontThrow and mandatory stipulated', () => {
-      const termStrict = new LitVocabTermBase(TEST_TERM_NAME, rdf, localStorage, true)
-
-      // Currently we don't allow both 'orUndefined' and 'mandatory' terms,
-      // since they contradict one another...,
-      expect(() => termStrict.orUndefined.mandatory.label)
-        .to.throw('Internal error', 'they conflict')
-
-      const termUnstrict = new LitVocabTermBase(TEST_TERM_NAME, rdf, localStorage, false)
-
-      // Currently we don't allow both 'orUndefined' and 'mandatory' terms,
-      // since they contradict one another...,
-      expect(() => termUnstrict.orUndefined.mandatory.label)
-        .to.throw('Internal error', 'they conflict')
-    })
-
     it('Should use the comment context', () => {
       const comment = 'test label string'
       const term = new LitVocabTermBase(

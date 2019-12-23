@@ -46,22 +46,25 @@ describe('Demonstrate LIT Vocab Term usage', () => {
   // if there is no English value provided and no no-language value. We refer to
   // this mode of operation as 'unstrict' mode, and it's very useful when
   // working with LIT Vocab Terms generated from vocabularies you have no
-  // control over, and which do not already provide labels for their terms.
+  // control over, and which do not already provide labels for their terms,
+  // i.e. in those cases you can still provide what will hopefully be
+  // meaningful and useful labels.
 
   describe('LIT Vocab Term label usage', () => {
     it('Label handling allowing local part of IRI as fallback English value', () => {
       // We explicitly want our term to allow the use of the local part of
-      // the IRI as the English label if no English label explicitly provided,
-      // so we pass 'false' for the 'strict' flag (as 'strict' enforces an
-      // explicit English label!).
-      // Here we're simply creating the term itself, and not yet adding any
-      // labels or comments.
+      // the IRI as the English label if no English label is provided
+      // explicitly, so we pass 'false' for the 'strict' flag (as 'strict'
+      // enforces that an explicit English label be provided!).
+      // Here we're simply creating the term itself, and not yet add any labels,
+      // comments or messages.
       const term = new LitVocabTermBase(TEST_TERM_NAME, rdf, localStorage, false)
 
       // Simply requesting the label now without an explicit language assumes
-      // English, but since we haven't provided any labels at all yet all we can
-      // return is the local part of the IRI (which we explicitly allow by
+      // English, but since we haven't provided any labels at all yet, all we
+      // can return is the local path of the IRI (which we explicitly allow by
       // stating in the term's constructor that we're not being 'strict').
+
       // NOTE: the expected return type is an LIT Literal object telling us not
       // just the text of the label, but also the language tag for this text,
       // and potentially a datatype (and (NOT IMPLEMENTED YET!) even extra
@@ -69,6 +72,7 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       // that a specifically requested language for a label wasn't found, but
       // but that we fell back to providing the English label instead (which
       // could be really useful in a UI tooltip for instance).
+
       // NOTE: the language tag on the returned LIT Literal object here is empty
       // (i.e. the value is of type XSD:string) meaning a string with no
       // language component at all. This makes sense in our case because the
@@ -298,31 +302,15 @@ describe('Demonstrate LIT Vocab Term usage', () => {
       expect(term.messageParams('one', 'two').value)
           .to.equal('Message with one, two params')
 
+      // We can freely move parameters around in the message text, as
+      // illustrated in our German translation...
       expect(term.asLanguage('de').messageParams('one', 'two').value)
           .to.equal('Unterschiedliche Reihenfolge two und dann one Parameter')
+
+      // ...and again, if we make it mandatory and pass the incorrect number of
+      // parameters, we get an exception.
+      expect(() => term.mandatory.messageParams('too few params'))
+          .to.throw(TEST_TERM_ERROR, 'en', 'no values')
     })
   })
-  //
-  // // Giving the programmer control over throwing exceptions.
-  // describe('Return undefined instead of throwing exception', () => {
-  //   it('Should return undefined instead of throwing', () => {
-  //     const term = new LitVocabTermBase(TEST_TERM_NAME, rdf, localStorage, true)
-  //
-  //     // We don't allow both 'orUndefined' and 'mandatory' since they
-  //     // contradict one another in intent (whether a strict term or not)...
-  //     expect(() => term.orUndefined.mandatory)
-  //         .to.throw('Internal error', 'they conflict')
-  //
-  //     expect(term.messageParams('too many params')).to.be.undefined
-  //
-  //     expect(() => term.mandatory.messageParams('too many params')).to.throw(TEST_TERM_NAME, 'en')
-  //     expect(term.orUndefined.messageParams('too many params')).to.be.undefined
-  //
-  //     const termUnstrict = new LitVocabTermBase(TEST_TERM_NAME, rdf, localStorage, false)
-  //
-  //     expect(() => termUnstrict.mandatory.label).to.throw(TEST_TERM_NAME, 'en')
-  //     expect(() => termUnstrict.mandatory.orUndefined.label)
-  //         .to.throw('Internal error', 'they conflict')
-  //   })
-  // })
 })
