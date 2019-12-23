@@ -18,13 +18,21 @@ const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
  * runtime (e.g. to look up the locale for a term's label at runtime if one is
  * not explicitly asked for).
  *
- * We'll use this Turtle snippet to help illustrate some of the usage patterns
- * below.
+ * This Turtle snippet may help illustrate what this class supports:
+ *
+ *   prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+ *   prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+ *   prefix skos:     <http://www.w3.org/2004/02/skos/core#>
+ *   prefix ex:   <http://example.com/>
  *
  *   ex:name a rdf:Property ;
  *     rdfs:label "Name" ;
  *     rdfs:label "First name"@en ;
- *     rdfs:label "Nombre"@es .
+ *     rdfs:label "Nombre"@es ;
+ *     rdfs:comment "A person's first name"@en .
+ *
+ *   ex:errNameTooLong a rdfs:Literal ;
+ *     skos:definition "Name must be less than {{0}}, but we got {{1}}"@en .
  *
  * NOTE: Since this class does NOT actually store the IRI value for the vocab
  * term (since we expect derived classes to provide that), testing this
@@ -118,10 +126,10 @@ class LitVocabTermBase {
           }
       })
 
-      Object.defineProperty(this, 'dontThrow', {
+      Object.defineProperty(this, 'orUndefined', {
       label: 'Set a flag to return undefined instead of any exceptions',
       get () {
-        this._dontThrowCalled = true
+        this._orUndefined = true
         this._throwOnError = false
         this.validateState ()
         return this
@@ -132,6 +140,7 @@ class LitVocabTermBase {
       label: 'Set our mandatory flag - i.e. throws if not as expected',
       get () {
         this._mandatory = true
+        this._throwOnError = true
         this.validateState ()
         return this
       }
@@ -155,8 +164,7 @@ class LitVocabTermBase {
           return this._label.asLanguage(language).lookup(
               this._asRdfLiteral,
               this._mandatory,
-              this._throwOnError,
-              language)
+              this._throwOnError)
         } finally {
           this.resetState()
         }
@@ -171,8 +179,7 @@ class LitVocabTermBase {
         const result = this._comment.asLanguage(language).lookup(
             this._asRdfLiteral,
             this._mandatory,
-            this._throwOnError,
-            language)
+            this._throwOnError)
 
         this.resetState()
         return result
@@ -187,8 +194,7 @@ class LitVocabTermBase {
         const result = this._message.asLanguage(language).lookup(
             this._asRdfLiteral,
             this._mandatory,
-            this._throwOnError,
-            language)
+            this._throwOnError)
 
         this.resetState()
         return result
@@ -197,9 +203,9 @@ class LitVocabTermBase {
   }
 
   validateState () {
-    if (this._dontThrowCalled && this._mandatory) {
+    if (this._orUndefined && this._mandatory) {
       this.resetState()
-      throw new Error(`Internal error - calling both the 'dontThrow' and the 'mandatory' methods on a LIT Vocab Term is not allowed, since they conflict in intent.`)
+      throw new Error(`Internal error - calling both the 'orUndefined' and the 'mandatory' methods on a LIT Vocab Term is not allowed, since they conflict in intent.`)
     }
   }
 
@@ -208,7 +214,7 @@ class LitVocabTermBase {
     this._languageOverride = undefined
     this._mandatory = false
     this._throwOnError = false
-    this._dontThrowCalled = undefined
+    this._orUndefined = undefined
   }
 
   addLabelNoLanguage(value) {

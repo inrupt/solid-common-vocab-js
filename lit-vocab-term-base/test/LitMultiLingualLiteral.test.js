@@ -137,11 +137,19 @@ describe('MultiLingualLiteral tests', () => {
 
     it('Should throw with params if requested language not found', () => {
       const literal = new LitMultiLingualLiteral(rdf, TEST_IRI)
-        .addValue('whatever {{0}} in English', 'en')
+          .addValue('whatever {{0}} in English', 'en')
 
       expect(() => literal.asLanguage('fr')
-        .params(true, true, true, 'use default'))
-        .to.throw(TEST_IRI, '[fr]', 'none found')
+          .params(true, true, true, 'use default'))
+          .to.throw(TEST_IRI, '[fr]', 'none found')
+    })
+
+    it('Should return undefined if params requested language not found', () => {
+      const literal = new LitMultiLingualLiteral(rdf, TEST_IRI)
+
+      expect(literal.asLanguage('fr')
+          .params(true, false, false, 'use default'))
+          .to.be.undefined
     })
 
     it('Should return RDF literal using current language', () => {
