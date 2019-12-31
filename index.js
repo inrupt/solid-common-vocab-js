@@ -1,6 +1,0 @@
-exports.LitContext = require('./src/LitContext')
-exports.LitContextError = require('./src/LitContextError')
-exports.LitUtils = require('./src/LitUtils')
-exports.LitMultiLingualLiteral = require('./src/LitMultiLingualLiteral')
-exports.LitTermRegistry = require('./src/LitTermRegistry')
-exports.LitVocabTerm = require('./src/LitVocabTerm')

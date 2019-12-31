@@ -2,8 +2,8 @@
 
 require('mock-local-storage')
 
-const LitContext = require('../../src/LitContext.js')
-const LitContextError = require('../../src/LitContextError.js')
+const LitContext = require('../src/LitContext.js')
+const LitContextError = require('../src/LitContextError.js')
 
 const chai = require('chai')
 const expect = chai.expect
