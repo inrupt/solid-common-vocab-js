@@ -25,6 +25,12 @@ implementation without any RDF library dependency. `LitVocabTermRdfExt` and
 `LitVocabTermRdfLib` both extend this class, and therefore provide the same
 interface (except for the constructor, where the RDF factory becomes implicit).
 
+The lit-vocab-term libraries are distributed as a GitHub NPM packages:
+- `@inrupt/lit-vocab-term-base`
+- `@inrupt/lit-vocab-term-rdf-ext`
+
+For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
+
 ### Introductory example
 
 For example, if we have the following simple RDF vocabulary:
@@ -39,8 +45,10 @@ ex:Person a rdfs:Class ;
 
 We could represent this as a LIT Vocab Term in Javascript like so:
 ```javascript
+const {LitVocabTermBase} = require('@inrupt/lit-vocab-term-base')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
 const rdf = require('rdf-ext')
+require('mock-local-storage')
 
 // 'localStorage' is used as a context. It's always there for browsers, but in NodeJS
 // we recommend simply using [Mock Local Storage](https://www.npmjs.com/package/mock-local-storage).
@@ -97,9 +105,6 @@ Note that the language tag defaults to an empty string in the case of fallback t
 the local part of the IRI (see the next section about strictness).
 
 ```javascript
-// Any other implementation of the RDFJS interface would be appropriate.
-const rdf = require('rdf-ext')
- 
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
   .addLabel('Person','en')
   .addLabel('Personne', 'fr')
@@ -127,9 +132,6 @@ component) of the term's IRI, while it will return `undefined` in the case of
 language tag is specified.
 
 ```javascript
-// Any other implementation of the RDFJS interface would be appropriate.
-const rdf = require('rdf-ext')
-
 // Here we specify loose behaviour(i.e. 'false' parameter to constructor)...
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, false)
 
@@ -147,9 +149,6 @@ to ensure the presence of the label by using the `.mandatory` accessor. When it 
 specified, and an explicitly defined label is not available, an exception will be thrown.
 
 ```javascript
-// Any other implementation of the RDFJS interface would be appropriate.
-const rdf = require('rdf-ext')
-
 // Here 'strictness' has no impact...
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
 
