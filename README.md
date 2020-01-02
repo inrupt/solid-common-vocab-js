@@ -27,7 +27,7 @@ interface (except for the constructor, where the RDF factory becomes implicit).
 
 ### Introductory example
 
-For example, if we have the following simple RDF vocab:
+For example, if we have the following simple RDF vocabulary:
 ```
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ex:   <https://example.com#>
@@ -37,23 +37,31 @@ ex:Person a rdfs:Class ;
   rdfs:comment "Full description of my Person class..."@en .
 ```
 
-We would represent this as a LIT Vocab Term in Javascript like so:
+We could represent this as a LIT Vocab Term in Javascript like so:
 ```javascript
-// Any other implementation of the RDFJS interface would be appropriate
+// Any other implementation of the RDFJS interfaces would also be appropriate.
 const rdf = require('rdf-ext')
 
-// The local storage is used as a context, and the last parameter indicates wether
-// we want a 'strict' behaviour or not (see next for explanation).  
+// 'localStorage' is used as a context. It's always there for browsers, but in NodeJS
+// we recommend simply using [Mock Local Storage](https://www.npmjs.com/package/mock-local-storage).
+// The last parameter indicates whether we want a 'strict' behaviour or not
+// (see below for an explanation).  
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
   .addLabel('My Person class','en')
   .addComment('Full description of my Person class...','en')
 
 const myIri = person.value
 // The label and the comment are available as RDFJS RDFLiteral instances:
-// - get the RDFLiteral object
+// - get the RDFLiteral object (which contains not just the text value, but also the 
+// language tag of that text (e.g. 'en' for English, or 'es' for Spanish), and potentially
+// other meta-data (e.g. a description of where the text actually came from, for example
+// if a user's current language preference was 'French', but we don't have
+// a French label and therefore returned the 'English' label instead, then we
+// can provide that information in a field describing this, which could be
+// extremely useful in a User Interface tooltip for instance).
 const myLabel = person.label
 const myComment = person.comment
-// - get the string value
+// - get the string value.
 const myLabelValue = person.label.value
 const myCommentValue = person.comment.value
 ```
@@ -62,7 +70,7 @@ To use the RDF-ext implementation of the lit-vocab-term, the previous example wo
 become: 
 
 ```javascript
-// Note that the dependency on the RDF lib is integrated in the implementation
+// Note that the dependency on the RDF lib is integrated in the implementation.
 const person = new LitVocabTermRdfExt('https://example.com#Person', localStorage, true)
   .addLabel('My Person class','en')
   .addComment('Full description of my Person class...','en')
@@ -71,22 +79,23 @@ const person = new LitVocabTermRdfExt('https://example.com#Person', localStorage
 
 ### Messages
 
-A feature of the lit-vocab-term is the support for parametric messages, which are
-useful for instance to report an error to the user using contextual information.
+An important feature of the lit-vocab-term is support for parameterized messages, that
+can be extremely useful, for instance to report errors to the user with contextual
+information.
 
 ```javascript
 const term = new LitVocabTermBase("https://test.com/vocab#Unauthorized", rdf, localStorage, true)
-    .addMessage('Your current account ({{0}}), does not have sufficient credentials for this operation', 'en')
-term.messageParams('myLogin').value // evaluates to "Your current account (myLogin)..."
+    .addMessage('Your account ({{0}}), does not have sufficient credentials for this operation', 'en')
+term.messageParams('My Current Account').value // Evaluates to "Your account (My Current Account)..."
 ```
 
 ### Multilinguality
 
-In the previous example, English is used as a default language. However, labels
-and comments may (and should) be specified in multiple languages.
+English is always used as a default language (unless we explicitly mandate a specific 
+language). However, labels and comments may (and should) be specified in multiple languages.
 
 ```javascript
-// Any other implementation of the RDFJS interface would be appropriate
+// Any other implementation of the RDFJS interface would be appropriate.
 const rdf = require('rdf-ext')
  
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
@@ -94,9 +103,11 @@ const person = new LitVocabTermBase('https://example.com#Person', rdf, localStor
   .addLabel('Personne', 'fr')
   .addLabel('Persona', 'es')
 
-// Default english label
+// Default to the English label (if there is one).
 const myLabel = person.label
-// Explicit language for the label
+
+// Request an explicit language for the label (but if there isn't one, fallback to the
+// English one, if there is one).
 myLabel = person.asLanguage('fr').label
 
 // Change the default language in the context
@@ -107,38 +118,38 @@ myLabel = person.label // myLabel contains the Spanish literal
 ### Strictness
 
 The last parameter indicates if the behaviour of the term should be strict or loose.
-In particular, in the case of a "loose" behaviour, in the absence of any label, 
-`term.label` will default to the local part of the term's IRI, while it will 
-return `undefined` when implementing a "strict" behaviour.
+In the case of "loose" behaviour, in the absence of any label, 
+`term.label` will default to the local part (i.e. the last segment of the path
+component) of the term's IRI, while it will return `undefined` in the case of
+"strict" behaviour.
 
 ```javascript
-// Any other implementation of the RDFJS interface would be appropriate
+// Any other implementation of the RDFJS interface would be appropriate.
 const rdf = require('rdf-ext')
 
-// Here, a loose behaviour
+// Here we specify loose behaviour(i.e. 'false' parameter to constructor)...
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, false)
 
-// myLabel will default to a literal with the value "Person", and the language tag @en
+// 'myLabel' will default to a literal with the value "Person", and the language tag @en.
 const myLabel = person.label 
  
-// Now a strict behaviour
+// Now strict behaviour...
 person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
-// myLabel will default to undefined
+// myLabel will default to 'undefined'.
 myLabel = person.label
 ```
 
-This behaviour (returning the local IRI or `undefined`) may be overriden to ensure
-the presence of the label by using the `.mandatory` accessor: when it is specified, 
-and the label is not available, an exception is thrown.
+This behaviour (returning the local part of the IRI, or `undefined`) may be overridden
+to ensure the presence of the label by using the `.mandatory` accessor. When it is
+specified, and an explicitly defined label is not available, an exception will be thrown.
 
 ```javascript
-// Any other implementation of the RDFJS interface would be appropriate
+// Any other implementation of the RDFJS interface would be appropriate.
 const rdf = require('rdf-ext')
 
-// For the demonstrated usage, the strictness has no impact
+// Here 'strictness' has no impact...
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
 
-// An exception will be thrown
+// An exception will be thrown, because we didn't provide have one.
 const myLabel = person.mandatory.label 
 ```
-
