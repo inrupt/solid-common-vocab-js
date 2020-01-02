@@ -1,11 +1,12 @@
 {
-  "name": "@lit/vocab-term-rdfext",
+  "name": "@inrupt/lit-vocab-term-rdf-ext",
   "version": "0.2.0",
   "description": "Extends the base LIT Vocab Term library to wrap rdf-ext.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inrupt/lit-vocab-term-js"
+    "url": "https://github.com/inrupt/lit-vocab-term-js.git",
+    "directory": "lit-vocab-term-rdf-ext"
   },
   "directories": {
     "test": "test"
