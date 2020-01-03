@@ -26,8 +26,8 @@ implementation without any RDF library dependency. `LitVocabTermRdfExt` and
 interface (except for the constructor, where the RDF factory becomes implicit).
 
 The lit-vocab-term libraries are distributed as a GitHub NPM packages:
-- `@pmcb55/lit-vocab-term-base`
-- `@pmcb55/lit-vocab-term-rdf-ext`
+- `@inrupt/lit-vocab-term-base`
+- `@inrupt/lit-vocab-term-rdf-ext`
 
 For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
 

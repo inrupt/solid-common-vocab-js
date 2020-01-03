@@ -1,12 +1,12 @@
 {
-  "name": "@inrupt/lit-vocab-term-base",
+  "name": "@pmcb55/lit-vocab-term-base",
   "version": "0.2.2",
   "description": "Very basic implementation of LIT Vocab Term with no RDF library dependencies at all.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inrupt/lit-vocab-term-js.git",
-    "directory": "lit-vocab-term-base"
+    "url": "https://github.com/pmcb55/lit-js.git",
+    "directory": "lit-vocab-term/lit-vocab-term-base"
   },
   "directories": {
     "test": "test"

@@ -1,12 +1,12 @@
 {
-  "name": "@inrupt/lit-vocab-term-rdf-ext",
+  "name": "@pmcb55/lit-vocab-term-rdf-ext",
   "version": "0.2.2",
   "description": "Extends the base LIT Vocab Term library to wrap rdf-ext.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inrupt/lit-vocab-term-js.git",
-    "directory": "lit-vocab-term-rdf-ext"
+    "url": "https://github.com/pmcb55/lit-js.git",
+    "directory": "lit-vocab-term/lit-vocab-term-rdf-ext"
   },
   "directories": {
     "test": "test"
@@ -15,7 +15,7 @@
     "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\""
   },
   "dependencies": {
-    "@inrupt/lit-vocab-term-base": "0.2.2",
+    "@pmcb55/lit-vocab-term-base": "0.2.2",
     "@rdfjs/formats-common": "^2.0.1",
     "aggregation": "^1.2.5",
     "moment": "^2.24.0",

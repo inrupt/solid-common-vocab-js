@@ -2,7 +2,7 @@
 
 const rdf = require('rdf-ext')
 
-const {LitVocabTermBase} = require('@inrupt/lit-vocab-term-base')
+const {LitVocabTermBase} = require('@pmcb55/lit-vocab-term-base')
 
 const aggregation = require("aggregation/es6")
 
