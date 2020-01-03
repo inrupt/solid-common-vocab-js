@@ -93,6 +93,8 @@ term.messageParams('My Current Account').value // Evaluates to "Your account (My
 
 English is always used as a default language (unless we explicitly mandate a specific 
 language). However, labels and comments may (and should) be specified in multiple languages.
+Note that the language tag defaults to an empty string in the case of fallback to 
+the local part of the IRI (see the next section about strictness).
 
 ```javascript
 // Any other implementation of the RDFJS interface would be appropriate.
@@ -121,7 +123,8 @@ The last parameter indicates if the behaviour of the term should be strict or lo
 In the case of "loose" behaviour, in the absence of any label, 
 `term.label` will default to the local part (i.e. the last segment of the path
 component) of the term's IRI, while it will return `undefined` in the case of
-"strict" behaviour.
+"strict" behaviour. When the local part of the IRI is returned as a label, no 
+language tag is specified.
 
 ```javascript
 // Any other implementation of the RDFJS interface would be appropriate.
