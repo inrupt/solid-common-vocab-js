@@ -9,4 +9,4 @@ exports.LitVocabTermBase = require('./src/LitVocabTermBase')
 
 // We also provide a very simple implementation that requires no RDF
 // libraries at all.
-exports.LitVocabTermBasic = require('./src/LitVocabTermBasic')
+exports.LitVocabTermBasic = require('./src/basic/LitVocabTermBasic')

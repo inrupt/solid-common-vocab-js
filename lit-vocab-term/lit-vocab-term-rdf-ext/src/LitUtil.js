@@ -10,8 +10,7 @@ const streamToString = require('stream-to-string')
 const fs = require('fs')
 const uuidv1 = require('uuid/v1')
 
-const LitContextError = require('../../src/LitContextError')
-const LitVocabTermBase = require('../../src/LitVocabTermBase')
+const {LitContextError, LitVocabTermBase} = require('@pmcb55/lit-vocab-term-base')
 
 module.exports.generateUuid = uuidv1
 
