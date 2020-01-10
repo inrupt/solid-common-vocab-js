@@ -1,27 +1,28 @@
 # The Linked data Integration Toolkit (LIT) for Javascript
 This toolkit is intended to contain a number of libraries, that collectively
-make up the LIT. These libraries are intended to be used by Javascript 
+make up the LIT for Javascript. These libraries are intended to be used by Javascript 
 developers working with RDF.
 
 ## lit-vocab-term-js
-A very simple wrapper library for developers that provides convenient access to
-the terms defined in RDF vocabularies (e.g. the classes and properties defined
-in vocabularies like http://schema.org, or FOAF).
+A very simple library that provides easy access to the individual terms (i.e.
+the classes and properties) defined in RDF vocabularies, such as
+http://schema.org, FOAF, VCard, LDP, ActivityStreams, etc.).
   
-A major benefit of this library is that it provides easy access to any 
-`rdfs:label` or `rdfs:comment` values defined on the terms, and provides
-ease-to-use support for multi-lingual values for these labels, comments or 
-message strings.
+A major feature of this library is that it provides easy access to any 
+`rdfs:label` or `rdfs:comment` values provided for vocabulary terms, and provides
+easy-to-use support for multi-lingual values for these labels and comments (and
+generic message strings).
 
 ## RDF library support
 This library is intended to act as a simple wrapper around existing low-level
-RDF Javascript libaries, like RdfExt or rdflib.js, although we also provide a
-very simple base implementation that has no RDF library dependency at all.
+RDF Javascript libaries (such as RdfExt or rdflib.js), meaning LIT vocab term
+instances can be used easily with these libraries. We also provide a simple 
+implementation that has no RDF library dependency at all.
 
 We provide implementations for both rdf-ext (https
 ://github.com/rdf-ext/rdf-ext) and rdflib.js. Our rdf-ext library simply
-extends the class 'rdf.defaults.NamedNode', whereas our rdflib.js extension
-is not yet implemented.
+extends the class 'rdf.defaults.NamedNode', and our rdflib.js extension
+extends the class 'Node'.
 
 ## Usage
 For detailed examples going beyond the common usages featured here, please see 
