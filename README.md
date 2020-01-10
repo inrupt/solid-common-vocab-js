@@ -4,20 +4,21 @@ make up the LIT for Javascript. These libraries are intended to be used by Javas
 developers working with RDF.
 
 ## lit-vocab-term-js
-A very simple library that provides easy access to the individual terms (i.e.
-the classes and properties) defined in RDF vocabularies, such as
-http://schema.org, FOAF, VCard, LDP, ActivityStreams, etc.).
+A very simple library that provides Javascript objects that represent the individual
+terms (i.e. the classes and properties) defined in RDF vocabularies (both existing
+vocabularies (like http://schema.org, FOAF, VCard, LDP, ActivityStreams, etc.) and
+your own custom RDF vocabularies).
   
 A major feature of this library is that it provides easy access to any 
-`rdfs:label` or `rdfs:comment` values provided for vocabulary terms, and provides
-easy-to-use support for multi-lingual values for these labels and comments (and
-generic message strings).
+`rdfs:label` or `rdfs:comment` values provided for these vocabulary terms, and 
+provides very easy-to-use support for multi-lingual values for these labels and
+comments (and generic message strings).
 
 **NOTE:** This library is used extensively by the LIT Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
 including Javascript) that provides LIT Vocab Term instances for every term
 defined within any RDF vocabulary. Due to how easy it is to simply point the LIT
-Artifact Generator at any RDF vocabulary, and have it automatically generate all
+Artifact Generator at any RDF vocabulary, and _have it_ automatically generate all
 the LIT Vocab Term instances for you automatically, we don't expect manual
 instantiation of LIT Vocab Terms to be very common. However, this documentation
 describes the LIT Vocab Term library without any dependency or requirement to
