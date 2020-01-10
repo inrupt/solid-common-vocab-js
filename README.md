@@ -13,16 +13,27 @@ A major feature of this library is that it provides easy access to any
 easy-to-use support for multi-lingual values for these labels and comments (and
 generic message strings).
 
+**NOTE:** This library is used extensively by the LIT Artifact Generator project 
+that can automatically generate source-code (in multiple programming languages, 
+including Javascript) that provides LIT Vocab Term instances for every term
+defined within any RDF vocabulary. Due to how easy it is to simply point the LIT
+Artifact Generator at any RDF vocabulary, and have it automatically generate all
+the LIT Vocab Term instances for you automatically, we don't expect manual
+instantiation of LIT Vocab Terms to be very common. However, this documentation
+describes the LIT Vocab Term library without any dependency or requirement to
+use the LIT Artifact Generator whatsoever.
+
 ## RDF library support
-This library is intended to act as a simple wrapper around existing low-level
-RDF Javascript libaries (such as RdfExt or rdflib.js), meaning LIT vocab term
-instances can be used easily with these libraries. We also provide a simple 
-implementation that has no RDF library dependency at all.
+The LIT Vocab Term objects from this library are intended to be simple wrappers
+around 'NamedNode' objects from existing low-level RDF Javascript libaries,
+such as RdfExt or rdflib.js. This means that LIT Vocab Term instances can be
+used natively with these libraries. We do however also provide a simple
+implementation that has no external RDF library dependency at all.
 
 We provide implementations for both rdf-ext (https
 ://github.com/rdf-ext/rdf-ext) and rdflib.js. Our rdf-ext library simply
 extends the class 'rdf.defaults.NamedNode', and our rdflib.js extension
-extends the class 'Node'.
+extends the class 'NamedNode'.
 
 ## Usage
 For detailed examples going beyond the common usages featured here, please see 
@@ -105,15 +116,18 @@ const person = new LitVocabTermRdfExt('https://example.com#Person', localStorage
 
 ### Messages
 
-An important feature of the `lit-vocab-term` is support for parameterized messages. This
-can be extremely useful, for instance to report errors to the user with contextual
-information.
+An important feature of the `lit-vocab-term` is support for parameterized messages.
+This can be extremely useful when defining your own RDF vocabularies and including
+message strings (thereby providing those message with globally unique IRI identifiers
+and allowing for easy translations of those messages). For instance, to report errors
+to the user with contextual information (and in multiple languages).
 
 ```javascript
 const term = new LitVocabTermBase("https://test.com/vocab#Unauthorized", rdf, localStorage, true)
     .addMessage('Your account ({{0}}), does not have sufficient credentials for this operation', 'en')
+    .addMessage('Votre compte ({{0}}) ne dispose pas des informations d'identification suffisantes pour cette opération', 'fr')
     
-term.messageParams('My Current Account').value // Evaluates to "Your account (My Current Account)..."
+term.messageParams('Current Account').value // Evaluates to "Your account (Current Account)..."
 ```
 
 ### Multilinguality
@@ -156,7 +170,7 @@ empty (i.e. "").
 
 ```javascript
 // Here we specify 'loose' behaviour(i.e. 'false' parameter to constructor)...
-const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, false)
+var person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, false)
 
 // 'personLabel' will default to a literal with the value "Person", and the language tag @en.
 var personLabel = person.label 
