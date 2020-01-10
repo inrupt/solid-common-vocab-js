@@ -17,7 +17,7 @@ comments (and generic message strings).
 **NOTE:** This library is used extensively by the LIT Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
 including Javascript) that provides LIT Vocab Term instances for every term
-defined within any RDF vocabulary. Due to how easy it is to simply point the LIT
+defined within any RDF vocabulary. Due to the ease of simply pointing the LIT
 Artifact Generator at any RDF vocabulary, and _have it_ automatically generate all
 the LIT Vocab Term instances for you automatically, we don't expect manual
 instantiation of LIT Vocab Terms to be very common. However, this documentation
