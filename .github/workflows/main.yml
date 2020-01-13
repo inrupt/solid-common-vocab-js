@@ -20,7 +20,7 @@ jobs:
       run: |
         npm ci --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-base/
         npm test --prefix lit-vocab-term/lit-vocab-term-base/
-        npm publish --registry https://npm.pkg.github.com/inrupt --prefix lit-vocab-term/lit-vocab-term-base/
+        cd lit-vocab-term/lit-vocab-term-base/ && npm publish --registry https://npm.pkg.github.com/pmcb55
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   
@@ -43,11 +43,11 @@ jobs:
       run: |
         npm ci --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-rdf-ext/
         npm test --prefix lit-vocab-term/lit-vocab-term-rdf-ext/
-        npm publish --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-rdf-ext/
+        cd lit-vocab-term/lit-vocab-term-rdf-ext/ && npm publish --registry https://npm.pkg.github.com/pmcb55
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   
-  release-vocab-term-rdfext:
+  release-vocab-term-rdflib:
     runs-on: ubuntu-latest
     name: Realeases the lit-vocab-term-rdflib package
     needs: release-vocab-term-base
@@ -66,6 +66,6 @@ jobs:
       run: |
         npm ci --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-rdflib/
         npm test --prefix lit-vocab-term/lit-vocab-term-rdfrdflib/
-        npm publish --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-rdfrdflib/
+        cd lit-vocab-term/lit-vocab-term-rdflib/ && npm publish --registry https://npm.pkg.github.com/pmcb55
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
