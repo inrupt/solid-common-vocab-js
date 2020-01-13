@@ -1,0 +1,60 @@
+{
+  "name": "@pmcb55/lit-vocab-term-rdflib",
+  "version": "0.2.2",
+  "description": "Extends the base LIT Vocab Term library to wrap rdflib.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmcb55/lit-js.git",
+    "directory": "lit-vocab-term/lit-vocab-term-rdflib"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\""
+  },
+  "dependencies": {
+    "@pmcb55/lit-vocab-term-base": "0.2.2",
+    "@rdfjs/formats-common": "^2.0.1",
+    "aggregation": "^1.2.5",
+    "moment": "^2.24.0",
+    "debug": "^4.1.1",
+    "rdflib": "^1.0.7-3",
+    "stream-to-string": "^1.2.0",
+    "string-to-stream": "^3.0.1"
+  },
+  "author": {
+    "name": "Nicolas Seydoux"
+  },
+  "license": "MIT",
+  "nyc": {
+    "check-coverage": true,
+    "per-file": true,
+    "lines": 98,
+    "statements": 98,
+    "functions": 98,
+    "branches": 98,
+    "include": [
+      "src/**/*.js"
+    ],
+    "exclude": [],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "require": [],
+    "extension": [],
+    "cache": true,
+    "all": true,
+    "report-dir": "./.nyc_output/alternative"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-string": "^1.5.0",
+    "mocha": "^6.1.4",
+    "mock-local-storage": "^1.1.8",
+    "nyc": "^14.1.1",
+    "standard": "^12.0.1"
+  }
+}

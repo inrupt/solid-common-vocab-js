@@ -1,0 +1,4 @@
+<https://alice.example.org/profile#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+<https://alice.example.org/profile#me> <https://schema.org/name> "Alice" .
+<https://alice.example.org/profile#me> <https://schema.org/email> "alice@hotmail.com" .
+<https://alice.example.org/profile#me> <https://schema.org/requiredMaxAge> "21" .
