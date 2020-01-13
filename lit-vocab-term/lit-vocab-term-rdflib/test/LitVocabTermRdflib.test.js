@@ -22,8 +22,8 @@ describe('LitVocabTermRdflib tests', () => {
 
     it('should behave as a LIT Vocab Term', () => {
       const iri = 'test://iri#whatever'
-      const term = new LitVocabTermRdflib(iri, localStorage, true)
-      expect(term.labelInLang('en')).equals('whatever')
+      const term = new LitVocabTermRdflib(iri, localStorage, false)
+      expect(term.asLanguage('en').label.value).equals('whatever')
     })
   })
 
