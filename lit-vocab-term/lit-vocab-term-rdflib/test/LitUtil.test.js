@@ -19,7 +19,7 @@ const SCHEMA = {
 }
 
 
-describe ('LIT utils tests', () => {
+describe ('LIT Util tests', () => {
   const aliceIriAsString = 'https://alice.example.org/profile#me'
   const alice = rdf.namedNode(aliceIriAsString)
 
@@ -85,7 +85,6 @@ describe ('LIT utils tests', () => {
   })
 
   describe ('Converting to string', () => {
-
     it ('Should write quads to console log', async () => {
       let result = await LitUtil.console(rdf.quad(alice, RDF.type, SCHEMA.Person))
       expect(result).to.equal(`{<${aliceIriAsString}> ${RDF.type} <${SCHEMA.Person.value}> .}`)
