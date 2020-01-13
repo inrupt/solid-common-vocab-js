@@ -17,10 +17,8 @@ jobs:
         registry-url: https://npm.pkg.github.com/
         scope: '@pmcb55'
     - name: NPM install, test and publish
-      run: |
-        npm ci --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-base/
-        npm test --prefix lit-vocab-term/lit-vocab-term-base/
-        cd lit-vocab-term/lit-vocab-term-base/ && npm publish --registry https://npm.pkg.github.com/pmcb55
+      # The test fallback in the last line prevents from blocking the other scripts when republishing 
+      run: bash ./.github/workflows/release-if-updated.sh ./lit-vocab-term/lit-vocab-term-base
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   
@@ -40,10 +38,7 @@ jobs:
         registry-url: https://npm.pkg.github.com/
         scope: '@pmcb55'
     - name: NPM install, test and publish
-      run: |
-        npm ci --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-rdf-ext/
-        npm test --prefix lit-vocab-term/lit-vocab-term-rdf-ext/
-        cd lit-vocab-term/lit-vocab-term-rdf-ext/ && npm publish --registry https://npm.pkg.github.com/pmcb55
+      run: bash ./.github/workflows/release-if-updated.sh ./lit-vocab-term/lit-vocab-term-rdf-ext
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
   
@@ -63,9 +58,6 @@ jobs:
         registry-url: https://npm.pkg.github.com/
         scope: '@pmcb55'
     - name: NPM install, test and publish
-      run: |
-        npm ci --registry https://npm.pkg.github.com/pmcb55 --prefix lit-vocab-term/lit-vocab-term-rdflib/
-        npm test --prefix lit-vocab-term/lit-vocab-term-rdfrdflib/
-        cd lit-vocab-term/lit-vocab-term-rdflib/ && npm publish --registry https://npm.pkg.github.com/pmcb55
+      run: bash ./.github/workflows/release-if-updated.sh ./lit-vocab-term/lit-vocab-term-rdflib
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
