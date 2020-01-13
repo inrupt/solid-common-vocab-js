@@ -1,6 +1,6 @@
 {
   "name": "@pmcb55/lit-vocab-term-base",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Very basic implementation of LIT Vocab Term with no RDF library dependencies at all.",
   "main": "index.js",
   "repository": {
