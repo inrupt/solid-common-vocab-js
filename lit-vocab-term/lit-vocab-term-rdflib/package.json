@@ -1,6 +1,6 @@
 {
   "name": "@pmcb55/lit-vocab-term-rdflib",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Extends the base LIT Vocab Term library to wrap rdflib.",
   "main": "index.js",
   "repository": {
@@ -15,7 +15,7 @@
     "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\""
   },
   "dependencies": {
-    "@pmcb55/lit-vocab-term-base": "0.2.3",
+    "@pmcb55/lit-vocab-term-base": "0.2.4",
     "@rdfjs/formats-common": "^2.0.1",
     "aggregation": "^1.2.5",
     "moment": "^2.24.0",

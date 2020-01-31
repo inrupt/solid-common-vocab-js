@@ -14,7 +14,7 @@ const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
  */
 class LitTermRegistry {
   static addTerm (termIri, term) {
-    localStorage.setItem(termIri, JSON.stringify(term))
+    localStorage.setItem(termIri, term.serialize())
     return this
   }
 

@@ -309,6 +309,14 @@ class LitVocabTermBase {
     return (valueLower.startsWith('http://') || valueLower.startsWith('https://'))
   }
 
+  /**
+   * This function serializes the current LitVocabTerm into a string. This feature
+   * is primarily used for storing in the local storage.
+   */
+  serialize() {
+    return JSON.stringify({"value":this.value, "termType": this.termType});
+  }
+
   // /**
   //  * Processes the specified inputs to extract any possible contextual information to help subsequent lookups. For
   //  * instance, we can look for the 'accept-language' HTTP header to set our language tag, or use session information to
