@@ -90,8 +90,6 @@ class LitVocabTermBase {
         undefined,
         'message (should be defined in RDF vocab using: skos:definition)')
 
-    LitTermRegistry.addTerm(iri, this)
-
     if (!strict) {
       // This can be overwritten if we get an actual no-language label later,
       // which would be perfectly fine.
@@ -307,14 +305,6 @@ class LitVocabTermBase {
 
     const valueLower = value.toLowerCase()
     return (valueLower.startsWith('http://') || valueLower.startsWith('https://'))
-  }
-
-  /**
-   * This function serializes the current LitVocabTerm into a string. This feature
-   * is primarily used for storing in the local storage.
-   */
-  serialize() {
-    return JSON.stringify({"value":this.value, "termType": this.termType});
   }
 
   // /**
