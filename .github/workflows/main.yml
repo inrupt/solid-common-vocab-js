@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Realeases the lit-vocab-term-base package
     steps:
-     # Makes the current repository available to the workflow
+     # Makes the current repository available to the workflow.
     - name: Checkout repo
       uses: actions/checkout@v2
       # Initializes node for the runner
@@ -17,7 +17,7 @@ jobs:
         registry-url: https://npm.pkg.github.com/
         scope: '@pmcb55'
     - name: NPM install, test and publish
-      # The test fallback in the last line prevents from blocking the other scripts when republishing 
+      # The test fallback in the last line prevents from blocking the other scripts when republishing.
       run: bash ./.github/workflows/release-if-updated.sh ./lit-vocab-term/lit-vocab-term-base
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
@@ -27,10 +27,10 @@ jobs:
     name: Realeases the lit-vocab-term-rdf-ext package
     needs: release-vocab-term-base
     steps:
-     # Makes the current repository available to the workflow
+     # Makes the current repository available to the workflow.
     - name: Checkout repo
       uses: actions/checkout@v2
-      # Initializes node for the runner
+      # Initializes node for the runner.
     - name: Node setup
       uses: actions/setup-node@v1
       with:
@@ -47,10 +47,10 @@ jobs:
     name: Realeases the lit-vocab-term-rdflib package
     needs: release-vocab-term-base
     steps:
-     # Makes the current repository available to the workflow
+     # Makes the current repository available to the workflow.
     - name: Checkout repo
       uses: actions/checkout@v2
-      # Initializes node for the runner
+      # Initializes node for the runner.
     - name: Node setup
       uses: actions/setup-node@v1
       with:
