@@ -13,10 +13,6 @@ const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
  * strings (so we need to expand out the meta-data for each term).
  */
 class LitTermRegistry {
-  static addTerm (termIri, term) {
-    localStorage.setItem(termIri, term.serialize())
-    return this
-  }
 
   static lookupLabel (termIri, language) {
     return LitTermRegistry.lookupFullTerm(`${termIri}-label-`, language)
