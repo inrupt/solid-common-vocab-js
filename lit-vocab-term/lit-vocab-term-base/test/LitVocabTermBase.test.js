@@ -275,4 +275,12 @@ describe('LitVocabTermBase tests', () => {
         expect(term.asString.label).equals('test label...')
     })
   })
+
+  describe ('Term serialization', () => {
+    it('Should only serialize the expected information', () => {
+      const term = new LitVocabTermBase(TEST_TERM_NAME, rdf, localStorage, false)
+          .addLabelNoLanguage('test label...')
+        expect(term.serialize()).equals(JSON.stringify({"value": term.value, "termType": term.termType}))
+    })
+  })
 })
