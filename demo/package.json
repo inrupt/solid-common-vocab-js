@@ -1,0 +1,15 @@
+{
+  "name": "demo",
+  "version": "0.1.0",
+  "description": "A very short demonstration of the LitVocabTerm usage",
+  "main": "index.js",
+  "author": {
+    "name": "Nicolas Seydoux",
+    "url": "https://solid.zwifi.eu/profile/card#me"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@pmcb55/lit-vocab-term-rdf-ext": "^0.2.4",
+    "mock-local-storage": "^1.1.11"
+  }
+}

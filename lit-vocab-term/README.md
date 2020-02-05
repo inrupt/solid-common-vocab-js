@@ -7,6 +7,24 @@ A major benefit of this library is that it provides easy access to any
 rdfs:label or rdfs:comment values defined on the terms, and provides ease-to-use
 support for multi-lingual values for these labels, comments or message strings. 
 
+### Setup
+
+The `demo` directory provides an extremely basic working example that you can run
+with the following commands:
+```
+cd demo
+npm install --registry=https://verdaccio.inrupt.com
+node index.js
+```
+
+This very simple example can be incrementally extended by pasting in code from
+the steps described below.
+
+(**NOTE**: If you want instead to use the `rdflib`-flavoured `LitVocabTerm`, 
+replace `LitVocabTermRdfExt` on the first line of `index.js` with
+`LitVocabTermRdflib`)
+
+
 ## RDF library support
 This library is intended to act as a simple wrapper around existing low-level
 RDF Javascript libaries, like RdfExt or rdflib.js, although we also provide a
@@ -154,4 +172,23 @@ const person = new LitVocabTermBase('https://example.com#Person', rdf, localStor
 
 // An exception will be thrown, because we didn't provide have one.
 const myLabel = person.mandatory.label 
+```
+
+## To go further
+
+### Usage in another library
+
+If you want to see how these libraries are used to make available in code actual
+RDF vocabularies, check out [the LIT RDF vocabularies repository](https://github.com/pmcb55/lit-rdf-vocab). 
+
+### Advanced building instructions
+
+If for some reasons you want to build and publish a version of these libraries to
+a local Verdaccio, be aware that `lit-vocab-term-base` should published before
+either `lit-vocab-term-rdf-ext` or `lit-vocab-term-rdflib` may be built:
+```
+cd lit-vocab-term/lit-vocab-term-base
+npm publish --registry=http://localhost:4873
+cd ../lit-vocab-term-rdfliib
+npm install --registry=http://localhost:4873
 ```
