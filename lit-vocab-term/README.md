@@ -7,6 +7,19 @@ A major benefit of this library is that it provides easy access to any
 rdfs:label or rdfs:comment values defined on the terms, and provides ease-to-use
 support for multi-lingual values for these labels, comments or message strings. 
 
+### Setup
+
+The `demo` directory provides an extremely basic working example that you can run
+with the following commands:
+```
+cd demo
+npm install --registry=https://verdaccio.inrupt.com
+node index.js
+```
+
+This very simple example can be incrementally extended by pasting in code from
+the steps described below.
+
 ## RDF library support
 This library is intended to act as a simple wrapper around existing low-level
 RDF Javascript libaries, like RdfExt or rdflib.js, although we also provide a
@@ -25,25 +38,15 @@ implementation without any RDF library dependency. `LitVocabTermRdfExt` and
 `LitVocabTermRdfLib` both extend this class, and therefore provide the same
 interface (except for the constructor, where the RDF factory becomes implicit).
 
+If you want to use the `rdflib`-flavoured `LitVocabTerm`, 
+replace `LitVocabTermRdfExt` on the first line by `LitVocabTermRdflib`, and 
+rebuild.
+
 The lit-vocab-term libraries are distributed as a GitHub NPM packages:
 - `@inrupt/lit-vocab-term-base`
 - `@inrupt/lit-vocab-term-rdf-ext`
 
 For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
-
-### Setup
-
-The `demo` directory provides an extremely basic working example that you can run
-with the following commands:
-```
-cd demo
-npm install --registry=https://verdaccio.inrupt.com
-node index.js
-```
-
-This can be extended by pasting in with the codes in the next steps. If you want
-to use the `rdflib`-flavoured `LitVocabTerm`, replace `LitVocabTermRdfExt` on the
-first line by `LitVocabTermRdflib`, and rebuild.
 
 ### Introductory example
 
