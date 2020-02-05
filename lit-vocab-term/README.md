@@ -31,6 +31,20 @@ The lit-vocab-term libraries are distributed as a GitHub NPM packages:
 
 For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
 
+### Setup
+
+The `demo` directory provides an extremely basic working example that you can run
+with the following commands:
+```
+cd demo
+npm install --registry=https://verdaccio.inrupt.com
+node index.js
+```
+
+This can be extended by pasting in with the codes in the next steps. If you want
+to use the `rdflib`-flavoured `LitVocabTerm`, replace `LitVocabTermRdfExt` on the
+first line by `LitVocabTermRdflib`, and rebuild.
+
 ### Introductory example
 
 For example, if we have the following simple RDF vocabulary:
@@ -154,4 +168,23 @@ const person = new LitVocabTermBase('https://example.com#Person', rdf, localStor
 
 // An exception will be thrown, because we didn't provide have one.
 const myLabel = person.mandatory.label 
+```
+
+## To go further
+
+### Usage in another library
+
+If you want to see how these libraries are used to make available in code actual
+RDF vocabularies, check out [the LIT RDF vocabularies repository](https://github.com/pmcb55/lit-rdf-vocab). 
+
+### Advanced building instructions
+
+If for some reasons you want to build and publish a version of these libraries to
+a local Verdaccio, be aware that `lit-vocab-term-base` should published before
+either `lit-vocab-term-rdf-ext` or `lit-vocab-term-rdflib` may be built:
+```
+cd lit-vocab-term/lit-vocab-term-base
+npm publish --registry=http://localhost:4873
+cd ../lit-vocab-term-rdfliib
+npm install --registry=http://localhost:4873
 ```
