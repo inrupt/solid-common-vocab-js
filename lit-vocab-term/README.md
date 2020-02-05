@@ -20,6 +20,11 @@ node index.js
 This very simple example can be incrementally extended by pasting in code from
 the steps described below.
 
+(**NOTE**: If you want instead to use the `rdflib`-flavoured `LitVocabTerm`, 
+replace `LitVocabTermRdfExt` on the first line of `index.js` with
+`LitVocabTermRdflib`)
+
+
 ## RDF library support
 This library is intended to act as a simple wrapper around existing low-level
 RDF Javascript libaries, like RdfExt or rdflib.js, although we also provide a
@@ -37,10 +42,6 @@ the examples feature the `LitVocabTermBase` class, which is our lit-vocab-term
 implementation without any RDF library dependency. `LitVocabTermRdfExt` and 
 `LitVocabTermRdfLib` both extend this class, and therefore provide the same
 interface (except for the constructor, where the RDF factory becomes implicit).
-
-If you want to use the `rdflib`-flavoured `LitVocabTerm`, 
-replace `LitVocabTermRdfExt` on the first line by `LitVocabTermRdflib`, and 
-rebuild.
 
 The lit-vocab-term libraries are distributed as a GitHub NPM packages:
 - `@inrupt/lit-vocab-term-base`
