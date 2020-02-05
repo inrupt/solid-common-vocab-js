@@ -1,7 +1,8 @@
 {
   "name": "demo",
-  "version": "0.1.0",
-  "description": "A very short demonstration of the LitVocabTerm usage",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A very short demonstration of LitVocabTerm usage",
   "main": "index.js",
   "author": {
     "name": "Nicolas Seydoux",
