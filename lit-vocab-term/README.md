@@ -21,8 +21,9 @@ This very simple example can be incrementally extended by pasting in code from
 the steps described below.
 
 (**NOTE**: If you want instead to use the `rdflib`-flavoured `LitVocabTerm`, 
-replace `LitVocabTermRdfExt` on the first line of `index.js` with
-`LitVocabTermRdflib`)
+replace the references to `LitVocabTermRdfExt` on the first line of `index.js`
+with `LitVocabTermRdflib`, and update `package.json` to depend on
+`@pmcb55/lit-vocab-term-rdflib`)
 
 
 ## RDF library support
