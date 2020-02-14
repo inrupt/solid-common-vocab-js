@@ -12,7 +12,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\""
+    "test": "mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\"",
+    "preversion": "npm test"
   },
   "dependencies": {
     "@pmcb55/lit-vocab-term-base": "0.2.4",
