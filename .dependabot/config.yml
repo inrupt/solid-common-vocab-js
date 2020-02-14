@@ -1,0 +1,16 @@
+version: 1
+update_configs:
+  # Keep package.json (& lockfiles) up to date as soon as
+  # new versions are published to the npm registry
+
+  - package_manager: "javascript"
+    directory: "/lit-vocab-term/lit-vocab-term-base"
+    update_schedule: "weekly"
+
+  - package_manager: "javascript"
+    directory: "/lit-vocab-term/lit-vocab-term-rdf-ext"
+    update_schedule: "weekly"
+
+  - package_manager: "javascript"
+    directory: "/lit-vocab-term/lit-vocab-term-rdflib"
+    update_schedule: "weekly"
