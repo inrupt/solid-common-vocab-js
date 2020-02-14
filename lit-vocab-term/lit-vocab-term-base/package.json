@@ -12,7 +12,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nyc mocha \\\"./test/**/*.test.js\\\""
+    "test": "nyc mocha \\\"./test/**/*.test.js\\\"",
+    "preversion": "npm test"
   },
   "dependencies": {
     "debug": "^4.1.1",
