@@ -5,6 +5,7 @@ module.exports = {
         "es6": true,
         "node": true
     },
+    "plugins": ["prettier"],
     "extends": "eslint:recommended",
     "globals": {
         "Atomics": "readonly",
@@ -14,5 +15,6 @@ module.exports = {
         "ecmaVersion": 2018
     },
     "rules": {
+        "prettier/prettier": "error"
     }
 };
