@@ -1,7 +1,7 @@
-'use strict'
+"use strict";
 
-const LitVocabTermBase = require('../LitVocabTermBase')
-const BasicRdfFactory = require('./BasicRdfFactory')
+const LitVocabTermBase = require("../LitVocabTermBase");
+const BasicRdfFactory = require("./BasicRdfFactory");
 
 /**
  * A very basic implementation for the LIT Vocab Term that doesn't require
@@ -18,18 +18,18 @@ class LitVocabTermBasic extends LitVocabTermBase {
    * English label (or no-language label) is provided, e.g. 'name' for the
    * term 'http://example.com/vocab#name'.
    */
-  constructor (iri, contextStorage, strict) {
-    super(iri, new BasicRdfFactory(), contextStorage, strict)
+  constructor(iri, contextStorage, strict) {
+    super(iri, new BasicRdfFactory(), contextStorage, strict);
 
-    this._iri = iri
+    this._iri = iri;
 
-    Object.defineProperty(this, 'value', {
-      label: 'Accessor for our IRI value',
-      get () {
-        return this._iri
+    Object.defineProperty(this, "value", {
+      label: "Accessor for our IRI value",
+      get() {
+        return this._iri;
       }
-    })
+    });
   }
 }
 
-module.exports = LitVocabTermBasic
+module.exports = LitVocabTermBasic;

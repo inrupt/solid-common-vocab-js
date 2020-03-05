@@ -1,26 +1,29 @@
-'use strict'
+"use strict";
 
-const debug = require('debug')('lit-vocab-term:LitUtil');
+const debug = require("debug")("lit-vocab-term:LitUtil");
 
-const rdf = require('rdflib')
-const rdfFormats = require('@rdfjs/formats-common')
-const stringToStream = require('string-to-stream')
-const streamToString = require('stream-to-string')
+const rdf = require("rdflib");
+const rdfFormats = require("@rdfjs/formats-common");
+const stringToStream = require("string-to-stream");
+const streamToString = require("stream-to-string");
 
-const fs = require('fs')
-const uuidv1 = require('uuid/v1')
+const fs = require("fs");
+const uuidv1 = require("uuid/v1");
 
-const {LitContextError, LitVocabTermBase} = require('@pmcb55/lit-vocab-term-base')
+const {
+  LitContextError,
+  LitVocabTermBase
+} = require("@pmcb55/lit-vocab-term-base");
 
-module.exports.generateUuid = uuidv1
+module.exports.generateUuid = uuidv1;
 
-const defaultWebIdServerDomain = 'https://NoSolidServer'
-module.exports.DEFAULT_WEDID_SERVER_DOMAIN = defaultWebIdServerDomain
+const defaultWebIdServerDomain = "https://NoSolidServer";
+module.exports.DEFAULT_WEDID_SERVER_DOMAIN = defaultWebIdServerDomain;
 
 // For use when generating IRI's but the programmer has not configured a
 // specific application name (just to be used as a hint within IRI's generated
 // by that application).
-module.exports.NO_APPLICATION_HINT = 'NO-APP'
+module.exports.NO_APPLICATION_HINT = "NO-APP";
 
 // NOTE: This namespace is defined in the LIT Core RDF vocabulary, but we can't
 // have a dependency on the source code generated from that RDF as we are too
@@ -29,8 +32,8 @@ module.exports.NO_APPLICATION_HINT = 'NO-APP'
 // TODO: Currently (Mar 2019) we have very limited only use of this value, so
 //  perhaps we should force the passing of this value to that GUID-generating
 //  method, or force the use of an environment variable...
-const litCoreNamespace = 'https://w3id.org/lit/vocab/core#'
-module.exports.LIT_CORE_NAMESPACE = litCoreNamespace
+const litCoreNamespace = "https://w3id.org/lit/vocab/core#";
+module.exports.LIT_CORE_NAMESPACE = litCoreNamespace;
 
 /**
  * When adding HTTP header data to an RDF payload we need to provide full
@@ -41,8 +44,8 @@ module.exports.LIT_CORE_NAMESPACE = litCoreNamespace
  * @returns {string}
  */
 module.exports.prefixForHttpHeader = () => {
-  return `${litCoreNamespace}prefixForHttpHeader_`
-}
+  return `${litCoreNamespace}prefixForHttpHeader_`;
+};
 
 /**
  * Creates a WebID based on the specified username (which is used as a
@@ -52,10 +55,12 @@ module.exports.prefixForHttpHeader = () => {
  * @param userName
  * @returns {NamedNode} NOTE: Returns a NamedNode instance, not a String!
  */
-module.exports.createWebId = (username) => {
-  const server = process.env.DATA_SERVER_SOLID || defaultWebIdServerDomain
-  return rdf.namedNode(`https://${username}.${server.substring(8)}/profile/card#me`)
-}
+module.exports.createWebId = username => {
+  const server = process.env.DATA_SERVER_SOLID || defaultWebIdServerDomain;
+  return rdf.namedNode(
+    `https://${username}.${server.substring(8)}/profile/card#me`
+  );
+};
 
 /**
  * Generates a Skolem (a unique IRI using the 'well-known' convention).
@@ -65,32 +70,34 @@ module.exports.createWebId = (username) => {
  * the context within our code).
  * @returns {*}
  */
-module.exports.generateWellKnownIri = (codeContext) => {
-  const uuid = this.generateUuid()
-  
+module.exports.generateWellKnownIri = codeContext => {
+  const uuid = this.generateUuid();
+
   if (codeContext === undefined) {
-    throw Error(`Currently we require a code context when generating Well Known IRI's to always provide hints to where resources are created (may relax this if it proves a problem).`)
-  }
-  
-  if (!process.env.NODE_ENV || process.env.NODE_ENV.startsWith('dev')) {
-    return rdf.namedNode(`https://DEV/${codeContext}/${uuid}`)
+    throw Error(
+      `Currently we require a code context when generating Well Known IRI's to always provide hints to where resources are created (may relax this if it proves a problem).`
+    );
   }
 
-  return rdf.namedNode(`${litCoreNamespace}.well-known/${codeContext}/${uuid}`)
-}
+  if (!process.env.NODE_ENV || process.env.NODE_ENV.startsWith("dev")) {
+    return rdf.namedNode(`https://DEV/${codeContext}/${uuid}`);
+  }
 
-let DEV_ONLY_ID = 0
+  return rdf.namedNode(`${litCoreNamespace}.well-known/${codeContext}/${uuid}`);
+};
+
+let DEV_ONLY_ID = 0;
 /**
  *
  * @returns {*}
  */
 module.exports.generateUuid = () => {
-  if (!process.env.NODE_ENV || process.env.NODE_ENV.startsWith('dev')) {
-    return DEV_ONLY_ID++
+  if (!process.env.NODE_ENV || process.env.NODE_ENV.startsWith("dev")) {
+    return DEV_ONLY_ID++;
   }
 
-  return uuidv1()
-}
+  return uuidv1();
+};
 
 /**
  * Provide a context string from the current location in the code (i.e. using
@@ -109,12 +116,13 @@ module.exports.generateUuid = () => {
  */
 module.exports.codeContext = (clazz, func) => {
   let iri = process.env.IRI_HINT_APPLICATION
-    ? `${process.env.IRI_HINT_APPLICATION}` : module.exports.NO_APPLICATION_HINT
-  iri += ((clazz && clazz.constructor) ? `/${clazz.constructor.name}` : '')
-  iri += func ? `/${func}` : ''
+    ? `${process.env.IRI_HINT_APPLICATION}`
+    : module.exports.NO_APPLICATION_HINT;
+  iri += clazz && clazz.constructor ? `/${clazz.constructor.name}` : "";
+  iri += func ? `/${func}` : "";
 
-  return iri
-}
+  return iri;
+};
 
 /**
  * Convenience method for debugging - writes to console the specified quad or
@@ -125,64 +133,83 @@ module.exports.codeContext = (clazz, func) => {
  * @param encoding Encoding (UTF-8 by default)
  * @returns {Promise<void>}
  */
-module.exports.console = async (quads, message = '', mediaType = 'application/n-triples', encoding = 'utf-8') => {
-  const store  = rdf.graph();
+module.exports.console = async (
+  quads,
+  message = "",
+  mediaType = "application/n-triples",
+  encoding = "utf-8"
+) => {
+  const store = rdf.graph();
   if (Array.isArray(quads)) {
-    quads.forEach(quad => store.add(quad))
+    quads.forEach(quad => store.add(quad));
   } else {
-    store.add(quads)
+    store.add(quads);
   }
   const result = store.toNT();
-  
-  debug(`================ ${message} START  ===================`)
-  debug(result)
-  debug(`================  ${message} END   ===================`)
-  return result
-}
+
+  debug(`================ ${message} START  ===================`);
+  debug(result);
+  debug(`================  ${message} END   ===================`);
+  return result;
+};
 
 /**
  *
  * @param statusCode
  * @returns {Promise<void>}
  */
-module.exports.isHttpOk = (statusCode) => {
-  let code
+module.exports.isHttpOk = statusCode => {
+  let code;
   switch (typeof statusCode) {
-    case ('string'):
-      code = Number(statusCode)
+    case "string":
+      code = Number(statusCode);
       if (isNaN(code)) {
-        throw Error(`Could not convert string status code [${String(statusCode)}] to a valid number, so could not determine if it represents an OK status or not.`)
+        throw Error(
+          `Could not convert string status code [${String(
+            statusCode
+          )}] to a valid number, so could not determine if it represents an OK status or not.`
+        );
       }
-      break
-  
-    case ('number'):
-      code = statusCode
-      break
-  
-    case ('object'):
-      if (!statusCode.termType || statusCode.termType !== 'Literal') {
-        throw Error(`Status code [${String(statusCode)}] was of type Object, but we only support RDF Literals - could not check if it represents an OK status or not.`)
+      break;
+
+    case "number":
+      code = statusCode;
+      break;
+
+    case "object":
+      if (!statusCode.termType || statusCode.termType !== "Literal") {
+        throw Error(
+          `Status code [${String(
+            statusCode
+          )}] was of type Object, but we only support RDF Literals - could not check if it represents an OK status or not.`
+        );
       }
-      
-      code = statusCode.valueOf()
-      break
-  
+
+      code = statusCode.valueOf();
+      break;
+
     default:
-      throw Error(`Could not determine datatype of specified status code [${String(statusCode)}] to check if it represents an OK status or not.`)
+      throw Error(
+        `Could not determine datatype of specified status code [${String(
+          statusCode
+        )}] to check if it represents an OK status or not.`
+      );
   }
-  
-  return (code >= 200 && code <= 299)
-}
+
+  return code >= 200 && code <= 299;
+};
 
 module.exports.replaceIriLocalName = (iri, replacement) => {
-  const iriValue = iri.value
-  const pos = Math.max(iriValue.lastIndexOf('#'), iriValue.lastIndexOf('/'))
+  const iriValue = iri.value;
+  const pos = Math.max(iriValue.lastIndexOf("#"), iriValue.lastIndexOf("/"));
   if (pos === -1) {
-    throw Error(`Could not find an IRI separator (e.g. '#' or '/') when trying to replace local name of IRI [${iri.valueOf()}] with [${replacement}].`)
+    throw Error(
+      `Could not find an IRI separator (e.g. '#' or '/') when trying to replace local name of IRI [${iri.valueOf()}] with [${replacement}].`
+    );
   }
 
-  return rdf.namedNode(iriValue.substring(0, pos) + '/' + replacement)
-}
+  return rdf.namedNode(iriValue.substring(0, pos) + "/" + replacement);
+};
 
 /**
  * Returns a newly minted IRI (NamedNode) that is relative to the specified
@@ -196,38 +223,44 @@ module.exports.replaceIriLocalName = (iri, replacement) => {
  */
 module.exports.makeRelativeIri = (iri, relativePart, appendGuid) => {
   if (relativePart === undefined) {
-    return iri
+    return iri;
   }
-  
-  let workingIri = this.stripTrailingPathSegment(iri.value)
-  let workingPath = relativePart
-  while (workingPath.startsWith('../')) {
-    workingPath = workingPath.substring(3)
+
+  let workingIri = this.stripTrailingPathSegment(iri.value);
+  let workingPath = relativePart;
+  while (workingPath.startsWith("../")) {
+    workingPath = workingPath.substring(3);
     try {
-      workingIri = this.stripTrailingPathSegment(workingIri)
+      workingIri = this.stripTrailingPathSegment(workingIri);
     } catch (ex) {
-      throw Error(`Failed to create a relative IRI from original IRI of [$(iri.value}] replacing with relative part [${relativePart}].`)
+      throw Error(
+        `Failed to create a relative IRI from original IRI of [$(iri.value}] replacing with relative part [${relativePart}].`
+      );
     }
   }
-  
-  return rdf.namedNode(`${workingIri}/${workingPath}${appendGuid ? ('/' + this.generateUuid()) : ''}`)
-}
 
-module.exports.stripTrailingPathSegment = (iriString) => {
-  const pos = Math.max(iriString.lastIndexOf('#'), iriString.lastIndexOf('/'))
+  return rdf.namedNode(
+    `${workingIri}/${workingPath}${appendGuid ? "/" + this.generateUuid() : ""}`
+  );
+};
+
+module.exports.stripTrailingPathSegment = iriString => {
+  const pos = Math.max(iriString.lastIndexOf("#"), iriString.lastIndexOf("/"));
   if (pos === -1) {
-    throw Error(`Could not find an IRI separator (e.g. '#' or '/') when trying to replace local name of IRI [${iriString}].`)
+    throw Error(
+      `Could not find an IRI separator (e.g. '#' or '/') when trying to replace local name of IRI [${iriString}].`
+    );
   }
-  return iriString.substring(0, pos)
-}
+  return iriString.substring(0, pos);
+};
 
-module.exports.escapeRegExp = (str) => {
-  return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1")
-}
+module.exports.escapeRegExp = str => {
+  return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+};
 
 module.exports.replaceAll = (str, find, replace) => {
-  return str.replace(new RegExp(this.escapeRegExp(find), 'g'), replace)
-}
+  return str.replace(new RegExp(this.escapeRegExp(find), "g"), replace);
+};
 
 /**
  * Validates that the specified value is a valid IRI - i.e. either an explicit
@@ -244,17 +277,26 @@ module.exports.replaceAll = (str, find, replace) => {
  */
 module.exports.validateIri = (value, rdfComponent, litContextObject) => {
   if (!value) {
-    litContextObject.reset()
-    throw new LitContextError(litContextObject.context(), `${rdfComponent} to match cannot be 'null' or 'undefined' (this may be a typo in the vocab term, or it may have moved to a different vocabulary - check the error stack to help pinpoint the problem) ${litContextObject.stateAsString()}.`)
+    litContextObject.reset();
+    throw new LitContextError(
+      litContextObject.context(),
+      `${rdfComponent} to match cannot be 'null' or 'undefined' (this may be a typo in the vocab term, or it may have moved to a different vocabulary - check the error stack to help pinpoint the problem) ${litContextObject.stateAsString()}.`
+    );
   }
-  
-  if (LitVocabTermBase.isString(value) && !LitVocabTermBase.isStringIri(value)) {
-    litContextObject.reset()
-    throw new LitContextError(litContextObject.context(), `${rdfComponent} to match must be a valid HTTP IRI (i.e. must begin with 'http://' or 'https://'), but we got [${value}] ${litContextObject.stateAsString()}.`)
+
+  if (
+    LitVocabTermBase.isString(value) &&
+    !LitVocabTermBase.isStringIri(value)
+  ) {
+    litContextObject.reset();
+    throw new LitContextError(
+      litContextObject.context(),
+      `${rdfComponent} to match must be a valid HTTP IRI (i.e. must begin with 'http://' or 'https://'), but we got [${value}] ${litContextObject.stateAsString()}.`
+    );
   }
-  
-  return LitVocabTermBase.isString(value) ? rdf.namedNode(value) : value
-}
+
+  return LitVocabTermBase.isString(value) ? rdf.namedNode(value) : value;
+};
 
 /**
  * Very simple method to camel case the specified value.
@@ -265,12 +307,14 @@ module.exports.validateIri = (value, rdfComponent, litContextObject) => {
  * @param value The value to be camel-cased.
  * @returns {string}
  */
-module.exports.camelize = (value) => {
-  const resut = value.toLowerCase().replace(/(?:(^.)|([-_\s]+.))/g, function(match) {
-    return match.charAt(match.length-1).toUpperCase()
-  })
-  return (resut.charAt(0).toLowerCase() + resut.substring(1))
-}
+module.exports.camelize = value => {
+  const resut = value
+    .toLowerCase()
+    .replace(/(?:(^.)|([-_\s]+.))/g, function(match) {
+      return match.charAt(match.length - 1).toUpperCase();
+    });
+  return resut.charAt(0).toLowerCase() + resut.substring(1);
+};
 
 /**
  * Simple method that tries to offer an explanation if we detect mismatched IRI
@@ -293,10 +337,12 @@ module.exports.camelize = (value) => {
  * @returns {string}
  */
 module.exports.mismatchingIris = (messagePrefix, first, second) => {
-  console.log(first.toString())
-  console.log(second.toString())
-  const explain = ((first.toString() === second.toString()) ?
-    ` (values as 'Strings' actually match, but first value is of type [${typeof first}] and second value is of type [${typeof second}]. We explicitly expected both to be IRI's (e.g. rdf.namedNode() instances))` : '')
+  console.log(first.toString());
+  console.log(second.toString());
+  const explain =
+    first.toString() === second.toString()
+      ? ` (values as 'Strings' actually match, but first value is of type [${typeof first}] and second value is of type [${typeof second}]. We explicitly expected both to be IRI's (e.g. rdf.namedNode() instances))`
+      : "";
 
-  return `${messagePrefix} - first IRI was [${first}], second was [${second}] - they *must* be the same${explain}.`
-}
+  return `${messagePrefix} - first IRI was [${first}], second was [${second}] - they *must* be the same${explain}.`;
+};

@@ -1,10 +1,10 @@
-'use strict'
+"use strict";
 
-const rdf = require('rdflib')
+const rdf = require("rdflib");
 
-const {LitVocabTermBase} = require('@pmcb55/lit-vocab-term-base')
+const { LitVocabTermBase } = require("@pmcb55/lit-vocab-term-base");
 
-const aggregation = require("aggregation/es6")
+const aggregation = require("aggregation/es6");
 
 /**
  * Provides an Rdf-Ext-specific LIT Vocab Term implementation.
@@ -15,45 +15,43 @@ const aggregation = require("aggregation/es6")
  * Node that allows us use it directly in methods from our underlying RDF
  * library.
  */
-class LitVocabTermRdflib
-    extends aggregation(rdf.NamedNode, LitVocabTermBase) {
+class LitVocabTermRdflib extends aggregation(rdf.NamedNode, LitVocabTermBase) {
+  /**
+   * Our Named Node only needs the first parameter, but our LIT Vocab Term
+   * can take a context storage (e.g. localStorage on a browser) too.
+   *
+   * @param iri the IRI for this vocabulary term
+   * @param contextStorage optional context storage (e.g. localStorage)
+   * name part of the IRI as the English label.
+   * @param strict flag if we should be strict. If not strict, we can use the
+   * path component of the term's IRI as the English label if no explicit
+   * English label (or no-language label) is provided, e.g. 'name' for the
+   * term 'http://example.com/vocab#name'.
+   */
+  constructor(iri, contextStorage, strict) {
+    super(iri, rdf, contextStorage, strict);
+  }
 
-    /**
-     * Our Named Node only needs the first parameter, but our LIT Vocab Term
-     * can take a context storage (e.g. localStorage on a browser) too.
-     *
-     * @param iri the IRI for this vocabulary term
-     * @param contextStorage optional context storage (e.g. localStorage)
-     * name part of the IRI as the English label.
-     * @param strict flag if we should be strict. If not strict, we can use the
-     * path component of the term's IRI as the English label if no explicit
-     * English label (or no-language label) is provided, e.g. 'name' for the
-     * term 'http://example.com/vocab#name'.
-     */
-    constructor (iri, contextStorage, strict) {
-        super(iri, rdf, contextStorage, strict)
-    }
+  /**
+   * This method allows us override the base class implementation of
+   * storing the actual IRI.
+   *
+   * @param iri the IRI for this vocabulary term
+   * @returns {LitVocabTermRdflib}
+   */
+  setIri(iri) {
+    // NOOP - our constructor stores the IRI.
+    return this;
+  }
 
-    /**
-     * This method allows us override the base class implementation of
-     * storing the actual IRI.
-     *
-     * @param iri the IRI for this vocabulary term
-     * @returns {LitVocabTermRdflib}
-     */
-    setIri(iri) {
-        // NOOP - our constructor stores the IRI.
-        return this
-    }
-
-    /**
-     * Returns the IRI for this vocabulary term.
-     *
-     * @returns iri the IRI for this vocabulary term
-     */
-    getIri() {
-        return this.value
-    }
+  /**
+   * Returns the IRI for this vocabulary term.
+   *
+   * @returns iri the IRI for this vocabulary term
+   */
+  getIri() {
+    return this.value;
+  }
 }
 
-module.exports = LitVocabTermRdflib
+module.exports = LitVocabTermRdflib;

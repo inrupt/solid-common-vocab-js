@@ -1,9 +1,9 @@
-'use strict'
+"use strict";
 
-const debug = require('debug')('lit-vocab-term:LitTermRegistry');
+const debug = require("debug")("lit-vocab-term:LitTermRegistry");
 
-const LitContext = require('./LitContext')
-const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
+const LitContext = require("./LitContext");
+const LitMultiLingualLiteral = require("./LitMultiLingualLiteral");
 
 /**
  * Simple registry of terms (and their associated meta-data (like labels,
@@ -13,29 +13,28 @@ const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
  * strings (so we need to expand out the meta-data for each term).
  */
 class LitTermRegistry {
-
-  static lookupLabel (termIri, language) {
-    return LitTermRegistry.lookupFullTerm(`${termIri}-label-`, language)
+  static lookupLabel(termIri, language) {
+    return LitTermRegistry.lookupFullTerm(`${termIri}-label-`, language);
   }
 
-  static updateLabel (termIri, language, label) {
-    localStorage.setItem(`${termIri}-label-${language}`,label)
+  static updateLabel(termIri, language, label) {
+    localStorage.setItem(`${termIri}-label-${language}`, label);
   }
 
-  static lookupComment (termIri, language) {
-    return LitTermRegistry.lookupFullTerm(`${termIri}-comment-`, language)
+  static lookupComment(termIri, language) {
+    return LitTermRegistry.lookupFullTerm(`${termIri}-comment-`, language);
   }
 
-  static updateComment (termIri, language, label) {
-    localStorage.setItem(`${termIri}-comment-${language}`,label)
+  static updateComment(termIri, language, label) {
+    localStorage.setItem(`${termIri}-comment-${language}`, label);
   }
 
-  static lookupMessage (termIri, language) {
-    return LitTermRegistry.lookupFullTerm(`${termIri}-message-`, language)
+  static lookupMessage(termIri, language) {
+    return LitTermRegistry.lookupFullTerm(`${termIri}-message-`, language);
   }
 
-  static updateMessage (termIri, language, label) {
-    localStorage.setItem(`${termIri}-message-${language}`,label)
+  static updateMessage(termIri, language, label) {
+    localStorage.setItem(`${termIri}-message-${language}`, label);
   }
 
   /**
@@ -49,24 +48,34 @@ class LitTermRegistry {
    * @returns {string}
    */
   static lookupFullTerm(term, language) {
-    let result = localStorage.getItem(`${term}${language}`)
+    let result = localStorage.getItem(`${term}${language}`);
     if (!result) {
-        const fallbackLanguage = localStorage.getItem(LitContext.CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE);
+      const fallbackLanguage = localStorage.getItem(
+        LitContext.CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE
+      );
       if (fallbackLanguage) {
-        result = localStorage.getItem(`${term}${fallbackLanguage}`)
+        result = localStorage.getItem(`${term}${fallbackLanguage}`);
       }
 
       if (result) {
-        debug(`Vocab term [${term}] found value [${result}] using preferred fallback language [${fallbackLanguage}].`)
+        debug(
+          `Vocab term [${term}] found value [${result}] using preferred fallback language [${fallbackLanguage}].`
+        );
       } else {
-        result = localStorage.getItem(`${term}en`)
+        result = localStorage.getItem(`${term}en`);
         if (result) {
-          debug(`Vocab term [${term}] found value [${result}] using English instead of explicitly requested [${language}].`)
+          debug(
+            `Vocab term [${term}] found value [${result}] using English instead of explicitly requested [${language}].`
+          );
         } else {
-          result = localStorage.getItem(`${term}${LitMultiLingualLiteral.NO_LANGUAGE_TAG}`)
+          result = localStorage.getItem(
+            `${term}${LitMultiLingualLiteral.NO_LANGUAGE_TAG}`
+          );
 
           if (!result) {
-            debug(`Vocab term lookup not found: [${term}] for explicit language [${language}], nor fallback [${fallbackLanguage}], English, or no specific language!.`)
+            debug(
+              `Vocab term lookup not found: [${term}] for explicit language [${language}], nor fallback [${fallbackLanguage}], English, or no specific language!.`
+            );
           }
         }
       }
@@ -76,4 +85,4 @@ class LitTermRegistry {
   }
 }
 
-module.exports = LitTermRegistry
+module.exports = LitTermRegistry;
