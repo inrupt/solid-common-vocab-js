@@ -208,23 +208,15 @@ module.exports.saveDatasetToFile = (
  * @param mediaType
  * @returns {Promise}
  */
-module.exports.datasetToString = (
-  dataset,
-  mediaType = "text/turtle",
-  encoding = "utf-8"
-) => {
-  const serializer = rdfFormats.serializers.get(mediaType);
-  const quadStream = serializer.import(dataset.toStream());
-  return streamToString(quadStream, encoding);
-};
+module.exports.datasetToString = (dataset, mediaType = 'text/turtle', encoding = 'utf-8') => {
+  const serializer = rdfFormats.serializers.get(mediaType)
+  const quadStream = serializer.import(dataset.toStream())
+  return streamToString(quadStream, encoding)
+}
 
-module.exports.quadsToString = async (
-  quads,
-  mediaType = "text/turtle",
-  encoding = "utf-8"
-) => {
-  return await this.datasetToString(rdf.dataset().addAll(quads));
-};
+module.exports.quadsToString = async (quads) => {
+  return await this.datasetToString(rdf.dataset().addAll(quads))
+}
 
 /**
  * Convenience method for debugging - writes to console the specified quad or
@@ -235,23 +227,15 @@ module.exports.quadsToString = async (
  * @param encoding Encoding (UTF-8 by default)
  * @returns {Promise<void>}
  */
-module.exports.console = async (
-  quads,
-  message = "",
-  mediaType = "text/turtle",
-  encoding = "utf-8"
-) => {
-  const result = await this.datasetToString(
-    Array.isArray(quads)
-      ? rdf.dataset().addAll(quads)
-      : rdf.dataset().add(quads)
-  );
+module.exports.console = async (quads, message = '') => {
+  const result = await this.datasetToString(Array.isArray(quads)
+    ? rdf.dataset().addAll(quads) : rdf.dataset().add(quads))
 
-  debug(`================ ${message} START  ===================`);
-  debug(result);
-  debug(`================  ${message} END   ===================`);
-  return result;
-};
+  debug(`================ ${message} START  ===================`)
+  debug(result)
+  debug(`================  ${message} END   ===================`)
+  return result
+}
 
 /**
  *
@@ -380,9 +364,9 @@ module.exports.stripTrailingPathSegment = iriString => {
   return iriString.substring(0, pos);
 };
 
-module.exports.escapeRegExp = str => {
-  return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
-};
+module.exports.escapeRegExp = (str) => {
+  return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1")
+}
 
 module.exports.replaceAll = (str, find, replace) => {
   return str.replace(new RegExp(this.escapeRegExp(find), "g"), replace);
