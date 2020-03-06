@@ -3,11 +3,7 @@
 const debug = require("debug")("lit-vocab-term:LitUtil");
 
 const rdf = require("rdflib");
-const rdfFormats = require("@rdfjs/formats-common");
-const stringToStream = require("string-to-stream");
-const streamToString = require("stream-to-string");
 
-const fs = require("fs");
 const uuidv1 = require("uuid/v1");
 
 const {
@@ -133,12 +129,7 @@ module.exports.codeContext = (clazz, func) => {
  * @param encoding Encoding (UTF-8 by default)
  * @returns {Promise<void>}
  */
-module.exports.console = async (
-  quads,
-  message = "",
-  mediaType = "application/n-triples",
-  encoding = "utf-8"
-) => {
+module.exports.console = async (quads, message = "") => {
   const store = rdf.graph();
   if (Array.isArray(quads)) {
     quads.forEach(quad => store.add(quad));
@@ -255,7 +246,7 @@ module.exports.stripTrailingPathSegment = iriString => {
 };
 
 module.exports.escapeRegExp = str => {
-  return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1");
 };
 
 module.exports.replaceAll = (str, find, replace) => {
@@ -337,8 +328,6 @@ module.exports.camelize = value => {
  * @returns {string}
  */
 module.exports.mismatchingIris = (messagePrefix, first, second) => {
-  console.log(first.toString());
-  console.log(second.toString());
   const explain =
     first.toString() === second.toString()
       ? ` (values as 'Strings' actually match, but first value is of type [${typeof first}] and second value is of type [${typeof second}]. We explicitly expected both to be IRI's (e.g. rdf.namedNode() instances))`

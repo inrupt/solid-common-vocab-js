@@ -33,18 +33,6 @@ class LitVocabTermRdflib extends aggregation(rdf.NamedNode, LitVocabTermBase) {
   }
 
   /**
-   * This method allows us override the base class implementation of
-   * storing the actual IRI.
-   *
-   * @param iri the IRI for this vocabulary term
-   * @returns {LitVocabTermRdflib}
-   */
-  setIri(iri) {
-    // NOOP - our constructor stores the IRI.
-    return this;
-  }
-
-  /**
    * Returns the IRI for this vocabulary term.
    *
    * @returns iri the IRI for this vocabulary term

@@ -218,11 +218,7 @@ module.exports.datasetToString = (
   return streamToString(quadStream, encoding);
 };
 
-module.exports.quadsToString = async (
-  quads,
-  mediaType = "text/turtle",
-  encoding = "utf-8"
-) => {
+module.exports.quadsToString = async quads => {
   return await this.datasetToString(rdf.dataset().addAll(quads));
 };
 
@@ -235,12 +231,7 @@ module.exports.quadsToString = async (
  * @param encoding Encoding (UTF-8 by default)
  * @returns {Promise<void>}
  */
-module.exports.console = async (
-  quads,
-  message = "",
-  mediaType = "text/turtle",
-  encoding = "utf-8"
-) => {
+module.exports.console = async (quads, message = "") => {
   const result = await this.datasetToString(
     Array.isArray(quads)
       ? rdf.dataset().addAll(quads)
@@ -381,7 +372,7 @@ module.exports.stripTrailingPathSegment = iriString => {
 };
 
 module.exports.escapeRegExp = str => {
-  return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1");
 };
 
 module.exports.replaceAll = (str, find, replace) => {
