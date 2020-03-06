@@ -1,8 +1,8 @@
-'use strict'
+"use strict";
 
-const LitContext = require('./LitContext')
-const LitTermRegistry = require('./LitTermRegistry')
-const LitMultiLingualLiteral = require('./LitMultiLingualLiteral')
+const LitContext = require("./LitContext");
+const LitTermRegistry = require("./LitTermRegistry");
+const LitMultiLingualLiteral = require("./LitMultiLingualLiteral");
 
 /**
  * Class to represent vocabulary terms. We expect derived classes to extend
@@ -51,8 +51,8 @@ class LitVocabTermBase {
    * English label (or no-language label) is provided, e.g. 'name' for the
    * term 'http://example.com/vocab#name'.
    */
-  constructor (iri, rdfFactory, contextStorage, strict) {
-    this.initializer(iri, rdfFactory, contextStorage, strict)
+  constructor(iri, rdfFactory, contextStorage, strict) {
+    this.initializer(iri, rdfFactory, contextStorage, strict);
   }
 
   /**
@@ -68,151 +68,155 @@ class LitVocabTermBase {
    * @returns {*}
    */
   initializer(iri, rdfFactory, contextStorage, strict) {
-    this._litSessionContext = new LitContext('en', contextStorage)
+    this._litSessionContext = new LitContext("en", contextStorage);
 
     // Create holders for meta-data on this vocabulary term (we could probably
     // lazily create these only if values are actually provided!).
     this._label = new LitMultiLingualLiteral(
-        rdfFactory,
-        iri,
-        undefined,
-        'rdfs:label')
+      rdfFactory,
+      iri,
+      undefined,
+      "rdfs:label"
+    );
 
     this._comment = new LitMultiLingualLiteral(
-        rdfFactory,
-        iri,
-        undefined,
-        'rdfs:comment')
+      rdfFactory,
+      iri,
+      undefined,
+      "rdfs:comment"
+    );
 
     this._message = new LitMultiLingualLiteral(
-        rdfFactory,
-        iri,
-        undefined,
-        'message (should be defined in RDF vocab using: skos:definition)')
+      rdfFactory,
+      iri,
+      undefined,
+      "message (should be defined in RDF vocab using: skos:definition)"
+    );
 
     if (!strict) {
       // This can be overwritten if we get an actual no-language label later,
       // which would be perfectly fine.
       this._label.addValue(
-          LitVocabTermBase.extractIriLocalName(iri),
-          LitMultiLingualLiteral.NO_LANGUAGE_TAG)
+        LitVocabTermBase.extractIriLocalName(iri),
+        LitMultiLingualLiteral.NO_LANGUAGE_TAG
+      );
     }
 
     this.resetState();
 
-      // Sets our flag to say we want our value as a string.
-      Object.defineProperty(this, 'asString', {
-          get () {
-              this._asRdfLiteral = false
-              return this
-          }
-      })
-
-      // Sets our flag to say we want our value as an RDF literal.
-      Object.defineProperty(this, 'asRdfLiteral', {
-          get () {
-              this._asRdfLiteral = true
-              return this
-          }
-      })
-
-    Object.defineProperty(this, 'mandatory', {
-      label: 'Set our mandatory flag - i.e. throws if not as expected',
-      get () {
-        this._mandatory = true
-        return this
+    // Sets our flag to say we want our value as a string.
+    Object.defineProperty(this, "asString", {
+      get() {
+        this._asRdfLiteral = false;
+        return this;
       }
-    })
+    });
 
-    Object.defineProperty(this, 'asEnglish', {
-      label: 'Simple convenience accessor for requesting English',
-      get () {
-        return this.asLanguage('en')
+    // Sets our flag to say we want our value as an RDF literal.
+    Object.defineProperty(this, "asRdfLiteral", {
+      get() {
+        this._asRdfLiteral = true;
+        return this;
       }
-    })
+    });
 
-    Object.defineProperty(this, 'label', {
-      label: 'Accessor for label that uses our LitSessionContext instance',
-      get () {
+    Object.defineProperty(this, "mandatory", {
+      label: "Set our mandatory flag - i.e. throws if not as expected",
+      get() {
+        this._mandatory = true;
+        return this;
+      }
+    });
+
+    Object.defineProperty(this, "asEnglish", {
+      label: "Simple convenience accessor for requesting English",
+      get() {
+        return this.asLanguage("en");
+      }
+    });
+
+    Object.defineProperty(this, "label", {
+      label: "Accessor for label that uses our LitSessionContext instance",
+      get() {
         try {
-          const language = this.useLanguageOverrideOrGetFromContext()
+          const language = this.useLanguageOverrideOrGetFromContext();
 
-          return this._label.asLanguage(language).lookup(
-              this._asRdfLiteral,
-              this._mandatory)
+          return this._label
+            .asLanguage(language)
+            .lookup(this._asRdfLiteral, this._mandatory);
         } finally {
-          this.resetState()
+          this.resetState();
         }
       }
-    })
+    });
 
-    Object.defineProperty(this, 'comment', {
-      label: 'Accessor for comment that uses our LitSessionContext instance',
-      get () {
-        const language = this.useLanguageOverrideOrGetFromContext()
+    Object.defineProperty(this, "comment", {
+      label: "Accessor for comment that uses our LitSessionContext instance",
+      get() {
+        const language = this.useLanguageOverrideOrGetFromContext();
 
-        const result = this._comment.asLanguage(language).lookup(
-            this._asRdfLiteral,
-            this._mandatory)
+        const result = this._comment
+          .asLanguage(language)
+          .lookup(this._asRdfLiteral, this._mandatory);
 
-        this.resetState()
-        return result
+        this.resetState();
+        return result;
       }
-    })
+    });
 
-    Object.defineProperty(this, 'message', {
-      label: 'Accessor for message that uses our LitSessionContext instance',
-      get () {
-        const language = this.useLanguageOverrideOrGetFromContext()
+    Object.defineProperty(this, "message", {
+      label: "Accessor for message that uses our LitSessionContext instance",
+      get() {
+        const language = this.useLanguageOverrideOrGetFromContext();
 
-        const result = this._message.asLanguage(language).lookup(
-            this._asRdfLiteral,
-            this._mandatory)
+        const result = this._message
+          .asLanguage(language)
+          .lookup(this._asRdfLiteral, this._mandatory);
 
-        this.resetState()
-        return result
+        this.resetState();
+        return result;
       }
-    })
+    });
   }
 
   resetState() {
-    this._asRdfLiteral = true
-    this._languageOverride = undefined
-    this._mandatory = false
-    this._orUndefined = undefined
+    this._asRdfLiteral = true;
+    this._languageOverride = undefined;
+    this._mandatory = false;
+    this._orUndefined = undefined;
   }
 
   addLabelNoLanguage(value) {
-    return this.addLabel(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG)
+    return this.addLabel(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG);
   }
 
   addLabel(value, language) {
-    this.validateAddParams(value, language, 'label')
-    this._label.addValue(value, language)
-    LitTermRegistry.updateLabel(this.value, language, value)
-    return this
+    this.validateAddParams(value, language, "label");
+    this._label.addValue(value, language);
+    LitTermRegistry.updateLabel(this.value, language, value);
+    return this;
   }
 
   addCommentNoLanguage(value) {
-    return this.addComment(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG)
+    return this.addComment(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG);
   }
 
   addComment(value, language) {
-    this.validateAddParams(value, language, 'comment')
-    this._comment.addValue(value, language)
-    LitTermRegistry.updateComment(this.value, language, value)
-    return this
+    this.validateAddParams(value, language, "comment");
+    this._comment.addValue(value, language);
+    LitTermRegistry.updateComment(this.value, language, value);
+    return this;
   }
 
   addMessageNoLanguage(value) {
-    return this.addMessage(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG)
+    return this.addMessage(value, LitMultiLingualLiteral.NO_LANGUAGE_TAG);
   }
 
   addMessage(value, language) {
-    this.validateAddParams(value, language, 'message')
-    this._message.addValue(value, language)
-    LitTermRegistry.updateMessage(this.value, language, value)
-    return this
+    this.validateAddParams(value, language, "message");
+    this._message.addValue(value, language);
+    LitTermRegistry.updateMessage(this.value, language, value);
+    return this;
   }
 
   /**
@@ -224,34 +228,40 @@ class LitVocabTermBase {
    */
   validateAddParams(value, language, what) {
     if (!value) {
-      throw new Error(`Attempted to add a non-existent [${what}] value to vocab term`)
+      throw new Error(
+        `Attempted to add a non-existent [${what}] value to vocab term`
+      );
     }
 
     if (!language) {
-      throw new Error(`Attempted to add the [${what}] value [${value}], but without specifying a language`)
+      throw new Error(
+        `Attempted to add the [${what}] value [${value}], but without specifying a language`
+      );
     }
 
-    return this
+    return this;
   }
 
-  useLanguageOverrideOrGetFromContext () {
+  useLanguageOverrideOrGetFromContext() {
     return this._languageOverride === undefined
-      ? this._litSessionContext.getLocale() : this._languageOverride
+      ? this._litSessionContext.getLocale()
+      : this._languageOverride;
   }
 
   asLanguage(language) {
-    this._languageOverride = language
-    return this
+    this._languageOverride = language;
+    return this;
   }
 
-  messageParams (...rest) {
-    const language = this.useLanguageOverrideOrGetFromContext()
+  messageParams(...rest) {
+    const language = this.useLanguageOverrideOrGetFromContext();
 
     try {
-      return  this._message.asLanguage(language).params(
-          this._asRdfLiteral, this._mandatory, ...rest)
+      return this._message
+        .asLanguage(language)
+        .params(this._asRdfLiteral, this._mandatory, ...rest);
     } finally {
-      this.resetState()
+      this.resetState();
     }
   }
 
@@ -262,23 +272,28 @@ class LitVocabTermBase {
    * @param stringOrNamedNode The IRI to extract from.
    * @returns {string}
    */
-  static extractIriLocalName (stringOrNamedNode) {
+  static extractIriLocalName(stringOrNamedNode) {
     const iri = this.isString(stringOrNamedNode)
-      ? stringOrNamedNode : stringOrNamedNode.value
+      ? stringOrNamedNode
+      : stringOrNamedNode.value;
 
-    const hashPos = iri.lastIndexOf('#')
+    const hashPos = iri.lastIndexOf("#");
     if (hashPos === -1) {
-      const lastSlashPos = iri.lastIndexOf('/')
-      if ((lastSlashPos === -1) ||
-        (iri.toLowerCase().startsWith('http') &&
-          (lastSlashPos < (iri.toLowerCase().startsWith('https') ? 8 : 7)))) {
-        throw Error(`Expected hash fragment ('#') or slash ('/') (other than 'https://...') in IRI [${iri}]`)
+      const lastSlashPos = iri.lastIndexOf("/");
+      if (
+        lastSlashPos === -1 ||
+        (iri.toLowerCase().startsWith("http") &&
+          lastSlashPos < (iri.toLowerCase().startsWith("https") ? 8 : 7))
+      ) {
+        throw Error(
+          `Expected hash fragment ('#') or slash ('/') (other than 'https://...') in IRI [${iri}]`
+        );
       }
 
-      return iri.substring(lastSlashPos + 1)
+      return iri.substring(lastSlashPos + 1);
     }
 
-    return iri.substring(hashPos + 1)
+    return iri.substring(hashPos + 1);
   }
 
   /**
@@ -287,8 +302,8 @@ class LitVocabTermBase {
    * @param value The value to evaluate.
    * @returns {boolean} true if String, else false.
    */
-  static isString (value) {
-    return ((typeof value === 'string') || (value instanceof String))
+  static isString(value) {
+    return typeof value === "string" || value instanceof String;
   }
 
   /**
@@ -298,13 +313,15 @@ class LitVocabTermBase {
    * @param value
    * @returns {boolean}
    */
-  static isStringIri (value) {
-    if (! this.isString(value)) {
+  static isStringIri(value) {
+    if (!this.isString(value)) {
       return false;
     }
 
-    const valueLower = value.toLowerCase()
-    return (valueLower.startsWith('http://') || valueLower.startsWith('https://'))
+    const valueLower = value.toLowerCase();
+    return (
+      valueLower.startsWith("http://") || valueLower.startsWith("https://")
+    );
   }
 
   // /**
@@ -379,4 +396,4 @@ class LitVocabTermBase {
   // }
 }
 
-module.exports = LitVocabTermBase
+module.exports = LitVocabTermBase;

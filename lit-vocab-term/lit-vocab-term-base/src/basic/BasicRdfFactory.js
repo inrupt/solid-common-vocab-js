@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 /**
  * A very simple RDF factory that provides simple implementations of the
@@ -14,18 +14,18 @@ class BasicRdfFactory {
    * @param languageOrDatatype
    * @returns {{language: *, value: *}}
    */
-  literal (literalValue, languageOrDatatype) {
+  literal(literalValue, languageOrDatatype) {
     // TODO: Only simple language tag support for now (i.e. no datatypes),
     //  and only returns a simple Javascript object, not an RDFJS 'Literal'...
     return {
       // '@context': '<Map terms to IRIs>',
       value: literalValue,
       datatype: {
-        value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString'
+        value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
       },
       language: languageOrDatatype
-    }
+    };
   }
 }
 
-module.exports = BasicRdfFactory
+module.exports = BasicRdfFactory;

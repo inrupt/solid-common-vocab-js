@@ -12,6 +12,7 @@
     "test": "test"
   },
   "scripts": {
+    "format": "prettier --write \"index.js\" \"src/**/*.js\"",
     "test": "nyc mocha \\\"./test/**/*.test.js\\\"",
     "preversion": "npm test"
   },
