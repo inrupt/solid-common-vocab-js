@@ -33,11 +33,5 @@ describe('LitVocabTermRdflib tests', () => {
       const vocabTerm = new LitVocabTermRdflib(iri, localStorage)
       expect(vocabTerm.getIri()).equals(iri)
     })
-
-    it('Should ignore set completely!', () => {
-      const iri = 'test://iri'
-      const vocabTerm = new LitVocabTermRdflib(iri, localStorage)
-      expect(vocabTerm.setIri('test://new-value').getIri()).equals(iri)
-    })
   })
 })

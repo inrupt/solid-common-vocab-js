@@ -36,18 +36,6 @@ class LitVocabTermRdfExt extends aggregation(
   }
 
   /**
-   * This method allows us override the base class implementation of
-   * storing the actual IRI.
-   *
-   * @param iri the IRI for this vocabulary term
-   * @returns {LitVocabTermRdfExt}
-   */
-  setIri(iri) {
-    // NOOP - our constructor stores the IRI.
-    return this;
-  }
-
-  /**
    * Returns the IRI for this vocabulary term.
    *
    * @returns iri the IRI for this vocabulary term
