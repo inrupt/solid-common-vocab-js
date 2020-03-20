@@ -5,6 +5,8 @@ node_modules
 
 .env
 
+.eslintcache
+
 # Deliberately ignore our developer-specific configuration file (Production should have none, with everything in
 # environment variables, e.g. the way Heroku operates).
 config/config.json
