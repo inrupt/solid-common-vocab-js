@@ -1,10 +1,10 @@
-# The Linked data Integration Toolkit (LIT) for Javascript
+# The Linked data Integration Toolkit (LIT) for JavaScript
 This toolkit is intended to contain a number of libraries, that collectively
-make up the LIT for Javascript. These libraries are intended to be used by Javascript 
+make up the LIT for JavaScript. These libraries are intended to be used by JavaScript 
 developers working with RDF.
 
 ## lit-vocab-term-js
-A very simple library that provides Javascript objects that represent the individual
+A very simple library that provides JavaScript objects that represent the individual
 terms (i.e. the classes and properties) defined in RDF vocabularies (both existing
 vocabularies (like http://schema.org, FOAF, VCard, LDP, ActivityStreams, etc.) and
 your own custom RDF vocabularies).
@@ -16,7 +16,7 @@ comments (and generic message strings).
 
 **NOTE:** This library is used extensively by the LIT Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
-including Javascript) that provides LIT Vocab Term instances for every term
+including JavaScript) that provides LIT Vocab Term instances for every term
 defined within any RDF vocabulary. Due to the ease of simply pointing the LIT
 Artifact Generator at any RDF vocabulary, and _have it_ automatically generate all
 the LIT Vocab Term instances for you automatically, we don't expect manual
@@ -26,7 +26,7 @@ use the LIT Artifact Generator whatsoever.
 
 ## RDF library support
 The LIT Vocab Term objects from this library are intended to be simple wrappers
-around 'NamedNode' objects from existing low-level RDF Javascript libaries,
+around 'NamedNode' objects from existing low-level RDF JavaScript libaries,
 such as RdfExt or rdflib.js. This means that LIT Vocab Term instances can be
 used natively with these libraries. We do however also provide a simple
 implementation that has no external RDF library dependency at all.
@@ -63,7 +63,7 @@ ex:Person a rdfs:Class ;
   rdfs:comment "Full description of my Person class..."@en .
 ```
 
-We could represent this as a LIT Vocab Term in Javascript like so:
+We could represent this as a LIT Vocab Term in JavaScript like so:
 ```javascript
 const {LitVocabTermBase} = require('@inrupt/lit-vocab-term-base')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
