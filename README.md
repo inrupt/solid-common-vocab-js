@@ -65,7 +65,7 @@ ex:Person a rdfs:Class ;
 
 We could represent this as a LIT Vocab Term in JavaScript like so:
 ```javascript
-const {LitVocabTermBase} = require('@inrupt/lit-vocab-term-base')
+const {LitVocabTermBase} = require('@pmcb55/lit-vocab-term-base')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
 const rdf = require('rdf-ext')
 require('mock-local-storage')
