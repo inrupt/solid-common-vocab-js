@@ -173,7 +173,8 @@ empty (i.e. "").
 // Here we specify 'loose' behaviour(i.e. 'false' parameter to constructor)...
 var person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, false)
 
-// 'personLabel' will default to a literal with the value "Person", and the language tag @en.
+// 'personLabel' will default to an RDF literal with the value "Person", and an empty
+// language tag (i.e. "").
 var personLabel = person.label 
  
 // Now strict behaviour...
