@@ -60,7 +60,7 @@
     "mocha": "^6.1.4",
     "mock-local-storage": "^1.1.8",
     "nyc": "^14.1.1",
-    "prettier": "1.19.1"
+    "prettier": "2.0.1"
   },
   "husky": {
     "hooks": {
