@@ -1,7 +1,3 @@
-export function add(a: number, b: number): number {
-  return a + b;
-}
+import {LitContext} from "./LitContext"
 
-import {LitVocabTermBase} from require("./LitVocabTermBase")
-
-export {LitVocabTermBase};
+export {LitContext};
