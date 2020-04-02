@@ -2,7 +2,9 @@
   "name": "@pmcb55/lit-vocab-term-base",
   "version": "0.2.4",
   "description": "Very basic implementation of LIT Vocab Term with no RDF library dependencies at all.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/pmcb55/lit-js.git",
@@ -14,7 +16,9 @@
   "scripts": {
     "format": "prettier --write \"index.js\" \"src/**/*.js\"",
     "test": "eslint \"index.js\" \"src/**\" && nyc mocha \\\"./test/**/*.test.js\\\"",
-    "preversion": "npm test"
+    "preversion": "npm test",
+    "build": "rollup --config rollup.config.js",
+    "prepublishOnly": "yarn run build"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -44,6 +48,9 @@
     "report-dir": "./.nyc_output/alternative"
   },
   "devDependencies": {
+    "rollup": "^2.2.0",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "typescript": "^3.8.3",
     "chai": "^4.2.0",
     "chai-string": "^1.5.0",
     "eslint": "^6.8.0",
