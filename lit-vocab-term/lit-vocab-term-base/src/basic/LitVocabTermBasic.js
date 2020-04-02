@@ -1,7 +1,7 @@
 "use strict";
 
 const LitVocabTermBase = require("../LitVocabTermBase");
-const BasicRdfFactory = require("./BasicRdfFactory");
+const DataFactory = require("@rdfjs/data-model");
 
 /**
  * A very basic implementation for the LIT Vocab Term that doesn't require
@@ -19,7 +19,7 @@ class LitVocabTermBasic extends LitVocabTermBase {
    * term 'http://example.com/vocab#name'.
    */
   constructor(iri, contextStorage, strict) {
-    super(iri, new BasicRdfFactory(), contextStorage, strict);
+    super(iri, DataFactory, contextStorage, strict);
 
     this._iri = iri;
 
