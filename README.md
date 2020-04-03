@@ -1,18 +1,32 @@
 # The Linked data Integration Toolkit (LIT) for JavaScript
-This toolkit is intended to contain a number of libraries, that collectively
-make up the LIT for JavaScript. These libraries are intended to be used by JavaScript 
+This Linked data Integration Toolkit (LIT) is intended to contain a number of
+libraries, that collectively make up the LIT for multiple programming languages,
+initially Java and JavaScript. This broad toolkit is intended to be used by 
 developers working with RDF.
 
 ## lit-vocab-term-js
-A very simple library that provides JavaScript objects that represent the individual
-terms (i.e. the classes and properties) defined in RDF vocabularies (both existing
-vocabularies (like http://schema.org, FOAF, VCard, LDP, ActivityStreams, etc.) and
-your own custom RDF vocabularies).
+A very simple library that provides JavaScript objects that represent the
+individual terms (i.e. the classes and properties) defined in RDF vocabularies
+(both existing vocabularies (like http://schema.org, FOAF, VCard, LDP,
+ActivityStreams, etc.) and your own custom RDF vocabularies).
   
 A major feature of this library is that it provides easy access to any 
 `rdfs:label` or `rdfs:comment` values provided for these vocabulary terms, and 
 provides very easy-to-use support for multi-lingual values for these labels and
 comments (and generic message strings).
+
+### Setup
+
+The `demo` directory provides an extremely basic working example that you can run
+with the following commands:
+```
+cd demo
+npm install --registry=https://verdaccio.inrupt.com
+node index.js
+```
+
+This very simple example can be incrementally extended by pasting in code from
+the steps described below.
 
 **NOTE:** This library is used extensively by the LIT Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
@@ -99,7 +113,7 @@ const personIri = person.value
 const personLabel = person.label
 const personComment = person.comment
 
-// - get the term's label or comment as a simple string value:
+// Get the term's label or comment as a simple string value:
 const personLabelAsString = person.label.value
 const personCommentAsString = person.comment.value
 ```
@@ -187,6 +201,7 @@ This behaviour (i.e. returning the local part of the IRI, or `undefined`) may be
 to instead throw an error when no label is found by using the `.mandatory` accessor.
 
 ```javascript
+// Here 'strictness' has no impact...
 const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
 
 // An exception will be thrown here, because our term has no label.

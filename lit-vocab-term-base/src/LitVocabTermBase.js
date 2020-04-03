@@ -109,7 +109,7 @@ class LitVocabTermBase {
       get() {
         this._asRdfLiteral = false;
         return this;
-      }
+      },
     });
 
     // Sets our flag to say we want our value as an RDF literal.
@@ -117,7 +117,7 @@ class LitVocabTermBase {
       get() {
         this._asRdfLiteral = true;
         return this;
-      }
+      },
     });
 
     Object.defineProperty(this, "mandatory", {
@@ -125,14 +125,14 @@ class LitVocabTermBase {
       get() {
         this._mandatory = true;
         return this;
-      }
+      },
     });
 
     Object.defineProperty(this, "asEnglish", {
       label: "Simple convenience accessor for requesting English",
       get() {
         return this.asLanguage("en");
-      }
+      },
     });
 
     Object.defineProperty(this, "label", {
@@ -147,7 +147,7 @@ class LitVocabTermBase {
         } finally {
           this.resetState();
         }
-      }
+      },
     });
 
     Object.defineProperty(this, "comment", {
@@ -161,7 +161,7 @@ class LitVocabTermBase {
 
         this.resetState();
         return result;
-      }
+      },
     });
 
     Object.defineProperty(this, "message", {
@@ -175,7 +175,7 @@ class LitVocabTermBase {
 
         this.resetState();
         return result;
-      }
+      },
     });
   }
 
