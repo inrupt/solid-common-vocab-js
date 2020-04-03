@@ -27,7 +27,7 @@ class LitVocabTermBasic extends LitVocabTermBase {
       label: "Accessor for our IRI value",
       get() {
         return this._iri;
-      }
+      },
     });
   }
 }

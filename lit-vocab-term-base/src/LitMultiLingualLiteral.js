@@ -41,7 +41,7 @@ class LitMultiLingualLiteral {
       get() {
         this.asLanguage("en");
         return this;
-      }
+      },
     });
   }
 

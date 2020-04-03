@@ -2,13 +2,17 @@
 
 const debug = require("debug")("lit-vocab-term:LitUtil");
 
-const rdf = require("rdflib");
+const rdf = require("rdf-ext");
+const rdfFormats = require("@rdfjs/formats-common");
+const stringToStream = require("string-to-stream");
+const streamToString = require("stream-to-string");
 
+const fs = require("fs");
 const uuidv1 = require("uuid/v1");
 
 const {
   LitContextError,
-  LitVocabTermBase
+  LitVocabTermBase,
 } = require("@pmcb55/lit-vocab-term-base");
 
 module.exports.generateUuid = uuidv1;
@@ -51,7 +55,7 @@ module.exports.prefixForHttpHeader = () => {
  * @param userName
  * @returns {NamedNode} NOTE: Returns a NamedNode instance, not a String!
  */
-module.exports.createWebId = username => {
+module.exports.createWebId = (username) => {
   const server = process.env.DATA_SERVER_SOLID || defaultWebIdServerDomain;
   return rdf.namedNode(
     `https://${username}.${server.substring(8)}/profile/card#me`
@@ -66,7 +70,7 @@ module.exports.createWebId = username => {
  * the context within our code).
  * @returns {*}
  */
-module.exports.generateWellKnownIri = codeContext => {
+module.exports.generateWellKnownIri = (codeContext) => {
   const uuid = this.generateUuid();
 
   if (codeContext === undefined) {
@@ -121,22 +125,118 @@ module.exports.codeContext = (clazz, func) => {
 };
 
 /**
+ * Loads a Turtle file (just 'cos we use Turtle by default - easy to refactor
+ * if other serializations needed) and returns the parsed dataset.
+ *
+ * @param filename The Turtle resource to load.
+ * @param resolveFunc
+ * @param rejectFunc
+ */
+module.exports.loadTurtleFile = (filename, resolveFunc, rejectFunc) => {
+  return this.loadTurtleFileIntoDataset(
+    filename,
+    undefined,
+    resolveFunc,
+    rejectFunc
+  );
+};
+
+module.exports.loadTurtleFilePromise = (filename) => {
+  return this.loadTurtleFileIntoDatasetPromise(filename, undefined);
+};
+
+module.exports.loadTurtleFileIntoDatasetPromise = (filename, dataset) => {
+  const mimeType = "text/turtle";
+  const data = fs.readFileSync(filename, "utf8");
+
+  const rdfParser = rdfFormats.parsers.get(mimeType);
+  const quadStream = rdfParser.import(stringToStream(data));
+  return (dataset ? dataset : rdf.dataset()).import(quadStream);
+};
+
+/**
+ * Loads a Turtle file (just 'cos we use Turtle by default - easy to refactor
+ * if other serializations needed) into the specified dataset and also returns
+ * the parsed dataset.
+ *
+ * @param filename The Turtle resource to load.
+ * @param dataset Dataset to put loaded data (if 'undefined' we'll create an
+ * empty dataset).
+ * @param resolveFunc
+ * @param rejectFunc
+ */
+module.exports.loadTurtleFileIntoDataset = async (
+  filename,
+  dataset,
+  resolveFunc,
+  rejectFunc
+) => {
+  return await this.loadTurtleFileIntoDatasetPromise(filename, dataset)
+    .then(resolveFunc)
+    .catch(rejectFunc);
+};
+
+/**
+ * Saves a dataset to the specified file as RDF (uses Turtle if no media type
+ * provided).
+ *
+ * @param dataset
+ * @param filename
+ * @param resolveFunc
+ * @param rejectFunc
+ */
+module.exports.saveDatasetToFile = (
+  dataset,
+  filename,
+  resolveFunc,
+  rejectFunc,
+  mediaType = "text/turtle",
+  encoding = "utf-8"
+) => {
+  const fileStream = fs.createWriteStream(filename, { encoding: encoding });
+
+  const serializer = rdfFormats.serializers.get(mediaType);
+  const quadStream = serializer.import(dataset.toStream());
+  quadStream.pipe(fileStream);
+};
+
+/**
+ * Serializes the specified dataset using the specified media type (e.g.
+ * JSON-LD, Turtle, etc.) and returns it as a string in the specified encoding.
+ *
+ * @param dataset
+ * @param mediaType
+ * @returns {Promise}
+ */
+module.exports.datasetToString = (
+  dataset,
+  mediaType = "text/turtle",
+  encoding = "utf-8"
+) => {
+  const serializer = rdfFormats.serializers.get(mediaType);
+  const quadStream = serializer.import(dataset.toStream());
+  return streamToString(quadStream, encoding);
+};
+
+module.exports.quadsToString = async (quads) => {
+  return await this.datasetToString(rdf.dataset().addAll(quads));
+};
+
+/**
  * Convenience method for debugging - writes to console the specified quad or
  * quads. Works asynchronously, so you need to invoke it with 'await'.
  *
  * @param quads The quad or quads to display
- * @param mediaType RDF serialization (NT by default)
+ * @param mediaType RDF serialization (Turtle by default)
  * @param encoding Encoding (UTF-8 by default)
  * @returns {Promise<void>}
  */
 module.exports.console = async (quads, message = "") => {
-  const store = rdf.graph();
-  if (Array.isArray(quads)) {
-    quads.forEach(quad => store.add(quad));
-  } else {
-    store.add(quads);
-  }
-  const result = store.toNT();
+  const result = await this.datasetToString(
+    Array.isArray(quads)
+      ? rdf.dataset().addAll(quads)
+      : rdf.dataset().add(quads)
+  );
 
   debug(`================ ${message} START  ===================`);
   debug(result);
@@ -149,7 +249,7 @@ module.exports.console = async (quads, message = "") => {
  * @param statusCode
  * @returns {Promise<void>}
  */
-module.exports.isHttpOk = statusCode => {
+module.exports.isHttpOk = (statusCode) => {
   let code;
   switch (typeof statusCode) {
     case "string":
@@ -201,6 +301,32 @@ module.exports.replaceIriLocalName = (iri, replacement) => {
 
   return rdf.namedNode(iriValue.substring(0, pos) + "/" + replacement);
 };
+//
+// /**
+//  * Extract the local name from the specified IRI (can be a primitive string or
+//  * a NamedNode).
+//  *
+//  * @param stringOrNamedNode The IRI to extract from.
+//  * @returns {string}
+//  */
+// module.exports.extractIriLocalName = (stringOrNamedNode) => {
+//   const iri = module.exports.isString(stringOrNamedNode)
+//     ? stringOrNamedNode : stringOrNamedNode.value
+//
+//   const hashPos = iri.lastIndexOf('#')
+//   if (hashPos === -1) {
+//     const lastSlashPos = iri.lastIndexOf('/')
+//     if ((lastSlashPos === -1) ||
+//       (iri.toLowerCase().startsWith('http') &&
+//         (lastSlashPos < (iri.toLowerCase().startsWith('https') ? 8 : 7)))) {
+//       throw Error(`Expected hash fragment ('#') or slash ('/') (other than 'https://...') in IRI [${iri}]`)
+//     }
+//
+//     return iri.substring(lastSlashPos + 1)
+//   }
+//
+//   return iri.substring(hashPos + 1)
+// }
 
 /**
  * Returns a newly minted IRI (NamedNode) that is relative to the specified
@@ -235,7 +361,7 @@ module.exports.makeRelativeIri = (iri, relativePart, appendGuid) => {
   );
 };
 
-module.exports.stripTrailingPathSegment = iriString => {
+module.exports.stripTrailingPathSegment = (iriString) => {
   const pos = Math.max(iriString.lastIndexOf("#"), iriString.lastIndexOf("/"));
   if (pos === -1) {
     throw Error(
@@ -245,13 +371,36 @@ module.exports.stripTrailingPathSegment = iriString => {
   return iriString.substring(0, pos);
 };
 
-module.exports.escapeRegExp = str => {
+module.exports.escapeRegExp = (str) => {
   return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1");
 };
 
 module.exports.replaceAll = (str, find, replace) => {
   return str.replace(new RegExp(this.escapeRegExp(find), "g"), replace);
 };
+
+// /**
+//  * Simple method to determine if the specified value is a primitive String.
+//
+//  * @param value The value to evaluate.
+//  * @returns {boolean} true if String, else false.
+//  */
+// module.exports.isString = (value) => {
+//   return ((typeof value === 'string') || (value instanceof String))
+// }
+//
+//
+// /**
+//  * Simply treat the value as an IRI if it starts with 'http://' or 'https://'
+//  * (case-insensitive).
+//  *
+//  * @param value
+//  * @returns {boolean}
+//  */
+// module.exports.isStringIri = (value) => {
+//   const valueLower = value.toLowerCase()
+//   return (valueLower.startsWith('http://') || valueLower.startsWith('https://'))
+// }
 
 /**
  * Validates that the specified value is a valid IRI - i.e. either an explicit
@@ -298,10 +447,10 @@ module.exports.validateIri = (value, rdfComponent, litContextObject) => {
  * @param value The value to be camel-cased.
  * @returns {string}
  */
-module.exports.camelize = value => {
+module.exports.camelize = (value) => {
   const resut = value
     .toLowerCase()
-    .replace(/(?:(^.)|([-_\s]+.))/g, function(match) {
+    .replace(/(?:(^.)|([-_\s]+.))/g, function (match) {
       return match.charAt(match.length - 1).toUpperCase();
     });
   return resut.charAt(0).toLowerCase() + resut.substring(1);
@@ -334,4 +483,17 @@ module.exports.mismatchingIris = (messagePrefix, first, second) => {
       : "";
 
   return `${messagePrefix} - first IRI was [${first}], second was [${second}] - they *must* be the same${explain}.`;
+};
+
+/**
+ * Reads the first object value from the given Dataset.
+ *
+ * @param dataset The input Dataset that will be read.
+ * @param defaultValue A default value if there is no first term found (empty
+ * dataset).
+ * @returns {*} The value of the first object value, else return the defaultValue.
+ */
+module.exports.firstDatasetValue = (dataset, defaultValue) => {
+  const first = dataset.toArray().shift();
+  return first ? first.object.value : defaultValue;
 };
