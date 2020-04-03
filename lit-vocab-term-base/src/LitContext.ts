@@ -1,16 +1,17 @@
 import moment from "moment";
 
-const CONTEXT_KEY_LOCALE : string = "i18nextLng";
+const CONTEXT_KEY_LOCALE: string = "i18nextLng";
 
 // Key that specifies a preferred fallback language - e.g. if the user selects
 // 'French' as the language for the current page, but there is no French, then
 // we'll check if the user has a preferred fallback language, e.g. maybe in
 // their profile they have selected 'Spanish' as their preferred fallback.
-const CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE : string = "lang_preferred_fallback";
+const CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE: string =
+  "lang_preferred_fallback";
 
 interface IStore {
-  setItem(key: string, value: string): void,
-  getItem(key: string) : string
+  setItem(key: string, value: string): void;
+  getItem(key: string): string | undefined;
 }
 
 /**
@@ -22,7 +23,6 @@ interface IStore {
  * simple key value of say 'i18nLanguage' in localStorage).
  */
 class LitContext {
-
   _initialLocale: string;
   _storage: IStore;
   _createdAt: number;
@@ -45,7 +45,7 @@ class LitContext {
     this._createdAt = moment().valueOf();
   }
 
-  getLocale(): string {
+  getLocale(): string | undefined {
     return this._storage.getItem(CONTEXT_KEY_LOCALE);
   }
 
@@ -63,4 +63,9 @@ class LitContext {
   }
 }
 
-export {LitContext, CONTEXT_KEY_LOCALE, CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE};
+export {
+  LitContext,
+  IStore,
+  CONTEXT_KEY_LOCALE,
+  CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE,
+};
