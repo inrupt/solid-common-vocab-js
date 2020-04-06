@@ -19,7 +19,7 @@
     "test-ts": "eslint --config .eslintrc.js \"src/**\" && jest",
     "preversion": "npm test",
     "build": "rollup --config rollup.config.js",
-    "prepublishOnly": "yarn run build"
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "debug": "^4.1.1",

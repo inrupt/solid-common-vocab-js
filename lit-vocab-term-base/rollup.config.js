@@ -17,7 +17,7 @@ export default {
     {
       dir: "umd",
       format: "umd",
-      name: "Tripledoc",
+      name: "LitVocabTerm",
     },
   ],
   plugins: [

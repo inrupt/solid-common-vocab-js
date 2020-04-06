@@ -1,3 +1,1 @@
-import { LitContext, IStore } from "./LitContext";
-
-export { LitContext, IStore };
+export { LitContext, IStore } from "./LitContext";

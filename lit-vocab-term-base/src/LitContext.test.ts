@@ -20,10 +20,12 @@ function storageMock(): IStore {
 
 describe("LitContext tests", () => {
   it("should fail if no locale provided", function () {
-    // @ts-ignore
-    expect(() => new LitContext(undefined, undefined)).to.throw(
-      "*MUST* be provided a locale"
-    );
+    expect(
+      // @ts-ignore, because the parameters of the constructor
+      // explicitely expect (string, IStore), to which (undef, undef) cannot
+      // be assigned.
+      () => new LitContext(undefined, undefined)
+    ).to.throw("*MUST* be provided a locale");
   });
 
   it("should fail if no storage provided", function () {
