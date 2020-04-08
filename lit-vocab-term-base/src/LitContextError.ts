@@ -62,31 +62,19 @@ class LitContextError extends Error {
   unwrapException(): string {
     const totalLevels = this.countLevels();
     let level = 1;
-    let result = this.report(level, totalLevels, this);
-    if (this._wrappedException) {
-      // If the wrapped exception is not a LitContextError, it's a regular Error.
-      // In this case, nothing additional is wrapped.
-      if (!(this._wrappedException instanceof LitContextError)) {
+    let result = ""
+    let current: LitContextError | undefined = this;
+    while (current !== undefined) {
+      result += "\n\n" + this.report(level++, totalLevels, current);
+      if (!(current._wrappedException instanceof LitContextError) &&
+        current._wrappedException) {
         result +=
-          "\n\n" + this.report(++level, totalLevels, this._wrappedException);
+          "\n\n" + this.report(level++, totalLevels, current._wrappedException);
+        // When reaching a plain Error, the unwrapping stops
+        current = undefined;
       } else {
-        let current: LitContextError | undefined = this._wrappedException;
-        while (current !== undefined) {
-          result += "\n\n" + this.report(++level, totalLevels, current);
-          if (
-            !(current._wrappedException instanceof LitContextError) &&
-            current._wrappedException
-          ) {
-            result +=
-              "\n\n" +
-              this.report(++level, totalLevels, current._wrappedException);
-            // When reaching a plain Error, the unwrapping stops
-            current = undefined;
-          } else {
-            // Unwraps the exception until _wrappedException is undefined
-            current = current._wrappedException;
-          }
-        }
+        // Unwraps the exception until _wrappedException is undefined
+        current = current._wrappedException;
       }
     }
     return result;
