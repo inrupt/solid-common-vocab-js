@@ -6,11 +6,7 @@ class LitContextError extends Error {
   _createdAt: number;
   _wrappedException?: LitContextError | Error;
 
-  constructor(
-    context: LitContext,
-    message: string,
-    wrappedException?: Error
-  ) {
+  constructor(context: LitContext, message: string, wrappedException?: Error) {
     // The ignore is required because of code coverage bug
     // https://github.com/gotwarlost/istanbul/issues/690
     super(message) /* istanbul ignore next */;
@@ -62,12 +58,14 @@ class LitContextError extends Error {
   unwrapException(): string {
     const totalLevels = this.countLevels();
     let level = 1;
-    let result = ""
+    let result = "";
     let current: LitContextError | undefined = this;
     while (current !== undefined) {
       result += "\n\n" + this.report(level++, totalLevels, current);
-      if (!(current._wrappedException instanceof LitContextError) &&
-        current._wrappedException) {
+      if (
+        !(current._wrappedException instanceof LitContextError) &&
+        current._wrappedException
+      ) {
         result +=
           "\n\n" + this.report(level++, totalLevels, current._wrappedException);
         // When reaching a plain Error, the unwrapping stops
