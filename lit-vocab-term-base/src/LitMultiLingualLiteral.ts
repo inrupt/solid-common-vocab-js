@@ -1,4 +1,4 @@
-import { DataFactory } from "rdf-js";
+import { DataFactory, Literal } from "rdf-js";
 
 const NO_LANGUAGE_TAG = "<No Language>";
 
@@ -78,11 +78,14 @@ class LitMultiLingualLiteral {
    * tag so that if we are returning an RDF literal it will contain the correct
    * language tag (i.e. 'en'), and not the requested language that didn't exist!
    *
-   * @param language The requested language (but if not found we use English
-   * and reset our language tag to 'en').
-   * @returns {*}
+   * @param asRdfLiteral {boolean} Should the returned value be a Literal or a string?
+   * @param mandatory {boolean} Should the lookup throw or return undefined on miss?
+   * @returns {string | Literal | undefined}
    */
-  lookup(asRdfLiteral: boolean, mandatory: boolean) {
+  lookup(
+    asRdfLiteral: boolean,
+    mandatory: boolean
+  ): string | Literal | undefined {
     const message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory);
     return this.returnAsStringOrRdfLiteral(asRdfLiteral, message);
   }
@@ -90,10 +93,11 @@ class LitMultiLingualLiteral {
   /**
    * Private method that only looks up the string itself (i.e. will not attempt
    * to wrap in an RDF literal).
-   *
-   * @param language
-   * @returns {*}
+   * @internal
+   * @param mandatory {boolean} Should the lookup throw or return undefined on miss?
+   * @returns {string | undefined}
    */
+
   lookupButDefaultToEnglishOrNoLanguage(
     mandatory: boolean
   ): string | undefined {
@@ -125,12 +129,17 @@ class LitMultiLingualLiteral {
   }
 
   /**
-   * TODO: Won't yet handle replacing multiple uses of say {{1}} in a single
-   *  string, which I guess it should...!?
+   * Replaces fillers (`{{1}}`, etc) with the provided values
    *
-   * @returns {*}
+   * @param asRdfLiteral {boolean} Should the returned value be a Literal or a string?
+   * @param mandatory {boolean} Should the lookup throw or return undefined on miss?
+   * @param rest {string[]} Values to be filled in.
+   * @returns { string | Literal | undefined }
    */
   params(asRdfLiteral: boolean, mandatory: boolean, ...rest: string[]) {
+    // TODO: Won't yet handle replacing multiple uses of say {{1}} in a single
+    //  string, which I guess it should...!?
+
     let message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory);
 
     // If we failed to find a value at all (and didn't throw!), then return
