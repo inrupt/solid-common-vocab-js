@@ -141,7 +141,7 @@ describe("LIT context-aware errors", () => {
     }
   });
 
-  it("should check if our erorr contains specified values", function () {
+  it("should check if our error contains specified values", function () {
     const context = new LitContext("en", mockStorage());
     const message = "Error occurred";
     try {

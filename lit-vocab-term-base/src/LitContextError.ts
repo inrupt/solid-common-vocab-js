@@ -9,7 +9,7 @@ class LitContextError extends Error {
   constructor(
     context: LitContext,
     message: string,
-    wrappedException: Error | null
+    wrappedException?: Error
   ) {
     // The ignore is required because of code coverage bug
     // https://github.com/gotwarlost/istanbul/issues/690
@@ -36,7 +36,7 @@ class LitContextError extends Error {
   report(level: number, totalLevels: number, exception: Error): string {
     let result = exception.message;
     let stack = exception.stack ? exception.stack.toString() : "";
-    if (process.env.NODE_ENV !== "production") {
+    if (process?.env?.NODE_ENV !== "production") {
       result += "\n" + `Level ${level} of ${totalLevels}:\n${stack}`;
     }
     return result;
