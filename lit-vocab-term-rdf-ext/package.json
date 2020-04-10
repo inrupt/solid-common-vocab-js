@@ -1,15 +1,8 @@
 {
   "name": "@pmcb55/lit-vocab-term-rdf-ext",
   "version": "0.2.4",
-<<<<<<< HEAD:lit-vocab-term-rdf-ext/package.json
   "description": "Extends the base LIT Vocab Term library to wrap rdf-ext.",
   "main": "index.js",
-=======
-  "description": "Very basic implementation of LIT Vocab Term with no RDF library dependencies at all.",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "types": "dist/index.d.ts",
->>>>>>> Updated environment for TS compiling:lit-vocab-term/lit-vocab-term-base/package.json
   "repository": {
     "type": "git",
     "url": "https://github.com/pmcb55/lit-js.git",
@@ -20,15 +13,8 @@
   },
   "scripts": {
     "format": "prettier --write \"index.js\" \"src/**/*.js\"",
-<<<<<<< HEAD:lit-vocab-term-rdf-ext/package.json
     "test": "eslint index.js \"src/**\" && mkdir -p test/resources/output && nyc mocha \"./test/**/*.test.js\"",
     "preversion": "npm test"
-=======
-    "test": "eslint \"index.js\" \"src/**\" && nyc mocha \\\"./test/**/*.test.js\\\"",
-    "preversion": "npm test",
-    "build": "rollup --config rollup.config.js",
-    "prepublishOnly": "yarn run build"
->>>>>>> Updated environment for TS compiling:lit-vocab-term/lit-vocab-term-base/package.json
   },
   "dependencies": {
     "@pmcb55/lit-vocab-term-base": "0.2.4",
