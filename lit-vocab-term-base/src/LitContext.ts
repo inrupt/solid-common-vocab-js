@@ -37,12 +37,13 @@ class LitContext {
 
     this._initialLocale = locale;
     this._storage = storage;
+
     this._storage.setItem(CONTEXT_KEY_LOCALE, locale);
     this._createdAt = moment().valueOf();
   }
 
-  getLocale(): string | undefined {
-    return this._storage.getItem(CONTEXT_KEY_LOCALE);
+  getLocale(): string {
+    return this._storage.getItem(CONTEXT_KEY_LOCALE) || this._initialLocale;
   }
 
   setLocale(locale: string): LitContext {
