@@ -32,6 +32,10 @@ class LitContextError extends Error {
   report(level: number, totalLevels: number, exception: Error): string {
     let result = exception.message;
     let stack = exception.stack ? exception.stack.toString() : "";
+    // Ignoring the next line is required for full code coverage, because when
+    // testing in a Node environment, it is not possible to have `process`
+    // undefined.
+    // istanbul ignore next
     if (process?.env?.NODE_ENV !== "production") {
       result += "\n" + `Level ${level} of ${totalLevels}:\n${stack}`;
     }

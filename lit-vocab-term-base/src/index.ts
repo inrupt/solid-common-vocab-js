@@ -1,3 +1,9 @@
-export { IStore } from "./utils/localStorage";
-export { LitContext } from "./LitContext";
+export { IStore, mockStorage } from "./utils/localStorage";
+export { LitContext, CONTEXT_KEY_LOCALE } from "./LitContext";
 export { LitContextError } from "./LitContextError";
+export {
+  LitMultiLingualLiteral,
+  NO_LANGUAGE_TAG,
+} from "./LitMultiLingualLiteral";
+export { LitVocabTerm, buildBasicTerm } from "./LitVocabTerm";
+export { LitTermRegistry } from "./LitTermRegistry";
