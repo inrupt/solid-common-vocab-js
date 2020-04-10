@@ -2,9 +2,9 @@ import { DataFactory, Literal, NamedNode, Term } from "rdf-js";
 
 const NO_LANGUAGE_TAG = "<No Language>";
 
-// Typically, this would come from a LIT-generated artifact,
-// but since those are based on the current project, it's
-// easier to define the constants manually
+// Typically, these would come from a LIT-generated artifact,
+// but since those generated artifacts depend on this current, it's
+// just much easier to define the constants we need manually here.
 const XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
 const RDF_LANGSTRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
 
@@ -13,9 +13,9 @@ function isLiteral(term: Term): term is Literal {
 }
 
 /**
- * Class that defines the concept of a multi-lingual literal (as in a String
- * literal). We can add multiple values in different languages, and look them
- * up again.
+ * Class that defines the concept of a multi-lingual literal (as in an RDF
+ * String literal). We can add multiple values in different languages, and
+ * look them up again.
  * Also supports parameterized string values (using {{0}} placeholders), for
  * which we can provide values when looking them up.
  */
@@ -120,8 +120,7 @@ class LitMultiLingualLiteral implements Literal {
    * tag so that if we are returning an RDF literal it will contain the correct
    * language tag (i.e. 'en'), and not the requested language that didn't exist!
    *
-   * @param language The requested language (but if not found we use English
-   * and reset our language tag to 'en').
+   * @param mandatory Flag - if true, we'll Throw an error if no value found.
    * @returns {*}
    */
   lookup(mandatory: boolean) {
@@ -138,7 +137,7 @@ class LitMultiLingualLiteral implements Literal {
    * Private method that only looks up the string itself (i.e. will not attempt
    * to wrap in an RDF literal).
    *
-   * @param language
+   * @param mandatory Flag - if true, we'll Throw an error if no value found.
    * @returns {*}
    */
   lookupButDefaultToEnglishOrNoLanguage(
@@ -175,6 +174,9 @@ class LitMultiLingualLiteral implements Literal {
    * TODO: Won't yet handle replacing multiple uses of say {{1}} in a single
    *  string, which I guess it should...!?
    *
+   * @param mandatory Flag - if true, we'll Throw an error if no value found.
+   * @param rest array of values to be used to replace placeholders in 
+   * the looked-up message.
    * @returns {*}
    */
   params(mandatory: boolean, ...rest: string[]): Literal | undefined {
