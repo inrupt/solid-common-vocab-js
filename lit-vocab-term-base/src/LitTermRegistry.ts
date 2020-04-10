@@ -1,15 +1,8 @@
 import debug from "debug";
 const DEBUG_NS = "lit-vocab-term:LitTermRegistry";
 
-import {
-  LitContext,
-  IStore,
-  CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE,
-} from "./LitContext";
-import {
-  LitMultiLingualLiteral,
-  NO_LANGUAGE_TAG,
-} from "./LitMultiLingualLiteral";
+import { IStore, CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./LitContext";
+import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
 
 /**
  * Simple registry of terms (and their associated meta-data (like labels,

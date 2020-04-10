@@ -1,4 +1,3 @@
-import moment from "moment";
 import { IStore } from "./utils/localStorage";
 
 const CONTEXT_KEY_LOCALE: string = "i18nextLng";
@@ -39,7 +38,7 @@ class LitContext {
     this._storage = storage;
 
     this._storage.setItem(CONTEXT_KEY_LOCALE, locale);
-    this._createdAt = moment().valueOf();
+    this._createdAt = Date.now();
   }
 
   getLocale(): string {

@@ -1,4 +1,3 @@
-import moment from "moment";
 import { LitContext } from "./LitContext";
 
 class LitContextError extends Error {
@@ -24,7 +23,7 @@ class LitContextError extends Error {
       }
     }
     this._context = context;
-    this._createdAt = moment().valueOf();
+    this._createdAt = Date.now();
     // See https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, LitContextError.prototype);
   }
