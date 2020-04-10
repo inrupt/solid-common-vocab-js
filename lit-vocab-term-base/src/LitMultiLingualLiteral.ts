@@ -1,6 +1,16 @@
-import { DataFactory, Literal } from "rdf-js";
+import { DataFactory, Literal, NamedNode, Term } from "rdf-js";
 
 const NO_LANGUAGE_TAG = "<No Language>";
+
+// Typically, this would come from a LIT-generated artifact,
+// but since those are based on the current project, it's
+// easier to define the constants manually
+const XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
+const RDF_LANGSTRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
+
+function isLiteral(term: Term): term is Literal {
+  return (term as Literal).language !== undefined;
+}
 
 /**
  * Class that defines the concept of a multi-lingual literal (as in a String
@@ -9,9 +19,9 @@ const NO_LANGUAGE_TAG = "<No Language>";
  * Also supports parameterized string values (using {{0}} placeholders), for
  * which we can provide values when looking them up.
  */
-class LitMultiLingualLiteral {
+class LitMultiLingualLiteral implements Literal {
   _rdfFactory: DataFactory;
-  _iri: string;
+  _iri: NamedNode;
   _values: Map<string, string>;
   _contextMessage: string;
   _language?: string;
@@ -33,7 +43,7 @@ class LitMultiLingualLiteral {
    */
   constructor(
     rdfFactory: DataFactory,
-    iri: string,
+    iri: NamedNode,
     values?: Map<String, String>,
     contextMessage?: string
   ) {
@@ -42,10 +52,42 @@ class LitMultiLingualLiteral {
     this._values = values ? values : new Map();
     this._contextMessage = contextMessage ? contextMessage : "<None provided>";
 
-    // Default to English.
     this._language = undefined;
 
     this._expandedMessage = undefined;
+  }
+
+  // Implementing the RDFJS Literal interface
+  termType: "Literal" = "Literal";
+
+  get value(): string {
+    return this.lookup(false)?.value || "";
+  }
+
+  get language(): string {
+    if (!this._language || this._language === NO_LANGUAGE_TAG) {
+      return "";
+    } else {
+      return this._language;
+    }
+  }
+
+  equals(other: Term): boolean {
+    if (isLiteral(other)) {
+      return (
+        this._values.get(other.language || NO_LANGUAGE_TAG) === other.value
+      );
+    } else {
+      return false;
+    }
+  }
+
+  get datatype(): NamedNode {
+    if (!this.language || this.language == NO_LANGUAGE_TAG) {
+      return this._rdfFactory.namedNode(XSD_STRING);
+    } else {
+      return this._rdfFactory.namedNode(RDF_LANGSTRING);
+    }
   }
 
   getIri() {
@@ -65,8 +107,8 @@ class LitMultiLingualLiteral {
     return this;
   }
 
-  lookupEnglish(asRdfLiteral: boolean, mandatory: boolean) {
-    return this.asLanguage("en").lookup(asRdfLiteral, mandatory);
+  lookupEnglish(mandatory: boolean) {
+    return this.asLanguage("en").lookup(mandatory);
   }
 
   /**
@@ -78,26 +120,27 @@ class LitMultiLingualLiteral {
    * tag so that if we are returning an RDF literal it will contain the correct
    * language tag (i.e. 'en'), and not the requested language that didn't exist!
    *
-   * @param asRdfLiteral {boolean} Should the returned value be a Literal or a string?
-   * @param mandatory {boolean} Should the lookup throw or return undefined on miss?
-   * @returns {string | Literal | undefined}
+   * @param language The requested language (but if not found we use English
+   * and reset our language tag to 'en').
+   * @returns {*}
    */
-  lookup(
-    asRdfLiteral: boolean,
-    mandatory: boolean
-  ): string | Literal | undefined {
+  lookup(mandatory: boolean) {
     const message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory);
-    return this.returnAsStringOrRdfLiteral(asRdfLiteral, message);
+    if (message === undefined) {
+      return undefined;
+    }
+
+    this._expandedMessage = message;
+    return this._rdfFactory.literal(message, this.handleNoLanguageTag());
   }
 
   /**
    * Private method that only looks up the string itself (i.e. will not attempt
    * to wrap in an RDF literal).
-   * @internal
-   * @param mandatory {boolean} Should the lookup throw or return undefined on miss?
-   * @returns {string | undefined}
+   *
+   * @param language
+   * @returns {*}
    */
-
   lookupButDefaultToEnglishOrNoLanguage(
     mandatory: boolean
   ): string | undefined {
@@ -114,7 +157,7 @@ class LitMultiLingualLiteral {
     } else if (mandatory) {
       // NOTE: we explicitly throw here, regardless of our 'throw' parameter.
       throw new Error(
-        `MultiLingualLiteral message with IRI [${this._iri}] required value in language [${this._language}], but none found (Context: [${this._contextMessage}]).`
+        `MultiLingualLiteral message with IRI [${this._iri.value}] required value in language [${this._language}], but none found (Context: [${this._contextMessage}]).`
       );
     } else {
       message = this._values.get("en");
@@ -129,17 +172,12 @@ class LitMultiLingualLiteral {
   }
 
   /**
-   * Replaces fillers (`{{1}}`, etc) with the provided values
+   * TODO: Won't yet handle replacing multiple uses of say {{1}} in a single
+   *  string, which I guess it should...!?
    *
-   * @param asRdfLiteral {boolean} Should the returned value be a Literal or a string?
-   * @param mandatory {boolean} Should the lookup throw or return undefined on miss?
-   * @param rest {string[]} Values to be filled in.
-   * @returns { string | Literal | undefined }
+   * @returns {*}
    */
-  params(asRdfLiteral: boolean, mandatory: boolean, ...rest: string[]) {
-    // TODO: Won't yet handle replacing multiple uses of say {{1}} in a single
-    //  string, which I guess it should...!?
-
+  params(mandatory: boolean, ...rest: string[]): Literal | undefined {
     let message = this.lookupButDefaultToEnglishOrNoLanguage(mandatory);
 
     // If we failed to find a value at all (and didn't throw!), then return
@@ -151,7 +189,7 @@ class LitMultiLingualLiteral {
     const paramsRequired = message.split("{{").length - 1;
     if (paramsRequired !== rest.length) {
       throw new Error(
-        `Setting parameters on LitMultiLingualLiteral with IRI [${this._iri}] and value [${message}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`
+        `Setting parameters on LitMultiLingualLiteral with IRI [${this._iri.value}] and value [${message}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`
       );
     }
 
@@ -160,20 +198,8 @@ class LitMultiLingualLiteral {
       message = message.replace(marker, rest[i]);
     }
 
-    return this.returnAsStringOrRdfLiteral(asRdfLiteral, message);
-  }
-
-  returnAsStringOrRdfLiteral(asRdfLiteral: boolean, message?: string) {
-    if (message === undefined) {
-      return undefined;
-    }
-
-    const result = asRdfLiteral
-      ? this._rdfFactory.literal(message, this.handleNoLanguageTag())
-      : message;
-
     this._expandedMessage = message;
-    return result;
+    return this._rdfFactory.literal(message, this.handleNoLanguageTag());
   }
 
   /**
@@ -187,4 +213,4 @@ class LitMultiLingualLiteral {
   }
 }
 
-export { LitMultiLingualLiteral, NO_LANGUAGE_TAG };
+export { LitMultiLingualLiteral, NO_LANGUAGE_TAG, XSD_STRING, RDF_LANGSTRING };
