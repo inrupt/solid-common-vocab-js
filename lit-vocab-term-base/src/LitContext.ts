@@ -1,4 +1,5 @@
 import moment from "moment";
+import { IStore } from "./utils/localStorage";
 
 const CONTEXT_KEY_LOCALE: string = "i18nextLng";
 
@@ -8,11 +9,6 @@ const CONTEXT_KEY_LOCALE: string = "i18nextLng";
 // their profile they have selected 'Spanish' as their preferred fallback.
 const CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE: string =
   "lang_preferred_fallback";
-
-interface IStore {
-  setItem(key: string, value: string): void;
-  getItem(key: string): string | undefined;
-}
 
 /**
  * Simple class to hold 'context', which could include things like a chosen language, localization settings, process
@@ -41,12 +37,13 @@ class LitContext {
 
     this._initialLocale = locale;
     this._storage = storage;
+
     this._storage.setItem(CONTEXT_KEY_LOCALE, locale);
     this._createdAt = moment().valueOf();
   }
 
-  getLocale(): string | undefined {
-    return this._storage.getItem(CONTEXT_KEY_LOCALE);
+  getLocale(): string {
+    return this._storage.getItem(CONTEXT_KEY_LOCALE) || this._initialLocale;
   }
 
   setLocale(locale: string): LitContext {

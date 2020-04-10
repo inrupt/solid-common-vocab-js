@@ -1,0 +1,193 @@
+import { LitContext } from "./LitContext";
+import { LitContextError } from "./LitContextError";
+import { mockStorage } from "./utils/localStorage";
+
+import chai from "chai";
+const expect = chai.expect;
+
+describe("LIT context-aware errors", () => {
+  beforeEach(() => {
+    delete process.env.NODE_ENV;
+  });
+
+  it("should fail if wrapped exception is not an Error", function () {
+    const context = new LitContext("en", mockStorage());
+    expect(
+      // @ts-ignore, because the parameters of the constructor
+      // explicitly expect (string, Error), to which (string, string) cannot
+      // be assigned.
+      () => new LitContextError(context, "test", "Not an error!")
+    ).to.throw("test");
+    expect(
+      // @ts-ignore
+      () => new LitContextError(context, "test", "Not an error!")
+    ).to.throw("Not an error!");
+  });
+
+  it("should be possible to create without a wrapped error", function () {
+    const context = new LitContext("en", mockStorage());
+    expect(new LitContextError(context, "test", undefined)).to.not.be.null;
+  });
+
+  it("should be able to wrap a standard error", function () {
+    const context = new LitContext("en", mockStorage());
+    const message = "Error occurred";
+    const wrapMessage = "Wrap error message";
+    const wrapError = new LitContextError(
+      context,
+      wrapMessage,
+      new Error(message)
+    );
+
+    expect(wrapError.countLevels()).to.equal(2);
+
+    const fullReport = wrapError.unwrapException();
+    expect(fullReport).to.include(message);
+    expect(fullReport).to.include(wrapMessage);
+  });
+
+  it("should contain wrapped exception details", function () {
+    const context = new LitContext("en", mockStorage());
+    const errorLvl1 = new LitContextError(
+      context,
+      "Error message Level1",
+      undefined
+    );
+    const errorLvl2 = new LitContextError(
+      context,
+      "Error message Level2",
+      errorLvl1
+    );
+    const errorLvl3 = new LitContextError(
+      context,
+      "Error message Level3",
+      errorLvl2
+    );
+    expect(errorLvl3.countLevels()).to.equal(3);
+    const fullReport = errorLvl3.unwrapException();
+    expect(fullReport).to.include("Error message Level1");
+    expect(fullReport).to.include("Error message Level2");
+    expect(fullReport).to.include("Error message Level3");
+  });
+
+  it("throwing a standard error loses nested information", function () {
+    const context = new LitContext("en", mockStorage());
+    const errorLvl1 = new LitContextError(
+      context,
+      "Error message Level1",
+      undefined
+    );
+    const errorLvl2 = new Error("Standard Error message Level2");
+    const errorLvl3 = new LitContextError(
+      context,
+      "Error message Level3",
+      errorLvl2
+    );
+    const errorLvl4 = new LitContextError(
+      context,
+      "Error message Level4",
+      errorLvl3
+    );
+
+    expect(errorLvl4.countLevels()).to.equal(3);
+    const fullReport = errorLvl4.unwrapException();
+    expect(fullReport).to.not.include(errorLvl1.message);
+    expect(fullReport).to.include("Standard Error message Level2");
+    expect(fullReport).to.include("Error message Level3");
+    expect(fullReport).to.include("Error message Level4");
+  });
+
+  it("should contain wrapped exception details, but no stack info", function () {
+    const context = new LitContext("en", mockStorage());
+    process.env.NODE_ENV = "production";
+    const errorLvl1 = new LitContextError(
+      context,
+      "Error message Level1",
+      undefined
+    );
+    const errorLvl2 = new LitContextError(
+      context,
+      "Error message Level2",
+      errorLvl1
+    );
+    const errorLvl3 = new LitContextError(
+      context,
+      "Error message Level3",
+      errorLvl2
+    );
+
+    expect(errorLvl3.countLevels()).to.equal(3);
+    const fullReport = errorLvl3.unwrapException();
+    expect(fullReport).to.include("Error message Level1");
+    expect(fullReport).to.include("Error message Level2");
+    expect(fullReport).to.include("Error message Level3");
+
+    expect(fullReport).to.not.include("Level ");
+  });
+
+  it("should unwrap when calling toString()", function () {
+    const context = new LitContext("en", mockStorage());
+    const message = "Error occurred";
+    try {
+      throw new Error(message);
+    } catch (error) {
+      const wrapMessage = "Wrap error message";
+      const wrapError = new LitContextError(context, wrapMessage, error);
+      expect(wrapError.countLevels()).to.equal(2);
+
+      const fullReport = wrapError.toString();
+      expect(fullReport).to.include(message);
+      expect(fullReport).to.include(wrapMessage);
+    }
+  });
+
+  it("should check if our error contains specified values", function () {
+    const context = new LitContext("en", mockStorage());
+    const message = "Error occurred";
+    try {
+      throw new LitContextError(context, message, undefined);
+    } catch (error) {
+      expect(error.contains(["Error"])).to.be.true;
+      expect(error.contains(["Error", "occurred"])).to.be.true;
+      expect(error.contains(["Error", "does not", "occurred"])).to.be.false;
+    }
+  });
+
+  it("should return true if we don't actually check for any arguments", function () {
+    const context = new LitContext("en", mockStorage());
+    const message = "Error occurred";
+    try {
+      throw new LitContextError(context, message, undefined);
+    } catch (error) {
+      expect(error.contains()).to.be.true;
+    }
+  });
+
+  it("should not throw on an empty stack", function () {
+    const context = new LitContext("en", mockStorage());
+    const message = "Error occurred";
+    const error = new LitContextError(context, message, undefined);
+    error.stack = undefined;
+    expect(error.unwrapException()).to.contain(message);
+  });
+
+  it("should not show the whole stack in production", () => {
+    if (process?.env) {
+      process.env.NODE_ENV = "production";
+      const context = new LitContext("en", mockStorage());
+      const message = "Error occurred";
+      const error = new LitContextError(context, message, undefined);
+      const prodReport = error.unwrapException();
+      process.env.NODE_ENV = "staging";
+      const stagingReport = error.unwrapException();
+      expect(prodReport).to.not.equal(stagingReport);
+    }
+  });
+
+  it("should support non-Node environment", () => {
+    const context = new LitContext("en", mockStorage());
+    const message = "Error occurred";
+    const error = new LitContextError(context, message, undefined);
+    expect(() => error.unwrapException()).not.to.throw();
+  });
+});
