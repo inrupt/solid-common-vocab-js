@@ -14,7 +14,7 @@ describe("LIT context-aware errors", () => {
     const context = new LitContext("en", mockStorage());
     expect(
       // @ts-ignore, because the parameters of the constructor
-      // explicitely expect (string, Error), to which (string, string) cannot
+      // explicitly expect (string, Error), to which (string, string) cannot
       // be assigned.
       () => new LitContextError(context, "test", "Not an error!")
     ).to.throw("test");
