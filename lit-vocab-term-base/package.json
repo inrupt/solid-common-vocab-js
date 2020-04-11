@@ -23,8 +23,7 @@
   "dependencies": {
     "@types/rdf-js": "2.0.12",
     "@rdfjs/data-model": "1.1.2",
-    "debug": "^4.1.1",
-    "moment": "^2.24.0"
+    "debug": "^4.1.1"
   },
   "author": "Pat McBennett",
   "license": "MIT",

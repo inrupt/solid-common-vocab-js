@@ -175,7 +175,7 @@ class LitMultiLingualLiteral implements Literal {
    *  string, which I guess it should...!?
    *
    * @param mandatory Flag - if true, we'll Throw an error if no value found.
-   * @param rest array of values to be used to replace placeholders in 
+   * @param rest array of values to be used to replace placeholders in
    * the looked-up message.
    * @returns {*}
    */
