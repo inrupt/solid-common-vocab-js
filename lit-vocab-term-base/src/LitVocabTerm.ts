@@ -1,4 +1,5 @@
-import { LitContext, IStore } from "./LitContext";
+import { Store } from "./utils/localStorage";
+import { LitContext } from "./LitContext";
 import { LitTermRegistry } from "./LitTermRegistry";
 import {
   LitMultiLingualLiteral,
@@ -85,7 +86,7 @@ class LitVocabTerm implements NamedNode {
   constructor(
     iri: NamedNode,
     rdfFactory: DataFactory,
-    contextStorage: IStore,
+    contextStorage: Store,
     strict?: boolean
   ) {
     this.iri = iri;
@@ -330,7 +331,7 @@ class LitVocabTerm implements NamedNode {
  * @param context
  * @param strict
  */
-function buildBasicTerm(iri: NamedNode, context: IStore, strict?: boolean) {
+function buildBasicTerm(iri: NamedNode, context: Store, strict?: boolean) {
   return new LitVocabTerm(iri, rdf, context, strict);
 }
 

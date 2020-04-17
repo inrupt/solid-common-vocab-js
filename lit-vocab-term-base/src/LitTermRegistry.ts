@@ -1,7 +1,8 @@
 import debug from "debug";
 const DEBUG_NS = "lit-vocab-term:LitTermRegistry";
 
-import { IStore, CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./LitContext";
+import { Store } from "./utils/localStorage";
+import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./LitContext";
 import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
 
 /**
@@ -12,9 +13,9 @@ import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
  * strings (so we need to expand out the meta-data for each term).
  */
 class LitTermRegistry {
-  private store: IStore;
+  private store: Store;
 
-  constructor(store: IStore) {
+  constructor(store: Store) {
     this.store = store;
   }
 

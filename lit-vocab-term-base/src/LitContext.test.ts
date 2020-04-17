@@ -1,5 +1,5 @@
 import { LitContext, CONTEXT_KEY_LOCALE } from "./LitContext";
-import { mockStorage } from "./utils/localStorage";
+import { getLocalStore } from "./utils/localStorage";
 
 import chai from "chai";
 const expect = chai.expect;
@@ -23,13 +23,13 @@ it("should fail if no storage provided", function () {
 });
 
 it("should create Ok", function () {
-  const context = new LitContext("en", mockStorage());
+  const context = new LitContext("en", getLocalStore());
   expect(context).is.not.null;
   expect(context.getLocale()).equals("en");
 });
 
 it("should change locale Ok", function () {
-  const context = new LitContext("en", mockStorage());
+  const context = new LitContext("en", getLocalStore());
   expect(context.getLocale()).equals("en");
   context.setLocale("es");
   expect(context.getLocale()).equals("es");
@@ -40,21 +40,15 @@ it("should change locale Ok", function () {
 
 it("should be created now", function () {
   const now = Date.now();
-  const context = new LitContext("en", mockStorage());
+  const context = new LitContext("en", getLocalStore());
   expect(context.getCreatedAt() >= now).to.be.true;
 });
 
 it("should fallback to the initial locale", () => {
-  const myMap = new Map<string, string>();
-  const storage = {
-    setItem: function (key: string, value: string) {
-      myMap.set(key, value);
-    },
-    getItem: function (key: string) {
-      return myMap.get(key);
-    },
-  };
-  const context = new LitContext("en", storage);
-  myMap.delete(CONTEXT_KEY_LOCALE);
+  const store = getLocalStore();
+  const context = new LitContext("en", store);
+  // A value is initialized in the store when the context is created,
+  // and to get the default initial locale this value must be removed.
+  store.removeItem(CONTEXT_KEY_LOCALE);
   expect(context.getLocale()).to.equal("en");
 });

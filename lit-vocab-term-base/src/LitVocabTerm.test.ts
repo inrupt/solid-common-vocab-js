@@ -1,4 +1,4 @@
-import { mockStorage } from "./utils/localStorage";
+import { getLocalStore } from "./utils/localStorage";
 import DataFactory from "@rdfjs/data-model";
 
 import { LitContext, CONTEXT_KEY_LOCALE } from "./LitContext";
@@ -31,7 +31,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         true
       );
       expect(term.label).to.be.undefined;
@@ -41,7 +41,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         true
       );
       expect(() => term.mandatory.label).to.throw(TEST_TERM_NAME.value);
@@ -51,7 +51,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         true
       );
       // @ts-ignore to enable testing error management
@@ -95,7 +95,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         false
       )
         .addLabelNoLanguage("test label...")
@@ -113,7 +113,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         true
       )
         .addLabel(`English label...`, "en")
@@ -131,7 +131,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         true
       );
       expect(() => term.mandatory.label).to.throw("none found");
@@ -140,7 +140,7 @@ describe("LitVocabTerm tests", () => {
 
   describe("Supports labels and comments", () => {
     it("Should use the label context", () => {
-      const storage = mockStorage();
+      const storage = getLocalStore();
       const label = "Irish label string";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
@@ -157,7 +157,7 @@ describe("LitVocabTerm tests", () => {
       const unStrictTerm = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         false
       );
 
@@ -181,7 +181,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         false
       ).addLabel(englishLabel, "en");
 
@@ -189,7 +189,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should override language", () => {
-      const storage = mockStorage();
+      const storage = getLocalStore();
       const irishLabel = "Irish label...";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
@@ -218,7 +218,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         true
       ).addLabel("Test label in English...", "en");
 
@@ -235,7 +235,7 @@ describe("LitVocabTerm tests", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
-        mockStorage(),
+        getLocalStore(),
         false
       ).addLabel("Test label in English...", "en");
 
@@ -247,7 +247,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should use the comment context", () => {
-      const storage = mockStorage();
+      const storage = getLocalStore();
       const comment = "test label string";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
@@ -265,7 +265,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("should support the shorthand asEnglish to get a value in english", () => {
-      const storage = mockStorage();
+      const storage = getLocalStore();
       const irishLabel = "Irish label...";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
@@ -281,7 +281,7 @@ describe("LitVocabTerm tests", () => {
 
   describe("Supports messages (rdfs:literals)", () => {
     it("Should access literal definition with language from context without params", () => {
-      const storage = mockStorage();
+      const storage = getLocalStore();
       const iri = TEST_TERM_NAME;
       const term = new LitVocabTerm(iri, DataFactory, storage, false)
         .addMessage("whatever test", "en")
@@ -293,7 +293,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should ignore locale from our context if explicit language, with one param", () => {
-      const storage = mockStorage();
+      const storage = getLocalStore();
       const term = new LitVocabTerm(TEST_TERM_NAME, DataFactory, storage, false)
         .addMessage("Params test {{0}} and {{1}}", "en")
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
@@ -310,7 +310,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should ignore locale from our context if explicit language, with params", () => {
-      const storage = mockStorage();
+      const storage = getLocalStore();
       const term = new LitVocabTerm(TEST_TERM_NAME, DataFactory, storage, false)
         .addMessage("Params test {{0}} and {{1}}", "en")
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
@@ -320,7 +320,7 @@ describe("LitVocabTerm tests", () => {
         term.asLanguage("en").messageParams("first", "second")?.value
       ).equals("Params test first and second");
 
-      mockStorage().setItem(CONTEXT_KEY_LOCALE, "en");
+      getLocalStore().setItem(CONTEXT_KEY_LOCALE, "en");
       expect(
         term.asLanguage("es").messageParams("first", "second")?.value
       ).equals("Prueba de parámetros first y second");
@@ -381,7 +381,7 @@ describe("LitVocabTerm tests", () => {
 
   describe("Implementing RDFJS", () => {
     it("should be possible to test LitVocabTerm equality", () => {
-      const store = mockStorage();
+      const store = getLocalStore();
       const aTerm = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
@@ -408,7 +408,7 @@ describe("LitVocabTerm tests", () => {
 
   describe("Embedding an RDFJS implementation", () => {
     it("should be possible to get a valid LitVocabTerm without providing any Datafactory", () => {
-      const store = mockStorage();
+      const store = getLocalStore();
       const aTerm = buildBasicTerm(TEST_TERM_NAME, store, false).addLabel(
         "test label...",
         "en"
