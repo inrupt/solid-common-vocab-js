@@ -1,4 +1,4 @@
-import { IStore } from "./utils/localStorage";
+import { Store } from "./utils/localStorage";
 
 const CONTEXT_KEY_LOCALE: string = "i18nextLng";
 
@@ -19,10 +19,10 @@ const CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE: string =
  */
 class LitContext {
   _initialLocale: string;
-  _storage: IStore;
+  _storage: Store;
   _createdAt: number;
 
-  constructor(locale: string, storage: IStore) {
+  constructor(locale: string, storage: Store) {
     if (!locale) {
       throw new Error(
         "A new context *MUST* be provided a locale, but none was provided."
@@ -61,7 +61,6 @@ class LitContext {
 
 export {
   LitContext,
-  IStore,
   CONTEXT_KEY_LOCALE,
   CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE,
 };

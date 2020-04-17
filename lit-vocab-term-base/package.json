@@ -1,6 +1,6 @@
 {
   "name": "@pmcb55/lit-vocab-term-base",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Very basic implementation of LIT Vocab Term, with minimal RDF library dependencies.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\"",
-    "test": "eslint --config .eslintrc.js \"src/**\" && jest",
+    "test": "eslint --config .eslintrc.js \"src/**\" && jest --no-cache",
     "preversion": "npm test",
     "build": "rollup --config rollup.config.js",
     "prepublishOnly": "npm run build"

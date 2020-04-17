@@ -1,19 +1,44 @@
-interface IStore {
-  setItem(key: string, value: string): void;
-  getItem(key: string): string | undefined;
-}
+type Store = typeof window.localStorage;
 
-// Storage Mock
-function mockStorage(): IStore {
-  let storage = new Map<string, string>();
+/**
+ * Returns a local store instance
+ */
+function buildStore(): Store {
+  const storage = new Map<string, string>();
   return {
-    setItem: function (key: string, value: string) {
+    setItem: (key: string, value: string) => {
       storage.set(key, value);
     },
-    getItem: function (key: string) {
-      return storage.get(key);
+    getItem: (key: string) => {
+      const result = storage.get(key);
+      return result ? result : null;
+    },
+    removeItem: (key: string) => {
+      storage.delete(key);
+    },
+    get length(): number {
+      return storage.size;
+    },
+    clear: () => storage.clear(),
+    key: function (index: number) {
+      const iterator = storage.entries();
+      let item = iterator.next();
+      for (let i = 0; i < index; i++) {
+        item = iterator.next();
+      }
+      return item && item.value ? item.value[0] : null;
     },
   };
 }
 
-export { IStore, mockStorage };
+/**
+ * Returns localStore in a browser environment, and a local store instance otherwise
+ */
+function getLocalStore(): Store {
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    return window.localStorage;
+  }
+  return buildStore();
+}
+
+export { Store, getLocalStore, buildStore };

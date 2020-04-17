@@ -1,6 +1,6 @@
 import { LitContext } from "./LitContext";
 import { LitContextError } from "./LitContextError";
-import { mockStorage } from "./utils/localStorage";
+import { getLocalStore } from "./utils/localStorage";
 
 import chai from "chai";
 const expect = chai.expect;
@@ -11,7 +11,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should fail if wrapped exception is not an Error", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     expect(
       // @ts-ignore, because the parameters of the constructor
       // explicitly expect (string, Error), to which (string, string) cannot
@@ -25,12 +25,12 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should be possible to create without a wrapped error", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     expect(new LitContextError(context, "test", undefined)).to.not.be.null;
   });
 
   it("should be able to wrap a standard error", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const message = "Error occurred";
     const wrapMessage = "Wrap error message";
     const wrapError = new LitContextError(
@@ -47,7 +47,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should contain wrapped exception details", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const errorLvl1 = new LitContextError(
       context,
       "Error message Level1",
@@ -71,7 +71,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("throwing a standard error loses nested information", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const errorLvl1 = new LitContextError(
       context,
       "Error message Level1",
@@ -98,7 +98,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should contain wrapped exception details, but no stack info", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     process.env.NODE_ENV = "production";
     const errorLvl1 = new LitContextError(
       context,
@@ -126,7 +126,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should unwrap when calling toString()", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const message = "Error occurred";
     try {
       throw new Error(message);
@@ -142,7 +142,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should check if our error contains specified values", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const message = "Error occurred";
     try {
       throw new LitContextError(context, message, undefined);
@@ -154,7 +154,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should return true if we don't actually check for any arguments", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const message = "Error occurred";
     try {
       throw new LitContextError(context, message, undefined);
@@ -164,7 +164,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should not throw on an empty stack", function () {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const message = "Error occurred";
     const error = new LitContextError(context, message, undefined);
     error.stack = undefined;
@@ -174,7 +174,7 @@ describe("LIT context-aware errors", () => {
   it("should not show the whole stack in production", () => {
     if (process?.env) {
       process.env.NODE_ENV = "production";
-      const context = new LitContext("en", mockStorage());
+      const context = new LitContext("en", getLocalStore());
       const message = "Error occurred";
       const error = new LitContextError(context, message, undefined);
       const prodReport = error.unwrapException();
@@ -185,7 +185,7 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should support non-Node environment", () => {
-    const context = new LitContext("en", mockStorage());
+    const context = new LitContext("en", getLocalStore());
     const message = "Error occurred";
     const error = new LitContextError(context, message, undefined);
     expect(() => error.unwrapException()).not.to.throw();

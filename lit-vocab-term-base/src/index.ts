@@ -1,4 +1,4 @@
-export { IStore, mockStorage } from "./utils/localStorage";
+export { Store, getLocalStore, buildStore } from "./utils/localStorage";
 export { LitContext, CONTEXT_KEY_LOCALE } from "./LitContext";
 export { LitContextError } from "./LitContextError";
 export {
