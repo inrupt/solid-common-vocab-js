@@ -35,13 +35,10 @@ function buildStore(): Store {
  * Returns localStore in a browser environment, and a local store instance otherwise
  */
 function getLocalStore(): Store {
-  try {
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
     return window.localStorage;
-  } catch (error) {
-    // This catch block prevents the jest Node environment to file because
-    // `window` is an undeclared reference.
-    return buildStore();
   }
+  return buildStore();
 }
 
 export { Store, getLocalStore, buildStore };
