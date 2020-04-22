@@ -8,14 +8,14 @@ const stringToStream = require("string-to-stream");
 const streamToString = require("stream-to-string");
 
 const fs = require("fs");
-const uuidv1 = require("uuid/v1");
+const uuidv4 = require("uuid/v4");
 
 const {
   LitContextError,
   LitVocabTermBase,
 } = require("@pmcb55/lit-vocab-term-base");
 
-module.exports.generateUuid = uuidv1;
+module.exports.generateUuid = uuidv4;
 
 const defaultWebIdServerDomain = "https://NoSolidServer";
 module.exports.DEFAULT_WEDID_SERVER_DOMAIN = defaultWebIdServerDomain;
@@ -96,7 +96,7 @@ module.exports.generateUuid = () => {
     return DEV_ONLY_ID++;
   }
 
-  return uuidv1();
+  return uuidv4();
 };
 
 /**
