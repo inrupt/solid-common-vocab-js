@@ -2,6 +2,7 @@ node_modules
 .nyc_output
 dist/
 umd/
+.eslintcache
 
 # Webstorm
 .idea
