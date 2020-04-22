@@ -20,11 +20,12 @@
     "@pmcb55/lit-vocab-term-base": "0.2.4",
     "@rdfjs/formats-common": "^2.0.1",
     "aggregation": "^1.2.5",
-    "moment": "^2.24.0",
     "debug": "^4.1.1",
+    "moment": "^2.24.0",
     "rdflib": "^1.0.7-3",
     "stream-to-string": "^1.2.0",
-    "string-to-stream": "^3.0.1"
+    "string-to-stream": "^3.0.1",
+    "uuid": "^7.0.3"
   },
   "author": {
     "name": "Nicolas Seydoux"
