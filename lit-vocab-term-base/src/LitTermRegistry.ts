@@ -68,7 +68,7 @@ class LitTermRegistry {
    */
   lookupFullTerm(term: string, language: string): string | undefined {
     const fallbackLanguage =
-      this.store.getItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE) || "en";
+      this.store.getItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE) ?? "en";
 
     return this.lookupFullTermFallback(term, language, [
       fallbackLanguage,
