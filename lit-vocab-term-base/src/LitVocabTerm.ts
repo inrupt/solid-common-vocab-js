@@ -248,6 +248,7 @@ class LitVocabTerm implements NamedNode {
   }
 
   asLanguage(language: string) {
+    // An empty string is converted to the NO_LANGUAGE_TAG
     this._languageOverride = language || NO_LANGUAGE_TAG;
     return this;
   }

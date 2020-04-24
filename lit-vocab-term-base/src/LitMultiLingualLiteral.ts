@@ -61,7 +61,7 @@ class LitMultiLingualLiteral implements Literal {
   termType: "Literal" = "Literal";
 
   get value(): string {
-    return this.lookup(false)?.value || "";
+    return this.lookup(false)?.value ?? "";
   }
 
   get language(): string {

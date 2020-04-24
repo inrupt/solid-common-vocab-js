@@ -35,7 +35,10 @@ function buildStore(): Store {
  * Returns localStore in a browser environment, and a local store instance otherwise
  */
 function getLocalStore(): Store {
-  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+  if (
+    typeof window !== "undefined" &&
+    typeof window.localStorage !== "undefined"
+  ) {
     return window.localStorage;
   }
   return buildStore();

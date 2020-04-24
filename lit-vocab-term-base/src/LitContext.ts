@@ -42,7 +42,7 @@ class LitContext {
   }
 
   getLocale(): string {
-    return this._storage.getItem(CONTEXT_KEY_LOCALE) || this._initialLocale;
+    return this._storage.getItem(CONTEXT_KEY_LOCALE) ?? this._initialLocale;
   }
 
   setLocale(locale: string): LitContext {
