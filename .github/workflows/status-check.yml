@@ -18,6 +18,5 @@ on:
             scope: '@inrupt'
         # NOTE: The following step is temporary, and should be removed when the repository is no 
         # longer a monorepo-ish.
-        - run: cd lit-vocab-term-base
         - run: npm ci
         - run: npm test

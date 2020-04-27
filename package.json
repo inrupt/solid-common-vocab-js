@@ -21,8 +21,9 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@types/rdf-js": "2.0.12",
     "@rdfjs/data-model": "1.1.2",
+    "@types/debug": "^4.1.5",
+    "@types/rdf-js": "2.0.12",
     "debug": "^4.1.1"
   },
   "author": "Pat McBennett",
