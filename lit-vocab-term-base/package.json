@@ -1,5 +1,5 @@
 {
-  "name": "@pmcb55/lit-vocab-term-base",
+  "name": "@inrupt/lit-vocab-term",
   "version": "0.2.5",
   "description": "Very basic implementation of LIT Vocab Term, with minimal RDF library dependencies.",
   "main": "dist/index.js",
@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pmcb55/lit-js.git",
+    "url": "https://github.com/inrupt/lit-vocab-term-js.git",
     "directory": "lit-vocab-term/lit-vocab-term-base"
   },
   "directories": {
@@ -25,7 +25,12 @@
     "@rdfjs/data-model": "1.1.2",
     "debug": "^4.1.1"
   },
-  "author": "Pat McBennett",
+  "author": {
+    "name": "Pat McBennett"
+  },
+  "contributors": [{
+    "name": "Nicolas Seydoux"
+  }],
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.2",
