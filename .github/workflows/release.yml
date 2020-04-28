@@ -15,9 +15,11 @@ jobs:
       with:
         node-version: '12.12.0'
         registry-url: https://npm.pkg.github.com/
-        scope: '@pmcb55'
+        scope: '@inrupt'
     - name: NPM install, test and publish
-      # The test fallback in the last line prevents from blocking the other scripts when republishing.
-      run: bash ./.github/workflows/release-if-updated.sh ./lit-vocab-term/lit-vocab-term-base
+      run: |
+        npm install --registry https://npm.pkg.github.com/inrupt
+        npm test
+        npm publish --registry https://npm.pkg.github.com/inrupt
       env:
         NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
