@@ -17,7 +17,5 @@ jobs:
           node-version: '12.12.0'
           registry-url: https://npm.pkg.github.com/
           scope: '@inrupt'
-      # NOTE: The following step is temporary, and should be removed when the repository is no 
-      # longer a monorepo-ish.
       - run: npm ci
       - run: npm test

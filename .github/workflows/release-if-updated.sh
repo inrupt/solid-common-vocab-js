@@ -7,7 +7,7 @@ newVersion=`node -p "require('./package.json').version"`
 # Only proceed if the version about to be published has not been published previously.
 if [ $newVersion != $publishedVersion ]
 then
-    npm install --registry https://npm.pkg.github.com/pmcb55
+    npm install --registry https://npm.pkg.github.com/inrupt
     npm test
-    npm publish --registry https://npm.pkg.github.com/pmcb55
+    npm publish --registry https://npm.pkg.github.com/inrupt
 fi
