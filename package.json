@@ -1,6 +1,6 @@
 {
   "name": "@inrupt/lit-vocab-term",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "Very basic implementation of LIT Vocab Term, with minimal RDF library dependencies.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
