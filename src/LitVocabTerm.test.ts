@@ -27,13 +27,13 @@ describe("LitVocabTerm tests", () => {
   );
 
   it("should support creating a term using a string IRI", () => {
-    const aTerm = new LitVocabTerm(
+    const myTerm = new LitVocabTerm(
       "http://some.vocab#myTerm",
       DataFactory,
       getLocalStore(),
       false
     ).addLabel("test label...", "en");
-    expect(aTerm.iri.value).to.equal("http://some.vocab#myTerm");
+    expect(myTerm.iri.value).to.equal("http://some.vocab#myTerm");
   });
 
   describe("Strict support", () => {
@@ -433,12 +433,12 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("should support building terms from a string", () => {
-      const aTerm = buildBasicTerm(
+      const myTerm = buildBasicTerm(
         "http://some.vocab#myTerm",
         getLocalStore(),
         false
       ).addLabel("test label...", "en");
-      expect(aTerm.iri.value).to.equal("http://some.vocab#myTerm");
+      expect(myTerm.iri.value).to.equal("http://some.vocab#myTerm");
     });
   });
 });
