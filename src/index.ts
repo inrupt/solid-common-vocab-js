@@ -7,3 +7,4 @@ export {
 } from "./LitMultiLingualLiteral";
 export { LitVocabTerm, buildBasicTerm } from "./LitVocabTerm";
 export { LitTermRegistry } from "./LitTermRegistry";
+export type IriString = string;

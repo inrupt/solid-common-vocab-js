@@ -6,6 +6,7 @@ import {
   NO_LANGUAGE_TAG,
 } from "./LitMultiLingualLiteral";
 import { DataFactory, NamedNode, Term, Literal } from "rdf-js";
+import { IriString } from "./index";
 import rdf from "@rdfjs/data-model";
 
 const DEFAULT_LOCALE = "en";
@@ -84,12 +85,16 @@ class LitVocabTerm implements NamedNode {
    * term 'http://example.com/vocab#name'.
    */
   constructor(
-    iri: NamedNode,
+    iri: NamedNode | IriString,
     rdfFactory: DataFactory,
     contextStorage: Store,
     strict?: boolean
   ) {
-    this.iri = iri;
+    if (typeof iri === "string") {
+      this.iri = rdfFactory.namedNode(iri);
+    } else {
+      this.iri = iri;
+    }
     this.rdfFactory = rdfFactory;
     if (strict !== undefined) {
       this.strict = strict;
@@ -104,21 +109,21 @@ class LitVocabTerm implements NamedNode {
     // lazily create these only if values are actually provided!).
     this._label = new LitMultiLingualLiteral(
       rdfFactory,
-      iri,
+      this.iri,
       undefined,
       "rdfs:label"
     );
 
     this._comment = new LitMultiLingualLiteral(
       rdfFactory,
-      iri,
+      this.iri,
       undefined,
       "rdfs:comment"
     );
 
     this._message = new LitMultiLingualLiteral(
       rdfFactory,
-      iri,
+      this.iri,
       undefined,
       "message (should be defined in RDF vocab using: skos:definition)"
     );
@@ -332,7 +337,14 @@ class LitVocabTerm implements NamedNode {
  * @param context
  * @param strict
  */
-function buildBasicTerm(iri: NamedNode, context: Store, strict?: boolean) {
+function buildBasicTerm(
+  iri: NamedNode | IriString,
+  context: Store,
+  strict?: boolean
+) {
+  if (typeof iri === "string") {
+    return new LitVocabTerm(rdf.namedNode(iri), rdf, context, strict);
+  }
   return new LitVocabTerm(iri, rdf, context, strict);
 }
 
