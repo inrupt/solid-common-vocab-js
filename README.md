@@ -21,12 +21,16 @@ The `demo` directory provides an extremely basic working example that you can ru
 with the following commands:
 ```
 cd demo
-npm install --registry=https://verdaccio.inrupt.com
+npm install --registry=https://npm.pkg.github.com/inrupt
 node index.js
 ```
 
-This very simple example can be incrementally extended by pasting in code from
-the steps described below.
+For detailed examples going beyond the common usages featured here, please see 
+the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
+
+The `lit-vocab-term` library is distributed as a Github NPM packages: `@inrupt/lit-vocab-term`
+For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
+
 
 **NOTE:** This library is used extensively by the LIT Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
@@ -40,29 +44,11 @@ use the LIT Artifact Generator whatsoever.
 
 ## RDF library support
 The LIT Vocab Term objects from this library are intended to be simple wrappers
-around 'NamedNode' objects from existing low-level RDF JavaScript libaries,
-such as RdfExt or rdflib.js. This means that LIT Vocab Term instances can be
-used natively with these libraries. We do however also provide a simple
-implementation that has no external RDF library dependency at all.
-
-We provide implementations for both rdf-ext (https
-://github.com/rdf-ext/rdf-ext) and rdflib.js. Our rdf-ext library simply
-extends the class 'rdf.defaults.NamedNode', and our rdflib.js extension
-extends the class 'NamedNode'.
-
-## Usage
-For detailed examples going beyond the common usages featured here, please see 
-the [demonstration test suite](./test/DemonstrateUsage.test.js). Note that all 
-the examples feature the `LitVocabTermBase` class, which is our lit-vocab-term 
-implementation without any RDF library dependency. `LitVocabTermRdfExt` and 
-`LitVocabTermRdfLib` both extend this class, and therefore provide the same
-interface (except for the constructor, where the RDF factory becomes implicit).
-
-The lit-vocab-term libraries are distributed as Github NPM packages:
-- `@pmcb55/lit-vocab-term-base`
-- `@pmcb55/lit-vocab-term-rdf-ext`
-
-For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
+around 'NamedNode' objects conforming to the [RDFJS interface](http://rdf.js.org/data-model-spec/).
+This means that LIT Vocab Term instances can be used natively with libraries that
+are RDFJS-compliant, such as `rdf-ext` or `rdflib.js`. A `LitVocabTerm` may be
+built by passing an RDFJS `Datafactory` implemented with any library, but it also
+embeds a basic `Datafactory` implementation for simplicity.
 
 ### Introductory example
 
@@ -79,18 +65,18 @@ ex:Person a rdfs:Class ;
 
 We could represent this as a LIT Vocab Term in JavaScript like so:
 ```javascript
-const {LitVocabTermBase} = require('@pmcb55/lit-vocab-term-base')
+const {LitVocabTerm, buildStore} = require('@inrupt/lit-vocab-term')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
 const rdf = require('rdf-ext')
-require('mock-local-storage')
 
-// 'localStorage' is used as a context - it will commonly store things like the current
+// The third argument provides as a context - it will commonly store things like the current
 // language preference of the user, which can be used to lookup term labels or comments
-// in that language. It's always there for browsers, but in NodeJS we recommend simply
-// using [Mock Local Storage](https://www.npmjs.com/package/mock-local-storage).
+// in that language. It's always there for browsers, but in NodeJS we expose a local 
+// implementation accessible through the method `buildStore`, which returns either
+// said local implementation or the browser store depending on the environment.
 // The last parameter indicates whether we want a 'strict' behaviour or not
 // (see below for an explanation).  
-const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
+const person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
   .addLabel('My Person class','en')
   .addComment('Full description of my Person class...','en')
 ```
@@ -118,15 +104,29 @@ const personLabelAsString = person.label.value
 const personCommentAsString = person.comment.value
 ```
 
-To use the RDF-ext implementation of the lit-vocab-term, the previous example would
-become: 
+To use the emmbedded `Datafactory` implementation to build a LitVocabTerm, the 
+previous example would become: 
 
 ```javascript
-// Note that the dependency on the RDF library is integrated in the implementation.
-const person = new LitVocabTermRdfExt('https://example.com#Person', localStorage, true)
+const {buildBasicTerm, buildStore} = require('@inrupt/lit-vocab-term')
+
+const person = buildBasicTerm('https://example.com#Person', buildStore(), true)
   .addLabel('My Person class','en')
   .addComment('Full description of my Person class...','en')
-// ...
+```
+
+**NOTE**: The `lit-vocab-term` library is implemented in TypeScript, and embeds 
+its typing. The following snippet of code demonstrate a basic TypeScript usage:
+
+```typescript
+import {buildBasicTerm, buildStore, LitVocabTerm} from '@inrupt/lit-vocab-term'
+
+const person: LitVocabTerm = buildBasicTerm(
+  'https://example.com#Person',
+  buildStore(),
+  true
+).addLabel('My Person class','en')
+.addComment('Full description of my Person class...','en')
 ```
 
 ### Messages
@@ -138,7 +138,7 @@ and allowing for easy translations of those messages). For instance, to report e
 to the user with contextual information (and in multiple languages).
 
 ```javascript
-const term = new LitVocabTermBase("https://test.com/vocab#Unauthorized", rdf, localStorage, true)
+const term = new LitVocabTerm("https://test.com/vocab#Unauthorized", rdf, buildStore(), true)
     .addMessage('Your account ({{0}}), does not have sufficient credentials for this operation', 'en')
     .addMessage('Votre compte ({{0}}) ne dispose pas des informations d'identification suffisantes pour cette opération', 'fr')
     
@@ -155,7 +155,8 @@ also provide these descriptions in multiple languages if appropriate and possibl
 the local part of the term's IRI (see the next section about `strictness`)).
 
 ```javascript
-const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
+const storage = buildStore()
+const person = new LitVocabTerm('https://example.com#Person', rdf, storage, true)
   .addLabel('Person','en')
   .addLabel('Personne', 'fr')
   .addLabel('Persona', 'es')
@@ -168,7 +169,7 @@ var personLabel = person.label
 personLabel = person.asLanguage('fr').label
 
 // Change the default language in our context (i.e. localStorage).
-localStorage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
+storage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
 
 personLabel = person.label // personLabel now contains the Spanish literal.
 ```
@@ -185,14 +186,14 @@ empty (i.e. "").
 
 ```javascript
 // Here we specify 'loose' behaviour(i.e. 'false' parameter to constructor)...
-var person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, false)
+var person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), false)
 
 // 'personLabel' will default to an RDF literal with the value "Person", and an empty
 // language tag (i.e. "").
 var personLabel = person.label 
  
 // Now strict behaviour...
-person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
+person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
 // personLabel will default to 'undefined'.
 personLabel = person.label
 ```
@@ -202,7 +203,7 @@ to instead throw an error when no label is found by using the `.mandatory` acces
 
 ```javascript
 // Here 'strictness' has no impact...
-const person = new LitVocabTermBase('https://example.com#Person', rdf, localStorage, true)
+const person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
 
 // An exception will be thrown here, because our term has no label.
 const personLabel = person.mandatory.label 
