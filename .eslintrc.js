@@ -6,7 +6,7 @@ module.exports = {
     node: true,
     mocha: true,
   },
-  plugins: ["prettier", "@typescript-eslint"],
+  plugins: ["prettier", "@typescript-eslint", "license-header"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -26,5 +26,6 @@ module.exports = {
     // we disable the generic one, because it thinks imported types are unused
     // when they're not:
     "no-unused-vars": "off",
+    "license-header/header": ["error", "./resources/license-header.js"],
   },
 };
