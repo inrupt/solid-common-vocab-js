@@ -26,6 +26,16 @@ describe("LitVocabTerm tests", () => {
     `test://iri#${TEST_TERM_NAME_PATH}`
   );
 
+  it("should support creating a term using a string IRI", () => {
+    const aTerm = new LitVocabTerm(
+      "http://some.vocab#myTerm",
+      DataFactory,
+      getLocalStore(),
+      false
+    ).addLabel("test label...", "en");
+    expect(aTerm.iri.value).to.equal("http://some.vocab#myTerm");
+  });
+
   describe("Strict support", () => {
     it("Should not use IRI local name if no label and strict", () => {
       const term = new LitVocabTerm(
@@ -420,6 +430,15 @@ describe("LitVocabTerm tests", () => {
         false
       ).addLabel("test label...", "en");
       expect(aTerm.equals(anotherTerm)).to.be.true;
+    });
+
+    it("should support building terms from a string", () => {
+      const aTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false
+      ).addLabel("test label...", "en");
+      expect(aTerm.iri.value).to.equal("http://some.vocab#myTerm");
     });
   });
 });
