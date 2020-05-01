@@ -1,6 +1,3 @@
-import debug from "debug";
-const DEBUG_NS = "lit-vocab-term:LitTermRegistry";
-
 import { Store } from "./utils/localStorage";
 import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./LitContext";
 import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
@@ -98,12 +95,8 @@ class LitTermRegistry {
     if (result) {
       return result;
     } else if (fallback.length > 0) {
-      debug(DEBUG_NS)(
-        `Fallback back to [${fallback[0]}] to look [${term}] up.`
-      );
       return this.lookupFullTermFallback(term, fallback[0], fallback.slice(1));
     } else {
-      debug(DEBUG_NS)(`Vocab term lookup not found: [${term}].`);
       return undefined;
     }
   }

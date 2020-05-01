@@ -22,9 +22,7 @@
   },
   "dependencies": {
     "@rdfjs/data-model": "1.1.2",
-    "@types/debug": "^4.1.5",
-    "@types/rdf-js": "2.0.12",
-    "debug": "^4.1.1"
+    "@types/rdf-js": "2.0.12"
   },
   "author": {
     "name": "Pat McBennett"
@@ -52,7 +50,6 @@
     "lint-staged": "^10.1.7",
     "prettier": "2.0.2",
     "rollup": "^2.7.3",
-    "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-typescript2": "^0.26.0",
     "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
