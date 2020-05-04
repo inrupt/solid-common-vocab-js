@@ -1,3 +1,11 @@
+/**
+ * Proprietary and Confidential
+ *
+ * Copyright 2020 Inrupt Inc. - all rights reserved.
+ *
+ * Do not use without explicit permission from Inrupt Inc.
+ */
+
 import { DataFactory, Literal, NamedNode, Term } from "rdf-js";
 
 const NO_LANGUAGE_TAG = "<No Language>";

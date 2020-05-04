@@ -1,3 +1,11 @@
+/**
+ * Proprietary and Confidential
+ *
+ * Copyright 2020 Inrupt Inc. - all rights reserved.
+ *
+ * Do not use without explicit permission from Inrupt Inc.
+ */
+
 import { Store } from "./utils/localStorage";
 import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./LitContext";
 import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";

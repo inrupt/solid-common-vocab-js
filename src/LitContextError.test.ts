@@ -1,3 +1,11 @@
+/**
+ * Proprietary and Confidential
+ *
+ * Copyright 2020 Inrupt Inc. - all rights reserved.
+ *
+ * Do not use without explicit permission from Inrupt Inc.
+ */
+
 import { LitContext } from "./LitContext";
 import { LitContextError } from "./LitContextError";
 import { getLocalStore } from "./utils/localStorage";
