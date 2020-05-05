@@ -21,7 +21,10 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
-    "prettier/prettier": "error",
+    "prettier/prettier": ["error", {
+      // To remove "error  Delete `␍`  prettier/prettier" reports on GitHub.
+      "endOfLine": "auto"
+    }],
     // There's a TypeScript-specific version of this rule;
     // we disable the generic one, because it thinks imported types are unused
     // when they're not:
