@@ -120,13 +120,13 @@ describe("LitVocabTerm tests", () => {
         .addCommentNoLanguage("test comment...")
         .addMessageNoLanguage("test message...");
 
-      expect(term.labelLiteral?.value).to.equal("test label...");
+      expect(term.label).to.equal("test label...");
       expect(term.labelLiteral).deep.equal(
         DataFactory.literal("test label...", "")
       );
 
-      expect(term.commentLiteral?.value).to.equal("test comment...");
-      expect(term.messageLiteral?.value).to.equal("test message...");
+      expect(term.comment).to.equal("test comment...");
+      expect(term.message).to.equal("test message...");
     });
 
     it("Should still fallback to English if language not found", () => {
@@ -185,15 +185,15 @@ describe("LitVocabTerm tests", () => {
       expect(unStrictTerm.labelLiteral).deep.equals(
         DataFactory.literal(TEST_TERM_NAME_PATH, "")
       );
-      expect(unStrictTerm.labelLiteral?.value).equals(TEST_TERM_NAME_PATH);
+      expect(unStrictTerm.label).equals(TEST_TERM_NAME_PATH);
 
       const englishLabel = "English language value";
       unStrictTerm.addLabel(englishLabel, "en");
       expect(unStrictTerm.labelLiteral).deep.equals(
         DataFactory.literal(englishLabel, "en")
       );
-      expect(unStrictTerm.labelLiteral?.value).equals(englishLabel);
-      expect(unStrictTerm.mandatory.labelLiteral?.value).equals(englishLabel);
+      expect(unStrictTerm.label).equals(englishLabel);
+      expect(unStrictTerm.mandatory.label).equals(englishLabel);
     });
 
     it("Should default to English value language", () => {
@@ -224,14 +224,14 @@ describe("LitVocabTerm tests", () => {
       const englishLabel = "English labelLiteral...";
       term.addLabel(englishLabel, "en");
 
-      expect(term.labelLiteral?.value).equals(englishLabel);
-      expect(term.asLanguage("").labelLiteral?.value).equals(englishLabel);
-      expect(term.asLanguage("fr").labelLiteral?.value).equals(englishLabel);
-      expect(term.asLanguage("ga").labelLiteral?.value).equals(irishLabel);
+      expect(term.label).equals(englishLabel);
+      expect(term.asLanguage("").label).equals(englishLabel);
+      expect(term.asLanguage("fr").label).equals(englishLabel);
+      expect(term.asLanguage("ga").label).equals(irishLabel);
 
       storage.setItem(CONTEXT_KEY_LOCALE, "ga");
-      expect(term.labelLiteral?.value).equals(irishLabel);
-      expect(term.asLanguage("").labelLiteral?.value).equals(englishLabel);
+      expect(term.label).equals(irishLabel);
+      expect(term.asLanguage("").label).equals(englishLabel);
     });
 
     it("Should throw if mandatory language not found and strict", () => {
@@ -240,7 +240,7 @@ describe("LitVocabTerm tests", () => {
         DataFactory,
         getLocalStore(),
         true
-      ).addLabel("Test labelLiteral in English...", "en");
+      ).addLabel("Test label in English...", "en");
 
       expect(() => term.mandatory.asLanguage("fr").labelLiteral).to.throw(
         "none found"
@@ -257,7 +257,7 @@ describe("LitVocabTerm tests", () => {
         DataFactory,
         getLocalStore(),
         false
-      ).addLabel("Test labelLiteral in English...", "en");
+      ).addLabel("Test label in English...", "en");
 
       expect(() => term.mandatory.asLanguage("fr").labelLiteral).to.throw(
         TEST_TERM_NAME.value
@@ -268,7 +268,7 @@ describe("LitVocabTerm tests", () => {
 
     it("Should use the comment context", () => {
       const storage = getLocalStore();
-      const comment = "test labelLiteral string";
+      const comment = "test label string";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
@@ -278,10 +278,10 @@ describe("LitVocabTerm tests", () => {
 
       expect(term.comment).to.be.undefined;
       term.addComment(comment, "en");
-      expect(term.commentLiteral?.value).equals(comment);
+      expect(term.comment).equals(comment);
       storage.setItem(CONTEXT_KEY_LOCALE, "en");
-      expect(term.commentLiteral?.value).equals(comment);
-      expect(term.asEnglish.commentLiteral?.value).equals(comment);
+      expect(term.comment).equals(comment);
+      expect(term.asEnglish.comment).equals(comment);
     });
 
     it("should support the shorthand asEnglish to get a value in english", () => {
@@ -295,7 +295,7 @@ describe("LitVocabTerm tests", () => {
       ).addLabel(irishLabel, "ga");
       const englishLabel = "English labelLiteral...";
       term.addLabel(englishLabel, "en");
-      expect(term.asEnglish.labelLiteral?.value).to.equal(englishLabel);
+      expect(term.asEnglish.label).to.equal(englishLabel);
     });
   });
 
@@ -307,9 +307,9 @@ describe("LitVocabTerm tests", () => {
         .addMessage("whatever test", "en")
         .addMessage("test whatever in Spanish", "es");
 
-      expect(term.messageLiteral?.value).equals("whatever test");
+      expect(term.message).equals("whatever test");
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
-      expect(term.messageLiteral?.value).equals("test whatever in Spanish");
+      expect(term.message).equals("test whatever in Spanish");
     });
 
     it("Should ignore locale from our context if explicit language, with one param", () => {
@@ -319,12 +319,12 @@ describe("LitVocabTerm tests", () => {
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
 
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
-      expect(term.messageParams("first", "second")?.value).equals(
-        "Prueba de parámetros first y second"
+      expect(term.messageParamsLiteral("first", "second")).deep.equals(
+        DataFactory.literal("Prueba de parámetros first y second", "es")
       );
 
       storage.setItem(CONTEXT_KEY_LOCALE, "en");
-      expect(term.messageParams("first", "second")?.value).equals(
+      expect(term.messageParams("first", "second")).equals(
         "Params test first and second"
       );
     });
@@ -337,12 +337,12 @@ describe("LitVocabTerm tests", () => {
 
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
       expect(
-        term.asLanguage("en").messageParams("first", "second")?.value
+        term.asLanguage("en").messageParamsLiteral("first", "second")?.value
       ).equals("Params test first and second");
 
       getLocalStore().setItem(CONTEXT_KEY_LOCALE, "en");
       expect(
-        term.asLanguage("es").messageParams("first", "second")?.value
+        term.asLanguage("es").messageParamsLiteral("first", "second")?.value
       ).equals("Prueba de parámetros first y second");
     });
   });

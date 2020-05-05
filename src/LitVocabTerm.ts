@@ -208,6 +208,23 @@ class LitVocabTerm implements NamedNode {
     return message && message.value;
   }
 
+  messageParamsLiteral(...rest: string[]) {
+    const language = this.useLanguageOverrideOrGetFromContext();
+
+    try {
+      return this._message
+        .asLanguage(language)
+        .params(this._mandatory, ...rest);
+    } finally {
+      this.resetState();
+    }
+  }
+
+  messageParams(...rest: string[]) {
+    const messageParams = this.messageParamsLiteral(...rest);
+    return messageParams && messageParams.value;
+  }
+
   resetState() {
     this._languageOverride = undefined;
     this._mandatory = false;
@@ -279,18 +296,6 @@ class LitVocabTerm implements NamedNode {
     // An empty string is converted to the NO_LANGUAGE_TAG
     this._languageOverride = language || NO_LANGUAGE_TAG;
     return this;
-  }
-
-  messageParams(...rest: string[]) {
-    const language = this.useLanguageOverrideOrGetFromContext();
-
-    try {
-      return this._message
-        .asLanguage(language)
-        .params(this._mandatory, ...rest);
-    } finally {
-      this.resetState();
-    }
   }
 
   /**

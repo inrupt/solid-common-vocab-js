@@ -317,9 +317,9 @@ describe("Demonstrate LIT Vocab Term usage", () => {
 
       // But if we look for the message with an incorrect number of parameters
       // (in this case our message has zero), we'll get an exception.
-      expect(() => term.mandatory.messageParams("too many params")).to.throw(
-        TEST_TERM_ERROR.value
-      );
+      expect(() =>
+        term.mandatory.messageParamsLiteral("too many params")
+      ).to.throw(TEST_TERM_ERROR.value);
     });
 
     it("Message with parameters", () => {
@@ -330,13 +330,13 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         .addMessage(englishMessage, "en")
         .addMessage(germanMessage, "de");
 
-      expect(term.messageParams("one", "two")?.value).to.equal(
+      expect(term.messageParams("one", "two")).to.equal(
         "Message with one, two params"
       );
 
       // We can freely move parameters around in the message text, as
       // illustrated in our German translation...
-      expect(term.asLanguage("de").messageParams("one", "two")?.value).to.equal(
+      expect(term.asLanguage("de").messageParams("one", "two")).to.equal(
         "Unterschiedliche Reihenfolge two und dann one Parameter"
       );
 
