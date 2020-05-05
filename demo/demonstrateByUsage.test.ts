@@ -96,7 +96,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
 
       // If we only want the text value of the label, we can explicitly ask
       // for only that using '.value' (which comes from the RDFJS interfaces).
-      expect(term.labelLiteral?.value).to.equal(TEST_TERM_NAME_PATH);
+      expect(term.label).to.equal(TEST_TERM_NAME_PATH);
 
       // Explicitly saying that a value is mandatory will throw an exception
       // (regardless of 'strict-ness') if no value can be found.
@@ -105,16 +105,14 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       // When we explicitly request French, but we still have no labels at all,
       // we'll return the IRI's local name by default (since our term was
       // created with 'unstrict' mode).
-      expect(term.asLanguage("fr").labelLiteral?.value).to.equal(
-        TEST_TERM_NAME_PATH
-      );
+      expect(term.asLanguage("fr").label).to.equal(TEST_TERM_NAME_PATH);
 
-      // Now we'll add a labelLiteral in French.
+      // Now we'll add a label in French.
       term.addLabel("Prénom", "fr");
 
       // But we still get back the local name if we don't request a specific
-      // language, and there is still no English or no-language tag labelLiteral.
-      expect(term.labelLiteral?.value).to.equal(TEST_TERM_NAME_PATH);
+      // language, and there is still no English or no-language tag label.
+      expect(term.label).to.equal(TEST_TERM_NAME_PATH);
 
       // But if we now explicitly ask for French, we'll get the French LIT
       // Literal object.
@@ -122,18 +120,18 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         rdf.literal("Prénom", "fr")
       );
 
-      // ...or if we just want the French labelLiteral as a string...
-      expect(term.asLanguage("fr").labelLiteral?.value).to.equal("Prénom");
+      // ...or if we just want the French label as a string...
+      expect(term.asLanguage("fr").label).to.equal("Prénom");
 
-      // Now we add a labelLiteral without any language at all...
+      // Now we add a label without any language at all...
       term.addLabelNoLanguage("No language NAME");
 
       // ... we'll get that no-language value back when no specific language
-      // is requested, since there is still no explicitly English-tagged labelLiteral.
-      expect(term.labelLiteral?.value).to.equal("No language NAME");
+      // is requested, since there is still no explicitly English-tagged label.
+      expect(term.label).to.equal("No language NAME");
 
       // And requesting a mandatory value will still throw an exception.
-      expect(() => term.mandatory.labelLiteral).to.throw(TEST_TERM_NAME.value);
+      expect(() => term.mandatory.label).to.throw(TEST_TERM_NAME.value);
 
       // If we provide a value explicitly tagged as 'English'...
       const englishLabel = "Label in English - Name";
@@ -141,25 +139,25 @@ describe("Demonstrate LIT Vocab Term usage", () => {
 
       // ...then we'll get that value back without needing to provide an
       // explicit language at all...
-      expect(term.labelLiteral?.value).to.equal(englishLabel);
+      expect(term.label).to.equal(englishLabel);
 
       // ...or if we explicitly request English...
-      expect(term.asLanguage("en").labelLiteral?.value).to.equal(englishLabel);
+      expect(term.asLanguage("en").label).to.equal(englishLabel);
 
       // ...or if we use our convenience '.asEnglish' accessor.
-      expect(term.asEnglish.labelLiteral?.value).to.equal(englishLabel);
+      expect(term.asEnglish.label).to.equal(englishLabel);
 
       // And making it mandatory should be fine too...
-      expect(term.mandatory.labelLiteral?.value).to.equal(englishLabel);
+      expect(term.mandatory.label).to.equal(englishLabel);
 
-      // When we now ask for a non-existent language labelLiteral (in this case
-      // German), this time it should fallback to the English labelLiteral.
-      expect(term.asLanguage("de").labelLiteral?.value).equals(englishLabel);
+      // When we now ask for a non-existent language label (in this case
+      // German), this time it should fallback to the English label.
+      expect(term.asLanguage("de").label).equals(englishLabel);
     });
 
     it("Label handling WITHOUT allowing local part of IRI as fallback", () => {
       // Here we explicitly prevent our term from using the local path of
-      // the IRI as the English labelLiteral if no English labelLiteral is explicitly
+      // the IRI as the English label if no English label is explicitly
       // provided (i.e. we set the 'strict' flag to 'true').
       // This is useful when we control the generation of vocab terms, since we
       // can enforce that all terms must have at least English labels and
@@ -167,41 +165,41 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       // today for example).
       const term = new LitVocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
 
-      // Simply requesting the labelLiteral without an explicit language assumes
+      // Simply requesting the label without an explicit language assumes
       // English, but since we haven't provided any labels at all we get
       // 'undefined' for strict terms.
-      expect(term.labelLiteral).to.be.undefined;
+      expect(term.label).to.be.undefined;
 
-      // Asking for a mandatory labelLiteral of a 'strict' term when there are no
+      // Asking for a mandatory label of a 'strict' term when there are no
       // matching labels throws an exception instead of returning 'undefined'.
-      expect(() => term.mandatory.labelLiteral).to.throw(TEST_TERM_NAME.value);
+      expect(() => term.mandatory.label).to.throw(TEST_TERM_NAME.value);
 
-      // Now we add a non-English language labelLiteral...
+      // Now we add a non-English language label...
       const labelInIrish = "Ainm";
       term.addLabel(labelInIrish, "ga");
 
       // Getting the value without providing a language still throws (since we
       // have no default (i.e. English) value)...
-      expect(term.labelLiteral).to.be.undefined;
+      expect(term.label).to.be.undefined;
 
-      // But looking specifically for our new language labelLiteral works fine.
-      expect(term.asLanguage("ga").labelLiteral?.value).to.equal(labelInIrish);
+      // But looking specifically for our new language label works fine.
+      expect(term.asLanguage("ga").label).to.equal(labelInIrish);
 
-      // Now we explicitly add an English labelLiteral...
+      // Now we explicitly add an English label...
       const englishLabel = "Label in English - Name";
       term.addLabel(englishLabel, "en");
 
-      // By default we'll get our English labelLiteral, of course...
-      expect(term.labelLiteral?.value).to.equal(englishLabel);
+      // By default we'll get our English label, of course...
+      expect(term.label).to.equal(englishLabel);
 
-      // But now when we ask for a non-existent language labelLiteral, this time we
-      // should fallback to the English labelLiteral...
-      expect(term.asLanguage("fr").labelLiteral?.value).equals(englishLabel);
+      // But now when we ask for a non-existent language label, this time we
+      // should fallback to the English label...
+      expect(term.asLanguage("fr").label).equals(englishLabel);
     });
 
     it("Show language coming from context", () => {
       const storage = getLocalStore();
-      // Create a vocab term with a non-English language labelLiteral (in this case
+      // Create a vocab term with a non-English language label (in this case
       // Irish, and using the 'strict' mode).
       const labelInIrish = "Ainm";
       const term = new LitVocabTerm(
@@ -211,37 +209,37 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         true
       ).addLabel(labelInIrish, "ga");
 
-      // First show that by default we can't find any labelLiteral values at all
+      // First show that by default we can't find any label values at all
       // (because we created our term in 'strict' mode, meaning we won't
       // fallback to using the path of the term's IRI)...
-      expect(term.labelLiteral).to.be.undefined;
+      expect(term.label).to.be.undefined;
 
       // Now set the context language to Irish...
       storage.setItem(CONTEXT_KEY_LOCALE, "ga");
 
-      // ..and now our default will return our Irish labelLiteral LIT Literal object.
+      // ..and now our default will return our Irish label LIT Literal object.
       expect(term.labelLiteral).to.deep.equal(rdf.literal(labelInIrish, "ga"));
 
-      // ...or, as before, just the labelLiteral text if we ask for just the value.
-      expect(term.labelLiteral?.value).equals(labelInIrish);
+      // ...or, as before, just the label text if we ask for just the value.
+      expect(term.label).equals(labelInIrish);
     });
   });
 
   /**
    * Here we use the 'strict' flag on our vocab terms, which enforces the
-   * expectation that the term will have at least an English labelLiteral and
-   * comment, and therefore will never use the IRI's path as the labelLiteral - it will
+   * expectation that the term will have at least an English label and
+   * comment, and therefore will never use the IRI's path as the label - it will
    * return 'undefined' (or throw an exception if '.mandatory') instead.
    */
   describe("Strict support", () => {
-    it("Should not use IRI path if no labelLiteral and strict", () => {
+    it("Should not use IRI path if no label and strict", () => {
       const term = new LitVocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
 
       // Won't fallback to use IRI path - just returns 'undefined'.
-      expect(term.labelLiteral).to.be.undefined;
+      expect(term.label).to.be.undefined;
 
       // ...or throws an exception if mandatory is stipulated.
-      expect(() => term.mandatory.labelLiteral).to.throw(TEST_TERM_NAME.value);
+      expect(() => term.mandatory.label).to.throw(TEST_TERM_NAME.value);
     });
 
     it("Should still fallback to English if language not found", () => {
@@ -251,10 +249,8 @@ describe("Demonstrate LIT Vocab Term usage", () => {
 
       // Here we ask for French (which we didn't provide), so we fallback to
       // the English values we did provide...
-      expect(term.asLanguage("fr").labelLiteral?.value).equals(`First name`);
-      expect(term.asLanguage("fr").commentLiteral?.value).equals(
-        `English comment...`
-      );
+      expect(term.asLanguage("fr").label).equals(`First name`);
+      expect(term.asLanguage("fr").comment).equals(`English comment...`);
     });
 
     it("Should require explicitly English label and comment if mandatory", () => {
@@ -313,15 +309,11 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         .addMessage(englishMessage, "en")
         .addMessage(germanMessage, "de");
 
-      expect(term.messageLiteral?.value).to.equal(englishMessage);
-      expect(term.asLanguage("de").messageLiteral?.value).to.equal(
-        germanMessage
-      );
+      expect(term.message).to.equal(englishMessage);
+      expect(term.asLanguage("de").message).to.equal(germanMessage);
 
       // Non-existent language value will fallback to English...
-      expect(term.asLanguage("fr").messageLiteral?.value).to.equal(
-        englishMessage
-      );
+      expect(term.asLanguage("fr").message).to.equal(englishMessage);
 
       // But if we look for the message with an incorrect number of parameters
       // (in this case our message has zero), we'll get an exception.
