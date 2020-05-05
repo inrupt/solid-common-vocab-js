@@ -203,12 +203,12 @@ class LitVocabTerm implements NamedNode {
     }
   }
 
-  get message(): String | undefined {
+  get message(): string | undefined {
     const message = this.messageLiteral;
     return message && message.value;
   }
 
-  messageParamsLiteral(...rest: string[]) {
+  messageParamsLiteral(...rest: string[]): Literal | undefined {
     const language = this.useLanguageOverrideOrGetFromContext();
 
     try {
@@ -220,7 +220,7 @@ class LitVocabTerm implements NamedNode {
     }
   }
 
-  messageParams(...rest: string[]) {
+  messageParams(...rest: string[]): string | undefined {
     const messageParams = this.messageParamsLiteral(...rest);
     return messageParams && messageParams.value;
   }

@@ -205,7 +205,7 @@ describe("LitVocabTerm tests", () => {
         false
       ).addLabel(englishLabel, "en");
 
-      expect(term.asLanguage("ga").labelLiteral?.value).equals(englishLabel);
+      expect(term.asLanguage("ga").label).equals(englishLabel);
     });
 
     it("Should override language", () => {
@@ -336,14 +336,14 @@ describe("LitVocabTerm tests", () => {
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
 
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
-      expect(
-        term.asLanguage("en").messageParamsLiteral("first", "second")?.value
-      ).equals("Params test first and second");
+      expect(term.asLanguage("en").messageParams("first", "second")).equals(
+        "Params test first and second"
+      );
 
       getLocalStore().setItem(CONTEXT_KEY_LOCALE, "en");
-      expect(
-        term.asLanguage("es").messageParamsLiteral("first", "second")?.value
-      ).equals("Prueba de parámetros first y second");
+      expect(term.asLanguage("es").messageParams("first", "second")).equals(
+        "Prueba de parámetros first y second"
+      );
     });
   });
 
