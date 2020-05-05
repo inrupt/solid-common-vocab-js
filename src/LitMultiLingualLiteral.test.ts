@@ -66,12 +66,12 @@ describe("Constructing a litteral", () => {
     expect(new LitMultiLingualLiteral(rdf, TEST_IRI).getIri()).equals(TEST_IRI);
   });
 
-  it("should default to a default context messageLiteral if none is provided", () => {
+  it("should default to a default context message if none is provided", () => {
     const contextualLiteral = new LitMultiLingualLiteral(
       rdf,
       TEST_IRI,
       new Map<string, string>(),
-      "Some contextual messageLiteral"
+      "Some contextual message"
     );
     const nonContextualLiteral = new LitMultiLingualLiteral(
       rdf,
@@ -79,14 +79,14 @@ describe("Constructing a litteral", () => {
       new Map<string, string>()
     );
     expect(contextualLiteral._contextMessage).to.equal(
-      "Some contextual messageLiteral"
+      "Some contextual message"
     );
     expect(nonContextualLiteral._contextMessage).to.not.be.undefined;
   });
 });
 
 describe("Adding messages", () => {
-  it("Should add messageLiteral, no constructor values", () => {
+  it("Should add message, no constructor values", () => {
     const literal = new LitMultiLingualLiteral(rdf, TEST_IRI);
     literal
       .addValue("whatever in Spanish", "es")
@@ -100,7 +100,7 @@ describe("Adding messages", () => {
     );
   });
 
-  it("Should add messageLiteral, including constructor values", () => {
+  it("Should add message, including constructor values", () => {
     const literal = new LitMultiLingualLiteral(
       rdf,
       TEST_IRI,
@@ -238,7 +238,7 @@ describe("Looking up messages", () => {
       .addValue("whatever in Irish", "ga");
 
     // NOTE: our result will have an 'en' tag, even though we asked for 'fr'
-    // (since we don't have a 'fr' messageLiteral!).
+    // (since we don't have a 'fr' message!).
     expect(literal.lookup(false)).to.deep.equal(
       rdf.literal("whatever in English", "en")
     );

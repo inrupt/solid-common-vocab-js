@@ -86,7 +86,7 @@ We can use this LIT vocab term in various ways:
 // To access the term's full IRI value:
 const personIri = person.value
 
-// The label and the commentLiteral are available as RDFJS RDFLiteral instances:
+// The label and the comment are available as RDFJS RDFLiteral instances:
 // - get the RDFLiteral object (which contains not just the text value, but also the 
 // language tag of that text (e.g. 'en' for English, or 'es' for Spanish).
 // The LIT can potentially offer further meta-data - such as a description of how the
@@ -99,7 +99,7 @@ const personIri = person.value
 const personLabel = person.label
 const personComment = person.comment
 
-// Get the term's label or commentLiteral as a simple string value:
+// Get the term's label or comment as a simple string value:
 const personLabelAsString = person.label.value
 const personCommentAsString = person.comment.value
 ```

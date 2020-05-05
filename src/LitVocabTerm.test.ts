@@ -117,16 +117,16 @@ describe("LitVocabTerm tests", () => {
         false
       )
         .addLabelNoLanguage("test label...")
-        .addCommentNoLanguage("test commentLiteral...")
-        .addMessageNoLanguage("test messageLiteral...");
+        .addCommentNoLanguage("test comment...")
+        .addMessageNoLanguage("test message...");
 
       expect(term.labelLiteral?.value).to.equal("test label...");
       expect(term.labelLiteral).deep.equal(
         DataFactory.literal("test label...", "")
       );
 
-      expect(term.commentLiteral?.value).to.equal("test commentLiteral...");
-      expect(term.messageLiteral?.value).to.equal("test messageLiteral...");
+      expect(term.commentLiteral?.value).to.equal("test comment...");
+      expect(term.messageLiteral?.value).to.equal("test message...");
     });
 
     it("Should still fallback to English if language not found", () => {
@@ -246,9 +246,9 @@ describe("LitVocabTerm tests", () => {
         "none found"
       );
 
-      expect(() => term.mandatory.commentLiteral).to.throw("none found");
+      expect(() => term.mandatory.comment).to.throw("none found");
 
-      expect(() => term.mandatory.messageLiteral).to.throw("none found");
+      expect(() => term.mandatory.message).to.throw("none found");
     });
 
     it("Should return undefined if mandatory language not found and unstrict", () => {
@@ -262,15 +262,11 @@ describe("LitVocabTerm tests", () => {
       expect(() => term.mandatory.asLanguage("fr").labelLiteral).to.throw(
         TEST_TERM_NAME.value
       );
-      expect(() => term.mandatory.commentLiteral).to.throw(
-        TEST_TERM_NAME.value
-      );
-      expect(() => term.mandatory.messageLiteral).to.throw(
-        TEST_TERM_NAME.value
-      );
+      expect(() => term.mandatory.comment).to.throw(TEST_TERM_NAME.value);
+      expect(() => term.mandatory.message).to.throw(TEST_TERM_NAME.value);
     });
 
-    it("Should use the commentLiteral context", () => {
+    it("Should use the comment context", () => {
       const storage = getLocalStore();
       const comment = "test labelLiteral string";
       const term = new LitVocabTerm(
@@ -278,9 +274,9 @@ describe("LitVocabTerm tests", () => {
         DataFactory,
         storage,
         undefined
-      ); //.addComment(commentLiteral, 'en')
+      ); //.addComment(comment, 'en')
 
-      expect(term.commentLiteral).to.be.undefined;
+      expect(term.comment).to.be.undefined;
       term.addComment(comment, "en");
       expect(term.commentLiteral?.value).equals(comment);
       storage.setItem(CONTEXT_KEY_LOCALE, "en");
@@ -387,13 +383,13 @@ describe("LitVocabTerm tests", () => {
         getLocalStore(),
         false
       )
-        .addLabel("test labelLiteral", "en")
-        .addComment("test commentLiteral", "en")
-        .addMessage("test messageLiteral", "en");
+        .addLabel("test label", "en")
+        .addComment("test comment", "en")
+        .addMessage("test message", "en");
 
-      expect(term.label).to.equal("test labelLiteral");
-      expect(term.comment).to.equal("test commentLiteral");
-      expect(term.message).to.equal("test messageLiteral");
+      expect(term.label).to.equal("test label");
+      expect(term.comment).to.equal("test comment");
+      expect(term.message).to.equal("test message");
     });
   });
 

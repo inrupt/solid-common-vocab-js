@@ -33,7 +33,7 @@ const expect = chai.expect;
  *     rdfs:label "Name" ;
  *     rdfs:label "First name"@en ;
  *     rdfs:label "Prénom"@fr ;
- *     rdfs:commentLiteral "A person's first name"@en ,
+ *     rdfs:comment "A person's first name"@en ,
  *                  "Nombre de una persona"@es ,
  *                  "Prénom d'une personne"@fr .
  *
@@ -230,7 +230,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
   /**
    * Here we use the 'strict' flag on our vocab terms, which enforces the
    * expectation that the term will have at least an English labelLiteral and
-   * commentLiteral, and therefore will never use the IRI's path as the labelLiteral - it will
+   * comment, and therefore will never use the IRI's path as the labelLiteral - it will
    * return 'undefined' (or throw an exception if '.mandatory') instead.
    */
   describe("Strict support", () => {
@@ -257,23 +257,21 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       );
     });
 
-    it("Should require explicitly English labelLiteral and commentLiteral if mandatory", () => {
+    it("Should require explicitly English label and comment if mandatory", () => {
       const term = new LitVocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true)
         .addLabelNoLanguage(`No-language label isn't enough for 'mandatory'...`)
         .addCommentNoLanguage(
           `No-language comment isn't enough for 'mandatory'...`
         );
 
-      expect(() => term.mandatory.labelLiteral).to.throw(TEST_TERM_NAME.value);
-      expect(() => term.mandatory.commentLiteral).to.throw(
-        TEST_TERM_NAME.value
-      );
+      expect(() => term.mandatory.label).to.throw(TEST_TERM_NAME.value);
+      expect(() => term.mandatory.comment).to.throw(TEST_TERM_NAME.value);
     });
   });
 
   // Comments and messages do not fallback to using the IRI's local name.
-  describe("LIT Vocab Term commentLiteral or messageLiteral usage", () => {
-    it("Comment and messageLiteral do not fallback to using the IRIs local name", () => {
+  describe("LIT Vocab Term comment or message usage", () => {
+    it("Comment and message do not fallback to using the IRIs local name", () => {
       const termStrict = new LitVocabTerm(
         TEST_TERM_NAME,
         rdf,
@@ -283,16 +281,12 @@ describe("Demonstrate LIT Vocab Term usage", () => {
 
       // By default, with no comments or messages added, we expect to get
       // back 'undefined'...
-      expect(termStrict.commentLiteral).to.be.undefined;
-      expect(termStrict.messageLiteral).to.be.undefined;
+      expect(termStrict.comment).to.be.undefined;
+      expect(termStrict.message).to.be.undefined;
 
       // But if we specify mandatory, we get exceptions instead.
-      expect(() => termStrict.mandatory.commentLiteral).to.throw(
-        TEST_TERM_NAME.value
-      );
-      expect(() => termStrict.mandatory.messageLiteral).to.throw(
-        TEST_TERM_NAME.value
-      );
+      expect(() => termStrict.mandatory.comment).to.throw(TEST_TERM_NAME.value);
+      expect(() => termStrict.mandatory.message).to.throw(TEST_TERM_NAME.value);
 
       // Same behaviour for unstrict terms.
       const termUnstrict = new LitVocabTerm(
@@ -301,19 +295,19 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         getLocalStore(),
         false
       );
-      expect(termUnstrict.commentLiteral).to.be.undefined;
-      expect(termUnstrict.messageLiteral).to.be.undefined;
+      expect(termUnstrict.comment).to.be.undefined;
+      expect(termUnstrict.message).to.be.undefined;
 
-      expect(() => termUnstrict.mandatory.commentLiteral).to.throw(
+      expect(() => termUnstrict.mandatory.comment).to.throw(
         TEST_TERM_NAME.value
       );
-      expect(() => termUnstrict.mandatory.messageLiteral).to.throw(
+      expect(() => termUnstrict.mandatory.message).to.throw(
         TEST_TERM_NAME.value
       );
     });
 
     it("Message with no parameters", () => {
-      const englishMessage = "Some messageLiteral with no parameters...";
+      const englishMessage = "Some message with no parameters...";
       const germanMessage = "Eine Nachricht ohne Parameter...";
       const term = new LitVocabTerm(TEST_TERM_ERROR, rdf, getLocalStore(), true)
         .addMessage(englishMessage, "en")
@@ -329,8 +323,8 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         englishMessage
       );
 
-      // But if we look for the messageLiteral with an incorrect number of parameters
-      // (in this case our messageLiteral has zero), we'll get an exception.
+      // But if we look for the message with an incorrect number of parameters
+      // (in this case our message has zero), we'll get an exception.
       expect(() => term.mandatory.messageParams("too many params")).to.throw(
         TEST_TERM_ERROR.value
       );
@@ -348,7 +342,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         "Message with one, two params"
       );
 
-      // We can freely move parameters around in the messageLiteral text, as
+      // We can freely move parameters around in the message text, as
       // illustrated in our German translation...
       expect(term.asLanguage("de").messageParams("one", "two")?.value).to.equal(
         "Unterschiedliche Reihenfolge two und dann one Parameter"

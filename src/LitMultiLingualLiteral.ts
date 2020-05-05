@@ -120,9 +120,9 @@ class LitMultiLingualLiteral implements Literal {
   }
 
   /**
-   * Looks up a messageLiteral in the currently set language, but if none found we
-   * use the English messageLiteral (which code-generators can enforce, so they should
-   * always ensure at least an English messageLiteral for vocab terms).
+   * Looks up a message in the currently set language, but if none found we
+   * use the English message (which code-generators can enforce, so they should
+   * always ensure at least an English message for vocab terms).
    *
    * NOTE: If we do use the English default, then we also reset our language
    * tag so that if we are returning an RDF literal it will contain the correct
@@ -184,7 +184,7 @@ class LitMultiLingualLiteral implements Literal {
    *
    * @param mandatory Flag - if true, we'll Throw an error if no value found.
    * @param rest array of values to be used to replace placeholders in
-   * the looked-up messageLiteral.
+   * the looked-up message.
    * @returns {*}
    */
   params(mandatory: boolean, ...rest: string[]): Literal | undefined {

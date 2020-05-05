@@ -42,7 +42,7 @@ const DEFAULT_LOCALE = "en";
  *     rdfs:label "Name" ;
  *     rdfs:label "First name"@en ;
  *     rdfs:label "Nombre"@es ;
- *     rdfs:commentLiteral "A person's first name"@en .
+ *     rdfs:comment "A person's first name"@en .
  *
  *   ex:errNameTooLong a rdfs:Literal ;
  *     skos:definition "Name must be less than {{0}}, but we got {{1}}"@en .
@@ -126,14 +126,14 @@ class LitVocabTerm implements NamedNode {
       rdfFactory,
       this.iri,
       undefined,
-      "rdfs:commentLiteral"
+      "rdfs:comment"
     );
 
     this._message = new LitMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
-      "messageLiteral (should be defined in RDF vocab using: skos:definition)"
+      "message (should be defined in RDF vocab using: skos:definition)"
     );
 
     if (!strict) {
@@ -178,7 +178,7 @@ class LitVocabTerm implements NamedNode {
     return label && label.value;
   }
 
-  // Accessor for commentLiteral that uses our LitSessionContext instance
+  // Accessor for comment that uses our LitSessionContext instance
   get commentLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
@@ -193,7 +193,7 @@ class LitVocabTerm implements NamedNode {
     return comment && comment.value;
   }
 
-  // Accessor for messageLiteral that uses our LitSessionContext instance
+  // Accessor for message that uses our LitSessionContext instance
   get messageLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();

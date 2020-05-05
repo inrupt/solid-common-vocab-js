@@ -40,7 +40,7 @@ describe("LIT context-aware errors", () => {
   it("should be able to wrap a standard error", function () {
     const context = new LitContext("en", getLocalStore());
     const message = "Error occurred";
-    const wrapMessage = "Wrap error messageLiteral";
+    const wrapMessage = "Wrap error message";
     const wrapError = new LitContextError(
       context,
       wrapMessage,
@@ -58,51 +58,51 @@ describe("LIT context-aware errors", () => {
     const context = new LitContext("en", getLocalStore());
     const errorLvl1 = new LitContextError(
       context,
-      "Error messageLiteral Level1",
+      "Error message Level1",
       undefined
     );
     const errorLvl2 = new LitContextError(
       context,
-      "Error messageLiteral Level2",
+      "Error message Level2",
       errorLvl1
     );
     const errorLvl3 = new LitContextError(
       context,
-      "Error messageLiteral Level3",
+      "Error message Level3",
       errorLvl2
     );
     expect(errorLvl3.countLevels()).to.equal(3);
     const fullReport = errorLvl3.unwrapException();
-    expect(fullReport).to.include("Error messageLiteral Level1");
-    expect(fullReport).to.include("Error messageLiteral Level2");
-    expect(fullReport).to.include("Error messageLiteral Level3");
+    expect(fullReport).to.include("Error message Level1");
+    expect(fullReport).to.include("Error message Level2");
+    expect(fullReport).to.include("Error message Level3");
   });
 
   it("throwing a standard error loses nested information", function () {
     const context = new LitContext("en", getLocalStore());
     const errorLvl1 = new LitContextError(
       context,
-      "Error messageLiteral Level1",
+      "Error message Level1",
       undefined
     );
-    const errorLvl2 = new Error("Standard Error messageLiteral Level2");
+    const errorLvl2 = new Error("Standard Error message Level2");
     const errorLvl3 = new LitContextError(
       context,
-      "Error messageLiteral Level3",
+      "Error message Level3",
       errorLvl2
     );
     const errorLvl4 = new LitContextError(
       context,
-      "Error messageLiteral Level4",
+      "Error message Level4",
       errorLvl3
     );
 
     expect(errorLvl4.countLevels()).to.equal(3);
     const fullReport = errorLvl4.unwrapException();
     expect(fullReport).to.not.include(errorLvl1.message);
-    expect(fullReport).to.include("Standard Error messageLiteral Level2");
-    expect(fullReport).to.include("Error messageLiteral Level3");
-    expect(fullReport).to.include("Error messageLiteral Level4");
+    expect(fullReport).to.include("Standard Error message Level2");
+    expect(fullReport).to.include("Error message Level3");
+    expect(fullReport).to.include("Error message Level4");
   });
 
   it("should contain wrapped exception details, but no stack info", function () {
@@ -110,25 +110,25 @@ describe("LIT context-aware errors", () => {
     process.env.NODE_ENV = "production";
     const errorLvl1 = new LitContextError(
       context,
-      "Error messageLiteral Level1",
+      "Error message Level1",
       undefined
     );
     const errorLvl2 = new LitContextError(
       context,
-      "Error messageLiteral Level2",
+      "Error message Level2",
       errorLvl1
     );
     const errorLvl3 = new LitContextError(
       context,
-      "Error messageLiteral Level3",
+      "Error message Level3",
       errorLvl2
     );
 
     expect(errorLvl3.countLevels()).to.equal(3);
     const fullReport = errorLvl3.unwrapException();
-    expect(fullReport).to.include("Error messageLiteral Level1");
-    expect(fullReport).to.include("Error messageLiteral Level2");
-    expect(fullReport).to.include("Error messageLiteral Level3");
+    expect(fullReport).to.include("Error message Level1");
+    expect(fullReport).to.include("Error message Level2");
+    expect(fullReport).to.include("Error message Level3");
 
     expect(fullReport).to.not.include("Level ");
   });
@@ -139,7 +139,7 @@ describe("LIT context-aware errors", () => {
     try {
       throw new Error(message);
     } catch (error) {
-      const wrapMessage = "Wrap error messageLiteral";
+      const wrapMessage = "Wrap error message";
       const wrapError = new LitContextError(context, wrapMessage, error);
       expect(wrapError.countLevels()).to.equal(2);
 

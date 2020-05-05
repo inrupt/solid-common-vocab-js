@@ -26,12 +26,12 @@ describe("Populating the LitTermRegistry", () => {
     const registry = new LitTermRegistry(getLocalStore());
 
     registry.updateLabel(iri, "en", "hello label");
-    registry.updateComment(iri, "en", "hello commentLiteral");
-    registry.updateMessage(iri, "en", "hello messageLiteral");
+    registry.updateComment(iri, "en", "hello comment");
+    registry.updateMessage(iri, "en", "hello message");
 
     expect(registry.lookupLabel(iri, "en")).to.equal("hello label");
-    expect(registry.lookupComment(iri, "en")).to.equal("hello commentLiteral");
-    expect(registry.lookupMessage(iri, "en")).to.equal("hello messageLiteral");
+    expect(registry.lookupComment(iri, "en")).to.equal("hello comment");
+    expect(registry.lookupMessage(iri, "en")).to.equal("hello message");
   });
 
   it("should override an appropriate value in the registry", () => {
@@ -51,11 +51,11 @@ describe("LitTermRegistry lookup", () => {
     const registry = new LitTermRegistry(getLocalStore());
 
     registry.updateLabel(iri, "es", "holà label");
-    registry.updateComment(iri, "es", "holà commentLiteral");
+    registry.updateComment(iri, "es", "holà comment");
     registry.updateMessage(iri, "es", "holà mensage");
 
     expect(registry.lookupLabel(iri, "es")).to.equal("holà label");
-    expect(registry.lookupComment(iri, "es")).to.equal("holà commentLiteral");
+    expect(registry.lookupComment(iri, "es")).to.equal("holà comment");
     expect(registry.lookupMessage(iri, "es")).to.equal("holà mensage");
   });
 
@@ -66,11 +66,11 @@ describe("LitTermRegistry lookup", () => {
     storage.setItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, "es");
 
     registry.updateLabel(iri, "es", "holà label");
-    registry.updateComment(iri, "es", "holà commentLiteral");
+    registry.updateComment(iri, "es", "holà comment");
     registry.updateMessage(iri, "es", "holà mensage");
 
     expect(registry.lookupLabel(iri, "en")).to.equal("holà label");
-    expect(registry.lookupComment(iri, "en")).to.equal("holà commentLiteral");
+    expect(registry.lookupComment(iri, "en")).to.equal("holà comment");
     expect(registry.lookupMessage(iri, "en")).to.equal("holà mensage");
   });
 
@@ -81,15 +81,15 @@ describe("LitTermRegistry lookup", () => {
     storage.setItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, "de");
 
     registry.updateLabel(iri, "es", "holà label");
-    registry.updateComment(iri, "es", "holà commentLiteral");
+    registry.updateComment(iri, "es", "holà comment");
     registry.updateMessage(iri, "es", "holà mensage");
     registry.updateLabel(iri, "en", "hello label");
-    registry.updateComment(iri, "en", "hello commentLiteral");
-    registry.updateMessage(iri, "en", "hello messageLiteral");
+    registry.updateComment(iri, "en", "hello comment");
+    registry.updateMessage(iri, "en", "hello message");
 
     expect(registry.lookupLabel(iri, "fr")).to.equal("hello label");
-    expect(registry.lookupComment(iri, "fr")).to.equal("hello commentLiteral");
-    expect(registry.lookupMessage(iri, "fr")).to.equal("hello messageLiteral");
+    expect(registry.lookupComment(iri, "fr")).to.equal("hello comment");
+    expect(registry.lookupMessage(iri, "fr")).to.equal("hello message");
   });
 
   it("should lookup with no language upon failing using requested, fallback in English languages", () => {
@@ -99,12 +99,12 @@ describe("LitTermRegistry lookup", () => {
     storage.setItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, "de");
 
     registry.updateLabel(iri, NO_LANGUAGE_TAG, "holala label");
-    registry.updateComment(iri, NO_LANGUAGE_TAG, "holala commentLiteral");
-    registry.updateMessage(iri, NO_LANGUAGE_TAG, "holala messageLiteral");
+    registry.updateComment(iri, NO_LANGUAGE_TAG, "holala comment");
+    registry.updateMessage(iri, NO_LANGUAGE_TAG, "holala message");
 
     expect(registry.lookupLabel(iri, "fr")).to.equal("holala label");
-    expect(registry.lookupComment(iri, "fr")).to.equal("holala commentLiteral");
-    expect(registry.lookupMessage(iri, "fr")).to.equal("holala messageLiteral");
+    expect(registry.lookupComment(iri, "fr")).to.equal("holala comment");
+    expect(registry.lookupMessage(iri, "fr")).to.equal("holala message");
   });
 
   it("should return undefined if no value is available", () => {
