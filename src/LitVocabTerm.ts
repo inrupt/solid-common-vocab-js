@@ -28,7 +28,7 @@ const DEFAULT_LOCALE = "en";
  * We can also take a reference to a context storage instance, which can
  * contain various contextual information, such as the current locale, or
  * language settings for an interaction that can be used to lookup context at
- * runtime (e.g. to look up the locale for a term's labelLiteral at runtime if one is
+ * runtime (e.g. to look up the locale for a term's label at runtime if one is
  * not explicitly asked for).
  *
  * This Turtle snippet may help illustrate what this class supports:
@@ -39,9 +39,9 @@ const DEFAULT_LOCALE = "en";
  *   prefix ex:   <http://example.com/>
  *
  *   ex:name a rdf:Property ;
- *     rdfs:labelLiteral "Name" ;
- *     rdfs:labelLiteral "First name"@en ;
- *     rdfs:labelLiteral "Nombre"@es ;
+ *     rdfs:label "Name" ;
+ *     rdfs:label "First name"@en ;
+ *     rdfs:label "Nombre"@es ;
  *     rdfs:commentLiteral "A person's first name"@en .
  *
  *   ex:errNameTooLong a rdfs:Literal ;
@@ -60,9 +60,9 @@ class LitVocabTerm implements NamedNode {
   strict: boolean;
 
   // Literals describing the term
-  private _labelLiteral: LitMultiLingualLiteral;
-  private _commentLiteral: LitMultiLingualLiteral;
-  private _messageLiteral: LitMultiLingualLiteral;
+  private _label: LitMultiLingualLiteral;
+  private _comment: LitMultiLingualLiteral;
+  private _message: LitMultiLingualLiteral;
 
   // Context store
   private _litSessionContext: LitContext;
@@ -88,8 +88,8 @@ class LitVocabTerm implements NamedNode {
    * @param rdfFactory an underlying RDF library that can create IRI's
    * @param contextStorage context for this term
    * @param strict flag if we should be strict. If not strict, we can use the
-   * path component of the term's IRI as the English labelLiteral if no explicit
-   * English labelLiteral (or no-language labelLiteral) is provided, e.g. 'name' for the
+   * path component of the term's IRI as the English label if no explicit
+   * English label (or no-language label) is provided, e.g. 'name' for the
    * term 'http://example.com/vocab#name'.
    */
   constructor(
@@ -115,21 +115,21 @@ class LitVocabTerm implements NamedNode {
 
     // Create holders for meta-data on this vocabulary term (we could probably
     // lazily create these only if values are actually provided!).
-    this._labelLiteral = new LitMultiLingualLiteral(
+    this._label = new LitMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
-      "rdfs:labelLiteral"
+      "rdfs:label"
     );
 
-    this._commentLiteral = new LitMultiLingualLiteral(
+    this._comment = new LitMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
       "rdfs:commentLiteral"
     );
 
-    this._messageLiteral = new LitMultiLingualLiteral(
+    this._message = new LitMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
@@ -137,9 +137,9 @@ class LitVocabTerm implements NamedNode {
     );
 
     if (!strict) {
-      // This can be overwritten if we get an actual no-language labelLiteral later,
+      // This can be overwritten if we get an actual no-language label later,
       // which would be perfectly fine.
-      this._labelLiteral.addValue(
+      this._label.addValue(
         LitVocabTerm.extractIriLocalName(iri),
         NO_LANGUAGE_TAG
       );
@@ -163,11 +163,11 @@ class LitVocabTerm implements NamedNode {
     return this.asLanguage("en");
   }
 
-  // Accessor for labelLiteral that uses our LitSessionContext instance
+  // Accessor for label that uses our LitSessionContext instance
   get labelLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
-      return this._labelLiteral.asLanguage(language).lookup(this._mandatory);
+      return this._label.asLanguage(language).lookup(this._mandatory);
     } finally {
       this.resetState();
     }
@@ -182,7 +182,7 @@ class LitVocabTerm implements NamedNode {
   get commentLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
-      return this._commentLiteral.asLanguage(language).lookup(this._mandatory);
+      return this._comment.asLanguage(language).lookup(this._mandatory);
     } finally {
       this.resetState();
     }
@@ -197,7 +197,7 @@ class LitVocabTerm implements NamedNode {
   get messageLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
-      return this._messageLiteral.asLanguage(language).lookup(this._mandatory);
+      return this._message.asLanguage(language).lookup(this._mandatory);
     } finally {
       this.resetState();
     }
@@ -218,8 +218,8 @@ class LitVocabTerm implements NamedNode {
   }
 
   addLabel(value: string, language: string) {
-    this.validateAddParams(value, language, "labelLiteral");
-    this._labelLiteral.addValue(value, language);
+    this.validateAddParams(value, language, "label");
+    this._label.addValue(value, language);
     this._registry.updateLabel(this.value, language, value);
     return this;
   }
@@ -229,8 +229,8 @@ class LitVocabTerm implements NamedNode {
   }
 
   addComment(value: string, language: string) {
-    this.validateAddParams(value, language, "commentLiteral");
-    this._commentLiteral.addValue(value, language);
+    this.validateAddParams(value, language, "comment");
+    this._comment.addValue(value, language);
     this._registry.updateComment(this.value, language, value);
     return this;
   }
@@ -240,8 +240,8 @@ class LitVocabTerm implements NamedNode {
   }
 
   addMessage(value: string, language: string) {
-    this.validateAddParams(value, language, "messageLiteral");
-    this._messageLiteral.addValue(value, language);
+    this.validateAddParams(value, language, "message");
+    this._message.addValue(value, language);
     this._registry.updateMessage(this.value, language, value);
     return this;
   }
@@ -285,7 +285,7 @@ class LitVocabTerm implements NamedNode {
     const language = this.useLanguageOverrideOrGetFromContext();
 
     try {
-      return this._messageLiteral
+      return this._message
         .asLanguage(language)
         .params(this._mandatory, ...rest);
     } finally {

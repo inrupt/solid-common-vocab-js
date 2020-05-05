@@ -30,9 +30,9 @@ const expect = chai.expect;
  *   prefix test:   <https://test.com/vocab#>
  *
  *   test:name a rdf:Property ;
- *     rdfs:labelLiteral "Name" ;
- *     rdfs:labelLiteral "First name"@en ;
- *     rdfs:labelLiteral "Prénom"@fr ;
+ *     rdfs:label "Name" ;
+ *     rdfs:label "First name"@en ;
+ *     rdfs:label "Prénom"@fr ;
  *     rdfs:commentLiteral "A person's first name"@en ,
  *                  "Nombre de una persona"@es ,
  *                  "Prénom d'une personne"@fr .
@@ -50,7 +50,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
   const TEST_TERM_ERROR = rdf.namedNode(`https://test.com/vocab#errSomeError`);
 
   // Vocab Term labels can be configured (via a constructor parameter) to
-  // fallback to using the path component of the term IRI as the English labelLiteral
+  // fallback to using the path component of the term IRI as the English label
   // if there is no English value provided and no no-language value. We refer to
   // this mode of operation as 'unstrict' mode, and it's very useful when
   // working with LIT Vocab Terms generated from vocabularies you have no
@@ -58,12 +58,12 @@ describe("Demonstrate LIT Vocab Term usage", () => {
   // i.e. in those cases you can still provide what will hopefully be
   // meaningful and useful labels.
 
-  describe("LIT Vocab Term labelLiteral usage", () => {
+  describe("LIT Vocab Term label usage", () => {
     it("Label handling allowing local part of IRI as fallback English value", () => {
       // We explicitly want our term to allow the use of the local part of
-      // the IRI as the English labelLiteral if no English labelLiteral is provided
+      // the IRI as the English label if no English label is provided
       // explicitly, so we pass 'false' for the 'strict' flag (as 'strict'
-      // enforces that an explicit English labelLiteral be provided!).
+      // enforces that an explicit English label be provided!).
       // Here we're simply creating the term itself, and not yet add any labels,
       // comments or messages.
       const term = new LitVocabTerm(
@@ -73,17 +73,17 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         false
       );
 
-      // Simply requesting the labelLiteral now without an explicit language assumes
+      // Simply requesting the label now without an explicit language assumes
       // English, but since we haven't provided any labels at all yet, all we
       // can return is the local path of the IRI (which we explicitly allow by
       // stating in the term's constructor that we're not being 'strict').
 
       // NOTE: the expected return type is an LIT Literal object telling us not
-      // just the text of the labelLiteral, but also the language tag for this text,
+      // just the text of the label, but also the language tag for this text,
       // and potentially a datatype (and (NOT IMPLEMENTED YET!) even extra
       // information that can explain fallback behaviour we may have taken, e.g.
-      // that a specifically requested language for a labelLiteral wasn't found, but
-      // but that we fell back to providing the English labelLiteral instead (which
+      // that a specifically requested language for a label wasn't found, but
+      // but that we fell back to providing the English label instead (which
       // could be really useful in a UI tooltip for instance).
 
       // NOTE: the language tag on the returned LIT Literal object here is empty
@@ -94,13 +94,13 @@ describe("Demonstrate LIT Vocab Term usage", () => {
         rdf.literal(TEST_TERM_NAME_PATH, "")
       );
 
-      // If we only want the text value of the labelLiteral, we can explicitly ask
+      // If we only want the text value of the label, we can explicitly ask
       // for only that using '.value' (which comes from the RDFJS interfaces).
       expect(term.labelLiteral?.value).to.equal(TEST_TERM_NAME_PATH);
 
       // Explicitly saying that a value is mandatory will throw an exception
       // (regardless of 'strict-ness') if no value can be found.
-      expect(() => term.mandatory.labelLiteral).to.throw(TEST_TERM_NAME.value);
+      expect(() => term.mandatory.label).to.throw(TEST_TERM_NAME.value);
 
       // When we explicitly request French, but we still have no labels at all,
       // we'll return the IRI's local name by default (since our term was

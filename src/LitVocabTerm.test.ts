@@ -24,9 +24,9 @@ const expect = chai.expect;
  *   prefix ex:   <http://example.com/>
  *
  *   ex:name a rdf:Property ;
- *     rdfs:labelLiteral "Name" ;
- *     rdfs:labelLiteral "First name"@en ;
- *     rdfs:labelLiteral "Nombre"@es .
+ *     rdfs:label "Name" ;
+ *     rdfs:label "First name"@en ;
+ *     rdfs:label "Nombre"@es .
  */
 describe("LitVocabTerm tests", () => {
   const TEST_TERM_NAME_PATH = "localName";
@@ -40,29 +40,29 @@ describe("LitVocabTerm tests", () => {
       DataFactory,
       getLocalStore(),
       false
-    ).addLabel("test labelLiteral...", "en");
+    ).addLabel("test label...", "en");
     expect(myTerm.iri.value).to.equal("http://some.vocab#myTerm");
   });
 
   describe("Strict support", () => {
-    it("Should not use IRI local name if no labelLiteral and strict", () => {
+    it("Should not use IRI local name if no label and strict", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
         true
       );
-      expect(term.labelLiteral).to.be.undefined;
+      expect(term.label).to.be.undefined;
     });
 
-    it("Should throw if mandatory and no labelLiteral and strict", () => {
+    it("Should throw if mandatory and no label and strict", () => {
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
         true
       );
-      expect(() => term.mandatory.labelLiteral).to.throw(TEST_TERM_NAME.value);
+      expect(() => term.mandatory.label).to.throw(TEST_TERM_NAME.value);
     });
 
     it("Should fail to add values if no value or language provided", () => {
@@ -74,7 +74,7 @@ describe("LitVocabTerm tests", () => {
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addLabel()).to.throw(
-        "Attempted to add a non-existent [labelLiteral] value to vocab term"
+        "Attempted to add a non-existent [label] value to vocab term"
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addLabel("test value...")).to.throw(
@@ -86,7 +86,7 @@ describe("LitVocabTerm tests", () => {
 
       // @ts-ignore to enable testing error management
       expect(() => term.addComment()).to.throw(
-        "Attempted to add a non-existent [commentLiteral] value to vocab term"
+        "Attempted to add a non-existent [comment] value to vocab term"
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addComment("test value...")).to.throw(
@@ -98,7 +98,7 @@ describe("LitVocabTerm tests", () => {
 
       // @ts-ignore to enable testing error management
       expect(() => term.addMessage()).to.throw(
-        "Attempted to add a non-existent [messageLiteral] value to vocab term"
+        "Attempted to add a non-existent [message] value to vocab term"
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addMessage("test value...")).to.throw(
@@ -116,13 +116,13 @@ describe("LitVocabTerm tests", () => {
         getLocalStore(),
         false
       )
-        .addLabelNoLanguage("test labelLiteral...")
+        .addLabelNoLanguage("test label...")
         .addCommentNoLanguage("test commentLiteral...")
         .addMessageNoLanguage("test messageLiteral...");
 
-      expect(term.labelLiteral?.value).to.equal("test labelLiteral...");
+      expect(term.labelLiteral?.value).to.equal("test label...");
       expect(term.labelLiteral).deep.equal(
-        DataFactory.literal("test labelLiteral...", "")
+        DataFactory.literal("test label...", "")
       );
 
       expect(term.commentLiteral?.value).to.equal("test commentLiteral...");
@@ -154,14 +154,14 @@ describe("LitVocabTerm tests", () => {
         getLocalStore(),
         true
       );
-      expect(() => term.mandatory.labelLiteral).to.throw("none found");
+      expect(() => term.mandatory.label).to.throw("none found");
     });
   });
 
   describe("Supports labels and comments", () => {
-    it("Should use the labelLiteral context", () => {
+    it("Should use the label context", () => {
       const storage = getLocalStore();
-      const label = "Irish labelLiteral string";
+      const label = "Irish label string";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
@@ -173,7 +173,7 @@ describe("LitVocabTerm tests", () => {
       expect(term.labelLiteral).deep.equals(DataFactory.literal(label, "ga"));
     });
 
-    it("Should use the IRI local name as English labelLiteral, if needed", () => {
+    it("Should use the IRI local name as English label, if needed", () => {
       const unStrictTerm = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
