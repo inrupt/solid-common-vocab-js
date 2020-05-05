@@ -86,20 +86,20 @@ We can use this LIT vocab term in various ways:
 // To access the term's full IRI value:
 const personIri = person.value
 
-// The label and the comment are available as RDFJS RDFLiteral instances:
+// The labelLiteral and the commentLiteral are available as RDFJS RDFLiteral instances:
 // - get the RDFLiteral object (which contains not just the text value, but also the 
 // language tag of that text (e.g. 'en' for English, or 'es' for Spanish).
 // The LIT can potentially offer further meta-data - such as a description of how the
 // text was determined. For example if a user's current language preference (as stored
 // in localStorage) was 'French', but our original RDF vocabulary didn't provide a
-// French label (in which case the LIT vocab term will fallback to using an English
-// label by default), then we can describe that behaviour in another field saying:
+// French labelLiteral (in which case the LIT vocab term will fallback to using an English
+// labelLiteral by default), then we can describe that behaviour in another field saying:
 // "Current language is French, but only German, Spanish and English labels are available: using English",
 // which can be extremely useful in a User Interface tooltip for instance):
 const personLabel = person.label
 const personComment = person.comment
 
-// Get the term's label or comment as a simple string value:
+// Get the term's labelLiteral or commentLiteral as a simple string value:
 const personLabelAsString = person.label.value
 const personCommentAsString = person.comment.value
 ```
@@ -161,10 +161,10 @@ const person = new LitVocabTerm('https://example.com#Person', rdf, storage, true
   .addLabel('Personne', 'fr')
   .addLabel('Persona', 'es')
 
-// Default to the English label (if there is one).
+// Default to the English labelLiteral (if there is one).
 var personLabel = person.label
 
-// Request an explicit language for the label (but if there isn't one, fallback to the
+// Request an explicit language for the labelLiteral (but if there isn't one, fallback to the
 // English one, if there is one).
 personLabel = person.asLanguage('fr').label
 
@@ -190,12 +190,12 @@ var person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), f
 
 // 'personLabel' will default to an RDF literal with the value "Person", and an empty
 // language tag (i.e. "").
-var personLabel = person.label 
+var personLabel = person.labelLiteral 
  
 // Now strict behaviour...
 person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
 // personLabel will default to 'undefined'.
-personLabel = person.label
+personLabel = person.labelLiteral
 ```
 
 This behaviour (i.e. returning the local part of the IRI, or `undefined`) may be overridden
@@ -205,6 +205,6 @@ to instead throw an error when no label is found by using the `.mandatory` acces
 // Here 'strictness' has no impact...
 const person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
 
-// An exception will be thrown here, because our term has no label.
+// An exception will be thrown here, because our term has no labelLiteral.
 const personLabel = person.mandatory.label 
 ```

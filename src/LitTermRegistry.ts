@@ -12,7 +12,7 @@ import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
 
 /**
  * Simple registry of terms (and their associated meta-data (like labels,
- * comment, message)) in multiple languages.
+ * commentLiteral, messageLiteral)) in multiple languages.
  *
  * We use localStorage to store all term meta-data, which can only store
  * strings (so we need to expand out the meta-data for each term).
