@@ -197,7 +197,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should default to English value language", () => {
-      const englishLabel = "English labelLiteral...";
+      const englishLabel = "English label...";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
@@ -286,7 +286,7 @@ describe("LitVocabTerm tests", () => {
 
     it("should support the shorthand asEnglish to get a value in english", () => {
       const storage = getLocalStore();
-      const irishLabel = "Irish labelLiteral...";
+      const irishLabel = "Irish label...";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
@@ -425,19 +425,19 @@ describe("LitVocabTerm tests", () => {
         DataFactory,
         store,
         false
-      ).addLabel("test labelLiteral...", "en");
+      ).addLabel("test label...", "en");
       const anotherTerm = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         store,
         false
-      ).addLabel("test labelLiteral...", "en");
+      ).addLabel("test label...", "en");
       const aDifferentTerm = new LitVocabTerm(
         DataFactory.namedNode(`${TEST_TERM_NAME.value}_`),
         DataFactory,
         store,
         false
-      ).addLabel("test labelLiteral...", "en");
+      ).addLabel("test label...", "en");
 
       expect(aTerm.equals(anotherTerm)).to.be.true;
       expect(aTerm.equals(aDifferentTerm)).to.be.false;
@@ -448,7 +448,7 @@ describe("LitVocabTerm tests", () => {
     it("should be possible to get a valid LitVocabTerm without providing any Datafactory", () => {
       const store = getLocalStore();
       const aTerm = buildBasicTerm(TEST_TERM_NAME, store, false).addLabel(
-        "test labelLiteral...",
+        "test label...",
         "en"
       );
       const anotherTerm = new LitVocabTerm(
@@ -456,7 +456,7 @@ describe("LitVocabTerm tests", () => {
         DataFactory,
         store,
         false
-      ).addLabel("test labelLiteral...", "en");
+      ).addLabel("test label...", "en");
       expect(aTerm.equals(anotherTerm)).to.be.true;
     });
 
@@ -465,7 +465,7 @@ describe("LitVocabTerm tests", () => {
         "http://some.vocab#myTerm",
         getLocalStore(),
         false
-      ).addLabel("test labelLiteral...", "en");
+      ).addLabel("test label...", "en");
       expect(myTerm.iri.value).to.equal("http://some.vocab#myTerm");
     });
   });
