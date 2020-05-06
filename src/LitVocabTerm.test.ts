@@ -120,11 +120,13 @@ describe("LitVocabTerm tests", () => {
         .addCommentNoLanguage("test comment...")
         .addMessageNoLanguage("test message...");
 
-      expect(term.label?.value).to.equal("test label...");
-      expect(term.label).deep.equal(DataFactory.literal("test label...", ""));
+      expect(term.label).to.equal("test label...");
+      expect(term.labelLiteral).deep.equal(
+        DataFactory.literal("test label...", "")
+      );
 
-      expect(term.comment?.value).to.equal("test comment...");
-      expect(term.message?.value).to.equal("test message...");
+      expect(term.comment).to.equal("test comment...");
+      expect(term.message).to.equal("test message...");
     });
 
     it("Should still fallback to English if language not found", () => {
@@ -137,10 +139,10 @@ describe("LitVocabTerm tests", () => {
         .addLabel(`English label...`, "en")
         .addComment(`English comment...`, "en");
 
-      expect(term.asLanguage("fr").label).deep.equal(
+      expect(term.asLanguage("fr").labelLiteral).deep.equal(
         DataFactory.literal(`English label...`, "en")
       );
-      expect(term.asLanguage("fr").comment).deep.equal(
+      expect(term.asLanguage("fr").commentLiteral).deep.equal(
         DataFactory.literal(`English comment...`, "en")
       );
     });
@@ -168,7 +170,7 @@ describe("LitVocabTerm tests", () => {
       ).addLabel(label, "ga");
 
       storage.setItem(CONTEXT_KEY_LOCALE, "ga");
-      expect(term.label).deep.equals(DataFactory.literal(label, "ga"));
+      expect(term.labelLiteral).deep.equals(DataFactory.literal(label, "ga"));
     });
 
     it("Should use the IRI local name as English label, if needed", () => {
@@ -180,18 +182,18 @@ describe("LitVocabTerm tests", () => {
       );
 
       // NOTE: The returned literal has a 'No-Language' tag!
-      expect(unStrictTerm.label).deep.equals(
+      expect(unStrictTerm.labelLiteral).deep.equals(
         DataFactory.literal(TEST_TERM_NAME_PATH, "")
       );
-      expect(unStrictTerm.label?.value).equals(TEST_TERM_NAME_PATH);
+      expect(unStrictTerm.label).equals(TEST_TERM_NAME_PATH);
 
       const englishLabel = "English language value";
       unStrictTerm.addLabel(englishLabel, "en");
-      expect(unStrictTerm.label).deep.equals(
+      expect(unStrictTerm.labelLiteral).deep.equals(
         DataFactory.literal(englishLabel, "en")
       );
-      expect(unStrictTerm.label?.value).equals(englishLabel);
-      expect(unStrictTerm.mandatory.label?.value).equals(englishLabel);
+      expect(unStrictTerm.label).equals(englishLabel);
+      expect(unStrictTerm.mandatory.label).equals(englishLabel);
     });
 
     it("Should default to English value language", () => {
@@ -203,12 +205,12 @@ describe("LitVocabTerm tests", () => {
         false
       ).addLabel(englishLabel, "en");
 
-      expect(term.asLanguage("ga").label?.value).equals(englishLabel);
+      expect(term.asLanguage("ga").label).equals(englishLabel);
     });
 
     it("Should override language", () => {
       const storage = getLocalStore();
-      const irishLabel = "Irish label...";
+      const irishLabel = "Irish labelLiteral...";
       const term = new LitVocabTerm(
         TEST_TERM_NAME,
         DataFactory,
@@ -216,20 +218,20 @@ describe("LitVocabTerm tests", () => {
         true
       ).addLabel(irishLabel, "ga");
 
-      expect(term.label).to.be.undefined;
-      expect(term.asLanguage("fr").label).to.be.undefined;
+      expect(term.labelLiteral).to.be.undefined;
+      expect(term.asLanguage("fr").labelLiteral).to.be.undefined;
 
-      const englishLabel = "English label...";
+      const englishLabel = "English labelLiteral...";
       term.addLabel(englishLabel, "en");
 
-      expect(term.label?.value).equals(englishLabel);
-      expect(term.asLanguage("").label?.value).equals(englishLabel);
-      expect(term.asLanguage("fr").label?.value).equals(englishLabel);
-      expect(term.asLanguage("ga").label?.value).equals(irishLabel);
+      expect(term.label).equals(englishLabel);
+      expect(term.asLanguage("").label).equals(englishLabel);
+      expect(term.asLanguage("fr").label).equals(englishLabel);
+      expect(term.asLanguage("ga").label).equals(irishLabel);
 
       storage.setItem(CONTEXT_KEY_LOCALE, "ga");
-      expect(term.label?.value).equals(irishLabel);
-      expect(term.asLanguage("").label?.value).equals(englishLabel);
+      expect(term.label).equals(irishLabel);
+      expect(term.asLanguage("").label).equals(englishLabel);
     });
 
     it("Should throw if mandatory language not found and strict", () => {
@@ -240,7 +242,7 @@ describe("LitVocabTerm tests", () => {
         true
       ).addLabel("Test label in English...", "en");
 
-      expect(() => term.mandatory.asLanguage("fr").label).to.throw(
+      expect(() => term.mandatory.asLanguage("fr").labelLiteral).to.throw(
         "none found"
       );
 
@@ -257,7 +259,7 @@ describe("LitVocabTerm tests", () => {
         false
       ).addLabel("Test label in English...", "en");
 
-      expect(() => term.mandatory.asLanguage("fr").label).to.throw(
+      expect(() => term.mandatory.asLanguage("fr").labelLiteral).to.throw(
         TEST_TERM_NAME.value
       );
       expect(() => term.mandatory.comment).to.throw(TEST_TERM_NAME.value);
@@ -276,10 +278,10 @@ describe("LitVocabTerm tests", () => {
 
       expect(term.comment).to.be.undefined;
       term.addComment(comment, "en");
-      expect(term.comment?.value).equals(comment);
+      expect(term.comment).equals(comment);
       storage.setItem(CONTEXT_KEY_LOCALE, "en");
-      expect(term.comment?.value).equals(comment);
-      expect(term.asEnglish.comment?.value).equals(comment);
+      expect(term.comment).equals(comment);
+      expect(term.asEnglish.comment).equals(comment);
     });
 
     it("should support the shorthand asEnglish to get a value in english", () => {
@@ -291,9 +293,9 @@ describe("LitVocabTerm tests", () => {
         storage,
         true
       ).addLabel(irishLabel, "ga");
-      const englishLabel = "English label...";
+      const englishLabel = "English labelLiteral...";
       term.addLabel(englishLabel, "en");
-      expect(term.asEnglish.label?.value).to.equal(englishLabel);
+      expect(term.asEnglish.label).to.equal(englishLabel);
     });
   });
 
@@ -305,9 +307,9 @@ describe("LitVocabTerm tests", () => {
         .addMessage("whatever test", "en")
         .addMessage("test whatever in Spanish", "es");
 
-      expect(term.message?.value).equals("whatever test");
+      expect(term.message).equals("whatever test");
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
-      expect(term.message?.value).equals("test whatever in Spanish");
+      expect(term.message).equals("test whatever in Spanish");
     });
 
     it("Should ignore locale from our context if explicit language, with one param", () => {
@@ -317,12 +319,12 @@ describe("LitVocabTerm tests", () => {
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
 
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
-      expect(term.messageParams("first", "second")?.value).equals(
-        "Prueba de parámetros first y second"
+      expect(term.messageParamsLiteral("first", "second")).deep.equals(
+        DataFactory.literal("Prueba de parámetros first y second", "es")
       );
 
       storage.setItem(CONTEXT_KEY_LOCALE, "en");
-      expect(term.messageParams("first", "second")?.value).equals(
+      expect(term.messageParams("first", "second")).equals(
         "Params test first and second"
       );
     });
@@ -334,14 +336,14 @@ describe("LitVocabTerm tests", () => {
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
 
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
-      expect(
-        term.asLanguage("en").messageParams("first", "second")?.value
-      ).equals("Params test first and second");
+      expect(term.asLanguage("en").messageParams("first", "second")).equals(
+        "Params test first and second"
+      );
 
       getLocalStore().setItem(CONTEXT_KEY_LOCALE, "en");
-      expect(
-        term.asLanguage("es").messageParams("first", "second")?.value
-      ).equals("Prueba de parámetros first y second");
+      expect(term.asLanguage("es").messageParams("first", "second")).equals(
+        "Prueba de parámetros first y second"
+      );
     });
   });
 
@@ -370,6 +372,24 @@ describe("LitVocabTerm tests", () => {
           "http://example.com-whatever#localName"
         )
       ).to.equal("localName");
+    });
+  });
+
+  describe("String wrapper accessors", () => {
+    it("Should return string values", () => {
+      const term = new LitVocabTerm(
+        TEST_TERM_NAME,
+        DataFactory,
+        getLocalStore(),
+        false
+      )
+        .addLabel("test label", "en")
+        .addComment("test comment", "en")
+        .addMessage("test message", "en");
+
+      expect(term.label).to.equal("test label");
+      expect(term.comment).to.equal("test comment");
+      expect(term.message).to.equal("test message");
     });
   });
 

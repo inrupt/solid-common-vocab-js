@@ -190,12 +190,12 @@ var person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), f
 
 // 'personLabel' will default to an RDF literal with the value "Person", and an empty
 // language tag (i.e. "").
-var personLabel = person.label 
+var personLabel = person.labelLiteral 
  
 // Now strict behaviour...
 person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
 // personLabel will default to 'undefined'.
-personLabel = person.label
+personLabel = person.labelLiteral
 ```
 
 This behaviour (i.e. returning the local part of the IRI, or `undefined`) may be overridden

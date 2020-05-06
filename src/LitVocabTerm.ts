@@ -164,7 +164,7 @@ class LitVocabTerm implements NamedNode {
   }
 
   // Accessor for label that uses our LitSessionContext instance
-  get label(): Literal | undefined {
+  get labelLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
       return this._label.asLanguage(language).lookup(this._mandatory);
@@ -173,8 +173,13 @@ class LitVocabTerm implements NamedNode {
     }
   }
 
+  get label(): string | undefined {
+    const label = this.labelLiteral;
+    return label && label.value;
+  }
+
   // Accessor for comment that uses our LitSessionContext instance
-  get comment() {
+  get commentLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
       return this._comment.asLanguage(language).lookup(this._mandatory);
@@ -183,14 +188,41 @@ class LitVocabTerm implements NamedNode {
     }
   }
 
+  get comment(): string | undefined {
+    const comment = this.commentLiteral;
+    return comment && comment.value;
+  }
+
   // Accessor for message that uses our LitSessionContext instance
-  get message() {
+  get messageLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
       return this._message.asLanguage(language).lookup(this._mandatory);
     } finally {
       this.resetState();
     }
+  }
+
+  get message(): string | undefined {
+    const message = this.messageLiteral;
+    return message && message.value;
+  }
+
+  messageParamsLiteral(...rest: string[]): Literal | undefined {
+    const language = this.useLanguageOverrideOrGetFromContext();
+
+    try {
+      return this._message
+        .asLanguage(language)
+        .params(this._mandatory, ...rest);
+    } finally {
+      this.resetState();
+    }
+  }
+
+  messageParams(...rest: string[]): string | undefined {
+    const messageParams = this.messageParamsLiteral(...rest);
+    return messageParams && messageParams.value;
   }
 
   resetState() {
@@ -264,18 +296,6 @@ class LitVocabTerm implements NamedNode {
     // An empty string is converted to the NO_LANGUAGE_TAG
     this._languageOverride = language || NO_LANGUAGE_TAG;
     return this;
-  }
-
-  messageParams(...rest: string[]) {
-    const language = this.useLanguageOverrideOrGetFromContext();
-
-    try {
-      return this._message
-        .asLanguage(language)
-        .params(this._mandatory, ...rest);
-    } finally {
-      this.resetState();
-    }
   }
 
   /**
