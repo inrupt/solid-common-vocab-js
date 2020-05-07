@@ -15,6 +15,7 @@
   },
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint --config .eslintrc.js --fix \"src/**\"",
     "test": "eslint --config .eslintrc.js \"src/**\" && jest --no-cache ./src",
     "preversion": "npm test",
     "build": "rollup --config rollup.config.js",
