@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@rdfjs/data-model": "1.1.2",
-    "@types/rdf-js": "2.0.12"
+    "@types/rdf-js": "3.0.0"
   },
   "author": {
     "name": "Pat McBennett"
