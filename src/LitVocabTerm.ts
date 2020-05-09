@@ -75,24 +75,25 @@ class LitVocabTerm implements NamedNode {
   rdfFactory: DataFactory;
   strict: boolean;
 
-  // Literals describing the term
+  // Literals describing the term.
   private _label: LitMultiLingualLiteral;
   private _comment: LitMultiLingualLiteral;
   private _message: LitMultiLingualLiteral;
 
-  // Context store
+  // Context store.
   private _litSessionContext: LitContext;
   private _registry: LitTermRegistry;
 
-  // Internal state
+  // Internal state.
   private _mandatory: boolean;
   private _languageOverride: string | undefined;
 
-  // Implementation of the NamedNode interface
+  // Implementation of the NamedNode interface.
   termType: "NamedNode" = "NamedNode";
   get value(): string {
     return this.iri.value;
   }
+
   equals(other: Term): boolean {
     return this.iri.equals(other);
   }
@@ -161,25 +162,30 @@ class LitVocabTerm implements NamedNode {
       );
     }
 
-    // Stateful variables defaults
+    // Stateful variables defaults.
     this._mandatory = true;
     this._languageOverride = undefined;
 
     this.resetState();
   }
 
-  // Set our mandatory flag - i.e. throws if not as expected
+  // Set our mandatory flag - i.e. throws if not as expected.
   get mandatory(): LitVocabTerm {
     this._mandatory = true;
     return this;
   }
 
-  // Simple convenience accessor for requesting English
+  // Simple convenience accessor for requesting English.
   get asEnglish(): LitVocabTerm {
     return this.asLanguage("en");
   }
 
-  // Accessor for label that uses our LitSessionContext instance
+  // Explicitly named alias for getting the IRI of this term as a String.
+  get iriAsString(): string {
+    return this.value;
+  }
+
+  // Accessor for label that uses our LitSessionContext instance.
   get labelLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
@@ -194,7 +200,7 @@ class LitVocabTerm implements NamedNode {
     return label && label.value;
   }
 
-  // Accessor for comment that uses our LitSessionContext instance
+  // Accessor for comment that uses our LitSessionContext instance.
   get commentLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
@@ -209,7 +215,7 @@ class LitVocabTerm implements NamedNode {
     return comment && comment.value;
   }
 
-  // Accessor for message that uses our LitSessionContext instance
+  // Accessor for message that uses our LitSessionContext instance.
   get messageLiteral(): Literal | undefined {
     try {
       const language = this.useLanguageOverrideOrGetFromContext();
@@ -309,7 +315,7 @@ class LitVocabTerm implements NamedNode {
   }
 
   asLanguage(language: string) {
-    // An empty string is converted to the NO_LANGUAGE_TAG
+    // An empty string is converted to the NO_LANGUAGE_TAG.
     this._languageOverride = language || NO_LANGUAGE_TAG;
     return this;
   }

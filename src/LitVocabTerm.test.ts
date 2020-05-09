@@ -60,6 +60,17 @@ describe("LitVocabTerm tests", () => {
     expect(myTerm.iri.value).to.equal("http://some.vocab#myTerm");
   });
 
+  it("should return term IRI as a string", () => {
+    const termIri = "http://some.vocab#myTerm";
+    const myTerm = new LitVocabTerm(
+      termIri,
+      DataFactory,
+      getLocalStore(),
+      false
+    );
+    expect(myTerm.iriAsString).to.equal(termIri);
+  });
+
   describe("Strict support", () => {
     it("Should not use IRI local name if no label and strict", () => {
       const term = new LitVocabTerm(
