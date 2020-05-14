@@ -71,6 +71,23 @@ describe("LitVocabTerm tests", () => {
     expect(myTerm.iriAsString).to.equal(termIri);
   });
 
+  it("should return term IRI as a string", () => {
+    const termIri = "http://some.vocab#myTerm";
+    const myTerm = new LitVocabTerm(
+      termIri,
+      DataFactory,
+      getLocalStore(),
+      false
+    );
+    expect(myTerm.toString).to.equal(termIri);
+
+    // TODO: Ideally this usage would work in TypeScipt too (it works in
+    //  JavaScript), but it results in the following error:
+    //  "error TS2538: Type 'LitVocabTerm' cannot be used as an index type."
+    // const obj = { termIri: "test value" };
+    // expect(obj[myTerm]).to.equal("test value");
+  });
+
   describe("Strict support", () => {
     it("Should not use IRI local name if no label and strict", () => {
       const term = new LitVocabTerm(

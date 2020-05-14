@@ -185,6 +185,12 @@ class LitVocabTerm implements NamedNode {
     return this.value;
   }
 
+  // Get the IRI of this term as a String (means we can treat this object
+  // instance as a string more easily).
+  get toString(): string {
+    return this.value;
+  }
+
   // Accessor for label that uses our LitSessionContext instance.
   get labelLiteral(): Literal | undefined {
     try {
