@@ -44,7 +44,7 @@ const expect = chai.expect;
  *     rdfs:label "First name"@en ;
  *     rdfs:label "Nombre"@es .
  */
-describe("LitVocabTerm tests", () => {
+describe("LitVocabTerm", () => {
   const TEST_TERM_NAME_PATH = "localName";
   const TEST_TERM_NAME = DataFactory.namedNode(
     `test://iri#${TEST_TERM_NAME_PATH}`
@@ -417,6 +417,22 @@ describe("LitVocabTerm tests", () => {
       expect(term.label).to.equal("test label");
       expect(term.comment).to.equal("test comment");
       expect(term.message).to.equal("test message");
+    });
+
+    it("should convert the term to its IRI", () => {
+      const term = new LitVocabTerm(
+        TEST_TERM_NAME,
+        DataFactory,
+        getLocalStore(),
+        false
+      )
+        .addLabel("test label", "en")
+        .addComment("test comment", "en")
+        .addMessage("test message", "en");
+      expect(`${term}`).to.equal(TEST_TERM_NAME.value);
+      let myObj: Record<string, string> = {};
+      myObj[`${term}`] = "some value";
+      expect(myObj[TEST_TERM_NAME.value]).to.equal("some value");
     });
   });
 

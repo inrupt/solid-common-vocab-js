@@ -378,6 +378,13 @@ class LitVocabTerm implements NamedNode {
       valueLower.startsWith("http://") || valueLower.startsWith("https://")
     );
   }
+
+  /**
+   * Returns the term IRI.
+   */
+  toString() {
+    return this.value;
+  }
 }
 
 /**
