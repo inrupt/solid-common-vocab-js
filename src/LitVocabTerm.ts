@@ -185,12 +185,6 @@ class LitVocabTerm implements NamedNode {
     return this.value;
   }
 
-  // Get the IRI of this term as a String (means we can treat this object
-  // instance as a string more easily).
-  get toString(): string {
-    return this.value;
-  }
-
   // Accessor for label that uses our LitSessionContext instance.
   get labelLiteral(): Literal | undefined {
     try {
@@ -234,6 +228,14 @@ class LitVocabTerm implements NamedNode {
   get message(): string | undefined {
     const message = this.messageLiteral;
     return message && message.value;
+  }
+
+  // Get the IRI of this term as a String (means we can treat this object
+  // instance as a string more easily).
+  // NOTE: This is *NOT* an accessor, but deliberately overriding the
+  // 'toString()' method on the base Object.
+  toString(): string {
+    return this.value;
   }
 
   messageParamsLiteral(...rest: string[]): Literal | undefined {

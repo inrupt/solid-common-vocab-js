@@ -79,7 +79,7 @@ describe("LitVocabTerm tests", () => {
       getLocalStore(),
       false
     );
-    expect(myTerm.toString).to.equal(termIri);
+    expect(myTerm.toString()).to.equal(termIri);
 
     // TODO: Ideally this usage would work in TypeScipt too (it works in
     //  JavaScript), but it results in the following error:
