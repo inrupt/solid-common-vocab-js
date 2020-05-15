@@ -230,6 +230,14 @@ class LitVocabTerm implements NamedNode {
     return message && message.value;
   }
 
+  // Get the IRI of this term as a String (means we can treat this object
+  // instance as a string more easily).
+  // NOTE: This is *NOT* an accessor, but deliberately overriding the
+  // 'toString()' method on the base Object.
+  toString(): string {
+    return this.value;
+  }
+
   messageParamsLiteral(...rest: string[]): Literal | undefined {
     const language = this.useLanguageOverrideOrGetFromContext();
 
