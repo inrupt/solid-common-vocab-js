@@ -301,7 +301,7 @@ class LitVocabTerm implements NamedNode {
    * @param what what kind of value we are adding
    */
   validateAddParams(value: string, language: string, what: string) {
-    if (!value) {
+    if (value === undefined || value === null) {
       throw new Error(
         `Attempted to add a non-existent [${what}] value to vocab term`
       );

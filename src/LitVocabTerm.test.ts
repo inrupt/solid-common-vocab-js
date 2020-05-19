@@ -117,6 +117,10 @@ describe("LitVocabTerm tests", () => {
         true
       );
       // @ts-ignore to enable testing error management
+      expect(() => term.addLabel(null)).to.throw(
+        "Attempted to add a non-existent [label] value to vocab term"
+      );
+      // @ts-ignore to enable testing error management
       expect(() => term.addLabel()).to.throw(
         "Attempted to add a non-existent [label] value to vocab term"
       );
@@ -128,6 +132,10 @@ describe("LitVocabTerm tests", () => {
         "without specifying a language"
       );
 
+      // @ts-ignore to enable testing error management
+      expect(() => term.addComment(null)).to.throw(
+        "Attempted to add a non-existent [comment] value to vocab term"
+      );
       // @ts-ignore to enable testing error management
       expect(() => term.addComment()).to.throw(
         "Attempted to add a non-existent [comment] value to vocab term"
@@ -141,6 +149,10 @@ describe("LitVocabTerm tests", () => {
       );
 
       // @ts-ignore to enable testing error management
+      expect(() => term.addMessage(null)).to.throw(
+        "Attempted to add a non-existent [message] value to vocab term"
+      );
+      // @ts-ignore to enable testing error management
       expect(() => term.addMessage()).to.throw(
         "Attempted to add a non-existent [message] value to vocab term"
       );
@@ -151,6 +163,24 @@ describe("LitVocabTerm tests", () => {
       expect(() => term.addMessage("test value...", "")).to.throw(
         "without specifying a language"
       );
+    });
+
+    it("Should allow empty values", () => {
+      const term = new LitVocabTerm(
+        TEST_TERM_NAME,
+        DataFactory,
+        getLocalStore(),
+        true
+      )
+        .addLabelNoLanguage("")
+        .addCommentNoLanguage("")
+        .addMessageNoLanguage("");
+
+      expect(term.label).to.equal("");
+      expect(term.labelLiteral).deep.equal(DataFactory.literal("", ""));
+
+      expect(term.comment).to.equal("");
+      expect(term.message).to.equal("");
     });
 
     it("Should add no-language values", () => {
