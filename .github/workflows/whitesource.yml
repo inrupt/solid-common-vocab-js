@@ -52,10 +52,3 @@ jobs:
           path: whitesource/policyRejectionSummary.json
           name: whitesource-logs
 
-      # This is for debugging some interaction with WhiteSource. Eventually we should be able to remove this
-      - name: Upload debug log
-        uses: actions/upload-artifact@v1.0.0
-        with:
-          path: whitesource
-          name: whitesource-debug-log
-
