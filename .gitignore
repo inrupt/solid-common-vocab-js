@@ -26,3 +26,6 @@ coverage/
 #
 .yalc
 yalc.lock
+
+# whitesource
+whitesource/
