@@ -543,4 +543,45 @@ describe("LitVocabTerm tests", () => {
       expect(myTerm.iri.value).to.equal("http://some.vocab#myTerm");
     });
   });
+
+  describe("SeeAlso support", () => {
+    it("should add and retrieve 'seeAlso' IRIs", () => {
+      const myTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false
+      );
+      expect(myTerm.seeAlso).to.be.undefined;
+
+      myTerm.addSeeAlso(TEST_TERM_NAME);
+      expect(myTerm.seeAlso!.size).to.equal(1);
+      expect(myTerm.seeAlso!.has(TEST_TERM_NAME)).to.be.true;
+    });
+
+    it("should treat as a set", () => {
+      const myTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false
+      )
+        .addSeeAlso(TEST_TERM_NAME)
+        .addSeeAlso(TEST_TERM_NAME);
+
+      expect(myTerm.seeAlso!.size).to.equal(1);
+    });
+  });
+
+  describe("isDefinedBy support", () => {
+    it("should add and retrieve 'isDefinedBy' IRI", () => {
+      const myTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false
+      );
+
+      expect(myTerm.isDefinedBy).to.be.undefined;
+      myTerm.addIsDefinedBy(TEST_TERM_NAME);
+      expect(myTerm.isDefinedBy!).to.equal(TEST_TERM_NAME);
+    });
+  });
 });

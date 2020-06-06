@@ -87,6 +87,8 @@ class LitVocabTerm implements NamedNode {
   // Internal state.
   private _mandatory: boolean;
   private _languageOverride: string | undefined;
+  private _isDefinedBy: NamedNode | undefined; // Only allow one value.
+  private _seeAlso: Set<NamedNode> | undefined;
 
   // Implementation of the NamedNode interface.
   termType: "NamedNode" = "NamedNode";
@@ -165,6 +167,8 @@ class LitVocabTerm implements NamedNode {
     // Stateful variables defaults.
     this._mandatory = true;
     this._languageOverride = undefined;
+    this._isDefinedBy = undefined;
+    this._seeAlso = undefined;
 
     this.resetState();
   }
@@ -173,6 +177,14 @@ class LitVocabTerm implements NamedNode {
   get mandatory(): LitVocabTerm {
     this._mandatory = true;
     return this;
+  }
+
+  get seeAlso(): Set<NamedNode> | undefined {
+    return this._seeAlso;
+  }
+
+  get isDefinedBy(): NamedNode | undefined {
+    return this._isDefinedBy;
   }
 
   // Simple convenience accessor for requesting English.
@@ -258,6 +270,20 @@ class LitVocabTerm implements NamedNode {
   resetState() {
     this._languageOverride = undefined;
     this._mandatory = false;
+  }
+
+  addSeeAlso(value: NamedNode) {
+    if (!this._seeAlso) {
+      this._seeAlso = new Set<NamedNode>();
+    }
+
+    this._seeAlso.add(value);
+    return this;
+  }
+
+  addIsDefinedBy(value: NamedNode) {
+    this._isDefinedBy = value;
+    return this;
   }
 
   addLabelNoLanguage(value: string) {
