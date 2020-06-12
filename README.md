@@ -28,7 +28,7 @@ node index.js
 For detailed examples going beyond the common usages featured here, please see 
 the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
 
-The `lit-vocab-term` library is distributed as a Github NPM packages: `@inrupt/lit-vocab-term`
+The `lit-vocab-term` library is distributed as a Github NPM packages: `@solid/lit-vocab-term`
 For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
 
 
@@ -65,7 +65,7 @@ ex:Person a rdfs:Class ;
 
 We could represent this as a LIT Vocab Term in JavaScript like so:
 ```javascript
-const {LitVocabTerm, buildStore} = require('@inrupt/lit-vocab-term')
+const {LitVocabTerm, buildStore} = require('@solid/lit-vocab-term')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
 const rdf = require('rdf-ext')
 
@@ -108,7 +108,7 @@ To use the emmbedded `Datafactory` implementation to build a LitVocabTerm, the
 previous example would become: 
 
 ```javascript
-const {buildBasicTerm, buildStore} = require('@inrupt/lit-vocab-term')
+const {buildBasicTerm, buildStore} = require('@solid/lit-vocab-term')
 
 const person = buildBasicTerm('https://example.com#Person', buildStore(), true)
   .addLabel('My Person class','en')
@@ -119,7 +119,7 @@ const person = buildBasicTerm('https://example.com#Person', buildStore(), true)
 its typing. The following snippet of code demonstrate a basic TypeScript usage:
 
 ```typescript
-import {buildBasicTerm, buildStore, LitVocabTerm} from '@inrupt/lit-vocab-term'
+import {buildBasicTerm, buildStore, LitVocabTerm} from '@solid/lit-vocab-term'
 
 const person: LitVocabTerm = buildBasicTerm(
   'https://example.com#Person',
