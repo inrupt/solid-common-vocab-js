@@ -4,7 +4,7 @@ on:
 jobs:
   release-vocab-term:
     runs-on: ubuntu-latest
-    name: Releases the lit-vocab-term package
+    name: Releases the lit-term package
     steps:
      # Makes the current repository available to the workflow.
     - name: Checkout repo
