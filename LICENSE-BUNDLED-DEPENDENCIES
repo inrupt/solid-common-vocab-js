@@ -1,6 +1,0 @@
-"module name","license","repository"
-"@inrupt/lit-vocab-term@0.3.6","MIT*","https://github.com/inrupt/lit-vocab-term-js"
-"@rdfjs/data-model@1.1.2","MIT","https://github.com/rdfjs-base/data-model"
-"@types/node@13.11.0","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped"
-"@types/rdf-js@2.0.12","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped"
-"@types/rdf-js@3.0.0","MIT","https://github.com/DefinitelyTyped/DefinitelyTyped"
