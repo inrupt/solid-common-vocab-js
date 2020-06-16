@@ -21,7 +21,7 @@ The `demo` directory provides an extremely basic working example that you can ru
 with the following commands:
 ```
 cd demo
-npm install --registry=https://npm.pkg.github.com/inrupt
+npm install
 node index.js
 ```
 
