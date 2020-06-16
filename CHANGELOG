@@ -1,0 +1,9 @@
+# Changelog
+
+This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## 0.4.2
+
+### Patches
+
+- Fixed the license SPDX in `package.json` 
