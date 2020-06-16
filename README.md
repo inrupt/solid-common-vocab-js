@@ -4,7 +4,7 @@ libraries, that collectively make up the LIT for multiple programming languages,
 initially Java and JavaScript. This broad toolkit is intended to be used by 
 developers working with RDF.
 
-## lit-vocab-term-js
+## lit-term-js
 A very simple library that provides JavaScript objects that represent the
 individual terms (i.e. the classes and properties) defined in RDF vocabularies
 (both existing vocabularies (like http://schema.org, FOAF, VCard, LDP,
@@ -28,7 +28,7 @@ node index.js
 For detailed examples going beyond the common usages featured here, please see 
 the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
 
-The `lit-vocab-term` library is distributed as a Github NPM packages: `@inrupt/lit-vocab-term`
+The `lit-term` library is distributed as a Github NPM packages: `@solid/lit-term`
 For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
 
 
@@ -65,7 +65,7 @@ ex:Person a rdfs:Class ;
 
 We could represent this as a LIT Vocab Term in JavaScript like so:
 ```javascript
-const {LitVocabTerm, buildStore} = require('@inrupt/lit-vocab-term')
+const {LitVocabTerm, buildStore} = require('@solid/lit-term')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
 const rdf = require('rdf-ext')
 
@@ -108,18 +108,18 @@ To use the emmbedded `Datafactory` implementation to build a LitVocabTerm, the
 previous example would become: 
 
 ```javascript
-const {buildBasicTerm, buildStore} = require('@inrupt/lit-vocab-term')
+const {buildBasicTerm, buildStore} = require('@solid/lit-term')
 
 const person = buildBasicTerm('https://example.com#Person', buildStore(), true)
   .addLabel('My Person class','en')
   .addComment('Full description of my Person class...','en')
 ```
 
-**NOTE**: The `lit-vocab-term` library is implemented in TypeScript, and embeds 
+**NOTE**: The `lit-term` library is implemented in TypeScript, and embeds 
 its typing. The following snippet of code demonstrate a basic TypeScript usage:
 
 ```typescript
-import {buildBasicTerm, buildStore, LitVocabTerm} from '@inrupt/lit-vocab-term'
+import {buildBasicTerm, buildStore, LitVocabTerm} from '@solid/lit-term'
 
 const person: LitVocabTerm = buildBasicTerm(
   'https://example.com#Person',
@@ -131,7 +131,7 @@ const person: LitVocabTerm = buildBasicTerm(
 
 ### Messages
 
-An important feature of the `lit-vocab-term` is support for parameterized messages.
+An important feature of the `lit-term` is support for parameterized messages.
 This can be extremely useful when defining your own RDF vocabularies and including
 message strings (thereby providing those message with globally unique IRI identifiers
 and allowing for easy translations of those messages). For instance, to report errors

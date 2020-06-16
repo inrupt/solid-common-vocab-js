@@ -1,0 +1,39 @@
+name: CD
+
+on: 
+  push:
+    # This excludes tags from CD
+    branches:
+
+env:
+  CI: true
+jobs:
+  publish-npm:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2.1.0
+    - name: Prepare for publication to npm
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+        scope: '@solid'
+    - name: Determine npm tag
+      # Remove non-alphanumeric characters
+      # See https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+      run: echo "::set-env name=TAG_SLUG::$(echo ${GITHUB_REF#refs/heads/} | tr -cd '[:alnum:]-')"
+    - run: npm ci
+    - name: Prepare prerelease version
+      run: |
+        git config user.name $GITHUB_ACTOR
+        git config user.email gh-actions-${GITHUB_ACTOR}@github.com
+        # Make sure the prerelease is tagged with the branch name, and that they are sorted by build:
+        npm version prerelease --preid=$TAG_SLUG-$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER
+    - name: Publish an npm tag for this branch
+      run: npm publish --access public --tag "$TAG_SLUG"
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - run: |
+        echo "Package published. To install, run:"
+        echo ""
+        echo "    npm install @solid/lit-term@$TAG_SLUG"

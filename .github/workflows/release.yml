@@ -1,10 +1,11 @@
 on: 
   release: 
     types: [published]
+
 jobs:
   release-vocab-term:
-    runs-on: ubuntu-latest
-    name: Releases the lit-vocab-term package
+    runs-on: ubuntu-20.04
+    name: Releases the lit-term package
     steps:
      # Makes the current repository available to the workflow.
     - name: Checkout repo
@@ -15,11 +16,11 @@ jobs:
       with:
         node-version: '12.12.0'
         registry-url: https://npm.pkg.github.com/
-        scope: '@inrupt'
+        scope: '@solid'
     - name: NPM install, test and publish
       run: |
-        npm install --registry https://npm.pkg.github.com/inrupt
+        npm install
         npm test
-        npm publish --registry https://npm.pkg.github.com/inrupt
+        npm publish --access public
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
