@@ -29,6 +29,6 @@ module.exports = {
     // we disable the generic one, because it thinks imported types are unused
     // when they're not:
     "no-unused-vars": "off",
-    "license-header/header": ["error", "./resources/license-header.js"],
+    "license-header/header": [process.env.CI ? "error" : "warn", "./resources/license-header.js"],
   },
 };
