@@ -24,9 +24,9 @@
 
 import { getLocalStore } from "./utils/localStorage";
 
-import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./LitContext";
-import { LitTermRegistry } from "./LitTermRegistry";
-import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
+import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./VocabContext";
+import { VocabTermRegistry } from "./VocabTermRegistry";
+import { NO_LANGUAGE_TAG } from "./VocabMultiLingualLiteral";
 
 import chai from "chai";
 const expect = chai.expect;
@@ -36,10 +36,10 @@ beforeEach(() => {
   getLocalStore().clear();
 });
 
-describe("Populating the LitTermRegistry", () => {
+describe("Populating the VocabTermRegistry", () => {
   const iri = "test://iri";
   it("should add an appropriate value in the registry", () => {
-    const registry = new LitTermRegistry(getLocalStore());
+    const registry = new VocabTermRegistry(getLocalStore());
 
     registry.updateLabel(iri, "en", "hello label");
     registry.updateComment(iri, "en", "hello comment");
@@ -51,7 +51,7 @@ describe("Populating the LitTermRegistry", () => {
   });
 
   it("should override an appropriate value in the registry", () => {
-    const registry = new LitTermRegistry(getLocalStore());
+    const registry = new VocabTermRegistry(getLocalStore());
 
     registry.updateLabel(iri, "en", "hello label");
     registry.updateLabel(iri, "en", "hello again label");
@@ -60,11 +60,11 @@ describe("Populating the LitTermRegistry", () => {
   });
 });
 
-describe("LitTermRegistry lookup", () => {
+describe("VocabTermRegistry lookup", () => {
   const iri = "test://iri";
 
   it("should return the value in the specified language if possible", () => {
-    const registry = new LitTermRegistry(getLocalStore());
+    const registry = new VocabTermRegistry(getLocalStore());
 
     registry.updateLabel(iri, "es", "holà label");
     registry.updateComment(iri, "es", "holà comment");
@@ -77,7 +77,7 @@ describe("LitTermRegistry lookup", () => {
 
   it("should lookup using fallback language if the specified one misses", () => {
     const storage = getLocalStore();
-    const registry = new LitTermRegistry(storage);
+    const registry = new VocabTermRegistry(storage);
 
     storage.setItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, "es");
 
@@ -92,7 +92,7 @@ describe("LitTermRegistry lookup", () => {
 
   it("should lookup in English upon failing using requested and fallback languages", () => {
     const storage = getLocalStore();
-    const registry = new LitTermRegistry(storage);
+    const registry = new VocabTermRegistry(storage);
 
     storage.setItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, "de");
 
@@ -110,7 +110,7 @@ describe("LitTermRegistry lookup", () => {
 
   it("should lookup with no language upon failing using requested, fallback in English languages", () => {
     const storage = getLocalStore();
-    const registry = new LitTermRegistry(storage);
+    const registry = new VocabTermRegistry(storage);
 
     storage.setItem(CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE, "de");
 
@@ -125,7 +125,7 @@ describe("LitTermRegistry lookup", () => {
 
   it("should return undefined if no value is available", () => {
     const storage = getLocalStore();
-    const registry = new LitTermRegistry(storage);
+    const registry = new VocabTermRegistry(storage);
 
     expect(registry.lookupLabel(iri, "fr")).to.be.undefined;
     expect(registry.lookupComment(iri, "fr")).to.be.undefined;

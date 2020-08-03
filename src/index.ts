@@ -23,12 +23,12 @@
  */
 
 export { Store, getLocalStore, buildStore } from "./utils/localStorage";
-export { LitContext, CONTEXT_KEY_LOCALE } from "./LitContext";
-export { LitContextError } from "./LitContextError";
+export { VocabContext, CONTEXT_KEY_LOCALE } from "./VocabContext";
+export { VocabContextError } from "./VocabContextError";
 export {
-  LitMultiLingualLiteral,
+  VocabMultiLingualLiteral,
   NO_LANGUAGE_TAG,
-} from "./LitMultiLingualLiteral";
-export { LitVocabTerm, buildBasicTerm } from "./LitVocabTerm";
-export { LitTermRegistry } from "./LitTermRegistry";
+} from "./VocabMultiLingualLiteral";
+export { VocabTerm, buildBasicTerm } from "./VocabTerm";
+export { VocabTermRegistry } from "./VocabTermRegistry";
 export type IriString = string;

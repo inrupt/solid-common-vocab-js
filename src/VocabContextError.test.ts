@@ -22,42 +22,42 @@
  * End license text.Source Distributions
  */
 
-import { LitContext } from "./LitContext";
-import { LitContextError } from "./LitContextError";
+import { VocabContext } from "./VocabContext";
+import { VocabContextError } from "./VocabContextError";
 import { getLocalStore } from "./utils/localStorage";
 
 import chai from "chai";
 const expect = chai.expect;
 
-describe("LIT context-aware errors", () => {
+describe("Vocab context-aware errors", () => {
   beforeEach(() => {
     delete process.env.NODE_ENV;
   });
 
   it("should fail if wrapped exception is not an Error", function () {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     expect(
       // @ts-ignore, because the parameters of the constructor
       // explicitly expect (string, Error), to which (string, string) cannot
       // be assigned.
-      () => new LitContextError(context, "test", "Not an error!")
+      () => new VocabContextError(context, "test", "Not an error!")
     ).to.throw("test");
     expect(
       // @ts-ignore
-      () => new LitContextError(context, "test", "Not an error!")
+      () => new VocabContextError(context, "test", "Not an error!")
     ).to.throw("Not an error!");
   });
 
   it("should be possible to create without a wrapped error", function () {
-    const context = new LitContext("en", getLocalStore());
-    expect(new LitContextError(context, "test", undefined)).to.not.be.null;
+    const context = new VocabContext("en", getLocalStore());
+    expect(new VocabContextError(context, "test", undefined)).to.not.be.null;
   });
 
   it("should be able to wrap a standard error", function () {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     const message = "Error occurred";
     const wrapMessage = "Wrap error message";
-    const wrapError = new LitContextError(
+    const wrapError = new VocabContextError(
       context,
       wrapMessage,
       new Error(message)
@@ -71,18 +71,18 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should contain wrapped exception details", function () {
-    const context = new LitContext("en", getLocalStore());
-    const errorLvl1 = new LitContextError(
+    const context = new VocabContext("en", getLocalStore());
+    const errorLvl1 = new VocabContextError(
       context,
       "Error message Level1",
       undefined
     );
-    const errorLvl2 = new LitContextError(
+    const errorLvl2 = new VocabContextError(
       context,
       "Error message Level2",
       errorLvl1
     );
-    const errorLvl3 = new LitContextError(
+    const errorLvl3 = new VocabContextError(
       context,
       "Error message Level3",
       errorLvl2
@@ -95,19 +95,19 @@ describe("LIT context-aware errors", () => {
   });
 
   it("throwing a standard error loses nested information", function () {
-    const context = new LitContext("en", getLocalStore());
-    const errorLvl1 = new LitContextError(
+    const context = new VocabContext("en", getLocalStore());
+    const errorLvl1 = new VocabContextError(
       context,
       "Error message Level1",
       undefined
     );
     const errorLvl2 = new Error("Standard Error message Level2");
-    const errorLvl3 = new LitContextError(
+    const errorLvl3 = new VocabContextError(
       context,
       "Error message Level3",
       errorLvl2
     );
-    const errorLvl4 = new LitContextError(
+    const errorLvl4 = new VocabContextError(
       context,
       "Error message Level4",
       errorLvl3
@@ -122,19 +122,19 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should contain wrapped exception details, but no stack info", function () {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     process.env.NODE_ENV = "production";
-    const errorLvl1 = new LitContextError(
+    const errorLvl1 = new VocabContextError(
       context,
       "Error message Level1",
       undefined
     );
-    const errorLvl2 = new LitContextError(
+    const errorLvl2 = new VocabContextError(
       context,
       "Error message Level2",
       errorLvl1
     );
-    const errorLvl3 = new LitContextError(
+    const errorLvl3 = new VocabContextError(
       context,
       "Error message Level3",
       errorLvl2
@@ -150,13 +150,13 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should unwrap when calling toString()", function () {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     const message = "Error occurred";
     try {
       throw new Error(message);
     } catch (error) {
       const wrapMessage = "Wrap error message";
-      const wrapError = new LitContextError(context, wrapMessage, error);
+      const wrapError = new VocabContextError(context, wrapMessage, error);
       expect(wrapError.countLevels()).to.equal(2);
 
       const fullReport = wrapError.toString();
@@ -166,10 +166,10 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should check if our error contains specified values", function () {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     const message = "Error occurred";
     try {
-      throw new LitContextError(context, message, undefined);
+      throw new VocabContextError(context, message, undefined);
     } catch (error) {
       expect(error.contains(["Error"])).to.be.true;
       expect(error.contains(["Error", "occurred"])).to.be.true;
@@ -178,19 +178,19 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should return true if we don't actually check for any arguments", function () {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     const message = "Error occurred";
     try {
-      throw new LitContextError(context, message, undefined);
+      throw new VocabContextError(context, message, undefined);
     } catch (error) {
       expect(error.contains()).to.be.true;
     }
   });
 
   it("should not throw on an empty stack", function () {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     const message = "Error occurred";
-    const error = new LitContextError(context, message, undefined);
+    const error = new VocabContextError(context, message, undefined);
     error.stack = undefined;
     expect(error.unwrapException()).to.contain(message);
   });
@@ -198,9 +198,9 @@ describe("LIT context-aware errors", () => {
   it("should not show the whole stack in production", () => {
     if (process?.env) {
       process.env.NODE_ENV = "production";
-      const context = new LitContext("en", getLocalStore());
+      const context = new VocabContext("en", getLocalStore());
       const message = "Error occurred";
-      const error = new LitContextError(context, message, undefined);
+      const error = new VocabContextError(context, message, undefined);
       const prodReport = error.unwrapException();
       process.env.NODE_ENV = "staging";
       const stagingReport = error.unwrapException();
@@ -209,9 +209,9 @@ describe("LIT context-aware errors", () => {
   });
 
   it("should support non-Node environment", () => {
-    const context = new LitContext("en", getLocalStore());
+    const context = new VocabContext("en", getLocalStore());
     const message = "Error occurred";
-    const error = new LitContextError(context, message, undefined);
+    const error = new VocabContextError(context, message, undefined);
     expect(() => error.unwrapException()).not.to.throw();
   });
 });

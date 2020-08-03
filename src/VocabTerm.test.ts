@@ -25,8 +25,8 @@
 import { getLocalStore } from "./utils/localStorage";
 import DataFactory from "@rdfjs/data-model";
 
-import { LitContext, CONTEXT_KEY_LOCALE } from "./LitContext";
-import { LitVocabTerm, buildBasicTerm } from "./LitVocabTerm";
+import { VocabContext, CONTEXT_KEY_LOCALE } from "./VocabContext";
+import { VocabTerm, buildBasicTerm } from "./VocabTerm";
 
 import chai from "chai";
 const expect = chai.expect;
@@ -51,7 +51,7 @@ describe("LitVocabTerm tests", () => {
   );
 
   it("should support creating a term using a string IRI", () => {
-    const myTerm = new LitVocabTerm(
+    const myTerm = new VocabTerm(
       "http://some.vocab#myTerm",
       DataFactory,
       getLocalStore(),
@@ -62,23 +62,13 @@ describe("LitVocabTerm tests", () => {
 
   it("should return term IRI as a string", () => {
     const termIri = "http://some.vocab#myTerm";
-    const myTerm = new LitVocabTerm(
-      termIri,
-      DataFactory,
-      getLocalStore(),
-      false
-    );
+    const myTerm = new VocabTerm(termIri, DataFactory, getLocalStore(), false);
     expect(myTerm.iriAsString).to.equal(termIri);
   });
 
   it("should return term IRI as a string", () => {
     const termIri = "http://some.vocab#myTerm";
-    const myTerm = new LitVocabTerm(
-      termIri,
-      DataFactory,
-      getLocalStore(),
-      false
-    );
+    const myTerm = new VocabTerm(termIri, DataFactory, getLocalStore(), false);
     expect(myTerm.toString()).to.equal(termIri);
 
     // TODO: Ideally this usage would work in TypeScipt too (it works in
@@ -90,7 +80,7 @@ describe("LitVocabTerm tests", () => {
 
   describe("Strict support", () => {
     it("Should not use IRI local name if no label and strict", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -100,7 +90,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should throw if mandatory and no label and strict", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -110,7 +100,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should fail to add values if no value or language provided", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -166,7 +156,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should allow empty values", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -184,7 +174,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should add no-language values", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -204,7 +194,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should still fallback to English if language not found", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -222,7 +212,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("should be unecessary to calling mandatory on strict term", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -236,7 +226,7 @@ describe("LitVocabTerm tests", () => {
     it("Should use the label context", () => {
       const storage = getLocalStore();
       const label = "Irish label string";
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         storage,
@@ -248,7 +238,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should use the IRI local name as English label, if needed", () => {
-      const unStrictTerm = new LitVocabTerm(
+      const unStrictTerm = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -272,7 +262,7 @@ describe("LitVocabTerm tests", () => {
 
     it("Should default to English value language", () => {
       const englishLabel = "English label...";
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -285,7 +275,7 @@ describe("LitVocabTerm tests", () => {
     it("Should override language", () => {
       const storage = getLocalStore();
       const irishLabel = "Irish labelLiteral...";
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         storage,
@@ -309,7 +299,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should throw if mandatory language not found and strict", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -326,7 +316,7 @@ describe("LitVocabTerm tests", () => {
     });
 
     it("Should return undefined if mandatory language not found and unstrict", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -343,7 +333,7 @@ describe("LitVocabTerm tests", () => {
     it("Should use the comment context", () => {
       const storage = getLocalStore();
       const comment = "test label string";
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         storage,
@@ -361,7 +351,7 @@ describe("LitVocabTerm tests", () => {
     it("should support the shorthand asEnglish to get a value in english", () => {
       const storage = getLocalStore();
       const irishLabel = "Irish label...";
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         storage,
@@ -377,7 +367,7 @@ describe("LitVocabTerm tests", () => {
     it("Should access literal definition with language from context without params", () => {
       const storage = getLocalStore();
       const iri = TEST_TERM_NAME;
-      const term = new LitVocabTerm(iri, DataFactory, storage, false)
+      const term = new VocabTerm(iri, DataFactory, storage, false)
         .addMessage("whatever test", "en")
         .addMessage("test whatever in Spanish", "es");
 
@@ -388,7 +378,7 @@ describe("LitVocabTerm tests", () => {
 
     it("Should ignore locale from our context if explicit language, with one param", () => {
       const storage = getLocalStore();
-      const term = new LitVocabTerm(TEST_TERM_NAME, DataFactory, storage, false)
+      const term = new VocabTerm(TEST_TERM_NAME, DataFactory, storage, false)
         .addMessage("Params test {{0}} and {{1}}", "en")
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
 
@@ -405,7 +395,7 @@ describe("LitVocabTerm tests", () => {
 
     it("Should ignore locale from our context if explicit language, with params", () => {
       const storage = getLocalStore();
-      const term = new LitVocabTerm(TEST_TERM_NAME, DataFactory, storage, false)
+      const term = new VocabTerm(TEST_TERM_NAME, DataFactory, storage, false)
         .addMessage("Params test {{0}} and {{1}}", "en")
         .addMessage("Prueba de parámetros {{0}} y {{1}}", "es");
 
@@ -424,34 +414,30 @@ describe("LitVocabTerm tests", () => {
   describe("extracting IRI local name", () => {
     it("Should throw if no local name", () => {
       expect(() =>
-        LitVocabTerm.extractIriLocalName("http://example.com-whatever")
+        VocabTerm.extractIriLocalName("http://example.com-whatever")
       ).to.throw("Expected hash");
 
       expect(() =>
-        LitVocabTerm.extractIriLocalName("https://example.com-whatever")
+        VocabTerm.extractIriLocalName("https://example.com-whatever")
       ).to.throw("Expected hash");
     });
 
     it("Should extract a / name", () => {
       expect(
-        LitVocabTerm.extractIriLocalName(
-          "http://example.com-whatever/localName"
-        )
+        VocabTerm.extractIriLocalName("http://example.com-whatever/localName")
       ).to.equal("localName");
     });
 
     it("Should extract a # name", () => {
       expect(
-        LitVocabTerm.extractIriLocalName(
-          "http://example.com-whatever#localName"
-        )
+        VocabTerm.extractIriLocalName("http://example.com-whatever#localName")
       ).to.equal("localName");
     });
   });
 
   describe("String wrapper accessors", () => {
     it("Should return string values", () => {
-      const term = new LitVocabTerm(
+      const term = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         getLocalStore(),
@@ -469,44 +455,44 @@ describe("LitVocabTerm tests", () => {
 
   describe("is string", () => {
     it("Should determine correctly", () => {
-      expect(LitVocabTerm.isString("test user name")).to.be.true;
-      expect(LitVocabTerm.isString(new String("test user name").toString())).to
-        .be.true;
+      expect(VocabTerm.isString("test user name")).to.be.true;
+      expect(VocabTerm.isString(new String("test user name").toString())).to.be
+        .true;
       // @ts-ignore to enable testing error management
-      expect(LitVocabTerm.isString(57)).to.be.false;
+      expect(VocabTerm.isString(57)).to.be.false;
       // @ts-ignore to enable testing error management
-      expect(LitVocabTerm.isString({})).to.be.false;
+      expect(VocabTerm.isString({})).to.be.false;
     });
 
     it("Should determine IRI correctly", () => {
-      expect(LitVocabTerm.isStringIri("HTTP://xyz")).to.be.true;
-      expect(LitVocabTerm.isStringIri("http://xyz")).to.be.true;
-      expect(LitVocabTerm.isStringIri("HTTPS://xyz")).to.be.true;
-      expect(LitVocabTerm.isStringIri("HTTPs://xyz")).to.be.true;
+      expect(VocabTerm.isStringIri("HTTP://xyz")).to.be.true;
+      expect(VocabTerm.isStringIri("http://xyz")).to.be.true;
+      expect(VocabTerm.isStringIri("HTTPS://xyz")).to.be.true;
+      expect(VocabTerm.isStringIri("HTTPs://xyz")).to.be.true;
 
-      expect(LitVocabTerm.isStringIri("http:/xyz")).to.be.false;
-      expect(LitVocabTerm.isStringIri("HTTPs//xyz")).to.be.false;
+      expect(VocabTerm.isStringIri("http:/xyz")).to.be.false;
+      expect(VocabTerm.isStringIri("HTTPs//xyz")).to.be.false;
       // @ts-ignore to enable testing error management
-      expect(LitVocabTerm.isStringIri(1.99)).to.be.false;
+      expect(VocabTerm.isStringIri(1.99)).to.be.false;
     });
   });
 
   describe("Implementing RDFJS", () => {
     it("should be possible to test LitVocabTerm equality", () => {
       const store = getLocalStore();
-      const aTerm = new LitVocabTerm(
+      const aTerm = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         store,
         false
       ).addLabel("test label...", "en");
-      const anotherTerm = new LitVocabTerm(
+      const anotherTerm = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         store,
         false
       ).addLabel("test label...", "en");
-      const aDifferentTerm = new LitVocabTerm(
+      const aDifferentTerm = new VocabTerm(
         DataFactory.namedNode(`${TEST_TERM_NAME.value}_`),
         DataFactory,
         store,
@@ -525,7 +511,7 @@ describe("LitVocabTerm tests", () => {
         "test label...",
         "en"
       );
-      const anotherTerm = new LitVocabTerm(
+      const anotherTerm = new VocabTerm(
         TEST_TERM_NAME,
         DataFactory,
         store,

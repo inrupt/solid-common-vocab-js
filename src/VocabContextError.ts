@@ -22,19 +22,23 @@
  * End license text.Source Distributions
  */
 
-import { LitContext } from "./LitContext";
+import { VocabContext } from "./VocabContext";
 
-class LitContextError extends Error {
-  _context: LitContext;
+class VocabContextError extends Error {
+  _context: VocabContext;
   _createdAt: number;
-  _wrappedException?: LitContextError | Error;
+  _wrappedException?: VocabContextError | Error;
 
-  constructor(context: LitContext, message: string, wrappedException?: Error) {
+  constructor(
+    context: VocabContext,
+    message: string,
+    wrappedException?: Error
+  ) {
     // The ignore is required because of code coverage bug
     // https://github.com/gotwarlost/istanbul/issues/690
     super(message) /* istanbul ignore next */;
     if (wrappedException) {
-      if (wrappedException instanceof LitContextError) {
+      if (wrappedException instanceof VocabContextError) {
         this._wrappedException = wrappedException;
         this.message = `${this.message}\nContains context error: ${wrappedException.message}`;
       } else if (wrappedException instanceof Error) {
@@ -49,7 +53,7 @@ class LitContextError extends Error {
     this._context = context;
     this._createdAt = Date.now();
     // See https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
-    Object.setPrototypeOf(this, LitContextError.prototype);
+    Object.setPrototypeOf(this, VocabContextError.prototype);
   }
 
   report(level: number, totalLevels: number, exception: Error): string {
@@ -67,9 +71,9 @@ class LitContextError extends Error {
 
   countLevels() {
     let result: number = 1;
-    let current: LitContextError | undefined = this;
+    let current: VocabContextError | undefined = this;
     while (current && current._wrappedException) {
-      if (!(current._wrappedException instanceof LitContextError)) {
+      if (!(current._wrappedException instanceof VocabContextError)) {
         // If we have wrapped a standard exception, then the unwrapping stops,
         //  because standard errors can't wrap other errors.
         current = undefined;
@@ -86,11 +90,11 @@ class LitContextError extends Error {
     const totalLevels = this.countLevels();
     let level = 1;
     let result = "";
-    let current: LitContextError | undefined = this;
+    let current: VocabContextError | undefined = this;
     while (current !== undefined) {
       result += "\n\n" + this.report(level++, totalLevels, current);
       if (
-        !(current._wrappedException instanceof LitContextError) &&
+        !(current._wrappedException instanceof VocabContextError) &&
         current._wrappedException
       ) {
         result +=
@@ -120,4 +124,4 @@ class LitContextError extends Error {
   }
 }
 
-export { LitContextError };
+export { VocabContextError };
