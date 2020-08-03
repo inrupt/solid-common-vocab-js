@@ -1,16 +1,32 @@
 /**
- * Proprietary and Confidential
+ * Begin license text.
+ * Copyright 2020 Inrupt Inc.
  *
- * Copyright 2020 Inrupt Inc. - all rights reserved.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * Do not use without explicit permission from Inrupt Inc.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * End license text.Source Distributions
  */
 
 import rdf from "@rdfjs/data-model";
 
 import { getLocalStore } from "../src/utils/localStorage";
-import { LitContext, CONTEXT_KEY_LOCALE } from "../src/LitContext";
-import { LitVocabTerm, buildBasicTerm } from "../src/LitVocabTerm";
+import { VocabContext, CONTEXT_KEY_LOCALE } from "../src/LitContext";
+import { VocabTerm, buildBasicTerm } from "../src/VocabTerm";
 
 const chai = require("chai");
 const expect = chai.expect;
@@ -66,12 +82,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       // enforces that an explicit English label be provided!).
       // Here we're simply creating the term itself, and not yet add any labels,
       // comments or messages.
-      const term = new LitVocabTerm(
-        TEST_TERM_NAME,
-        rdf,
-        getLocalStore(),
-        false
-      );
+      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), false);
 
       // Simply requesting the label now without an explicit language assumes
       // English, but since we haven't provided any labels at all yet, all we
@@ -163,7 +174,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       // can enforce that all terms must have at least English labels and
       // comments (this is something that the LIT Artifact Generator can enforce
       // today for example).
-      const term = new LitVocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
+      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
 
       // Simply requesting the label without an explicit language assumes
       // English, but since we haven't provided any labels at all we get
@@ -202,12 +213,10 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       // Create a vocab term with a non-English language label (in this case
       // Irish, and using the 'strict' mode).
       const labelInIrish = "Ainm";
-      const term = new LitVocabTerm(
-        TEST_TERM_NAME,
-        rdf,
-        storage,
-        true
-      ).addLabel(labelInIrish, "ga");
+      const term = new VocabTerm(TEST_TERM_NAME, rdf, storage, true).addLabel(
+        labelInIrish,
+        "ga"
+      );
 
       // First show that by default we can't find any label values at all
       // (because we created our term in 'strict' mode, meaning we won't
@@ -233,7 +242,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
    */
   describe("Strict support", () => {
     it("Should not use IRI path if no label and strict", () => {
-      const term = new LitVocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
+      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
 
       // Won't fallback to use IRI path - just returns 'undefined'.
       expect(term.label).to.be.undefined;
@@ -243,7 +252,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
     });
 
     it("Should still fallback to English if language not found", () => {
-      const term = new LitVocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true)
+      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true)
         .addLabel(`First name`, "en")
         .addComment(`English comment...`, "en");
 
@@ -254,7 +263,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
     });
 
     it("Should require explicitly English label and comment if mandatory", () => {
-      const term = new LitVocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true)
+      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true)
         .addLabelNoLanguage(`No-language label isn't enough for 'mandatory'...`)
         .addCommentNoLanguage(
           `No-language comment isn't enough for 'mandatory'...`
@@ -268,7 +277,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
   // Comments and messages do not fallback to using the IRI's local name.
   describe("LIT Vocab Term comment or message usage", () => {
     it("Comment and message do not fallback to using the IRIs local name", () => {
-      const termStrict = new LitVocabTerm(
+      const termStrict = new VocabTerm(
         TEST_TERM_NAME,
         rdf,
         getLocalStore(),
@@ -285,7 +294,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       expect(() => termStrict.mandatory.message).to.throw(TEST_TERM_NAME.value);
 
       // Same behaviour for unstrict terms.
-      const termUnstrict = new LitVocabTerm(
+      const termUnstrict = new VocabTerm(
         TEST_TERM_NAME,
         rdf,
         getLocalStore(),
@@ -305,7 +314,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
     it("Message with no parameters", () => {
       const englishMessage = "Some message with no parameters...";
       const germanMessage = "Eine Nachricht ohne Parameter...";
-      const term = new LitVocabTerm(TEST_TERM_ERROR, rdf, getLocalStore(), true)
+      const term = new VocabTerm(TEST_TERM_ERROR, rdf, getLocalStore(), true)
         .addMessage(englishMessage, "en")
         .addMessage(germanMessage, "de");
 
@@ -326,7 +335,7 @@ describe("Demonstrate LIT Vocab Term usage", () => {
       const englishMessage = "Message with {{0}}, {{1}} params";
       const germanMessage =
         "Unterschiedliche Reihenfolge {{1}} und dann {{0}} Parameter";
-      const term = new LitVocabTerm(TEST_TERM_ERROR, rdf, getLocalStore(), true)
+      const term = new VocabTerm(TEST_TERM_ERROR, rdf, getLocalStore(), true)
         .addMessage(englishMessage, "en")
         .addMessage(germanMessage, "de");
 

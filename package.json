@@ -1,14 +1,14 @@
 {
-  "name": "@solid/lit-term",
-  "version": "0.4.1",
-  "description": "Very basic implementation of LIT Vocab Term, with minimal RDF library dependencies.",
+  "name": "@inrupt/solid-common-vocab",
+  "version": "0.5.0",
+  "description": "Implementation of Solid Common Vocab, with minimal RDF library dependencies.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inrupt/lit-term-js.git",
-    "directory": "lit-vocab-term/lit-term-base"
+    "url": "https://github.com/inrupt/solid-common-vocab-js.git",
+    "directory": "solid-common-vocab"
   },
   "directories": {
     "test": "test"

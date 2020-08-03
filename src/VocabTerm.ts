@@ -23,12 +23,12 @@
  */
 
 import { Store } from "./utils/localStorage";
-import { LitContext } from "./LitContext";
-import { LitTermRegistry } from "./LitTermRegistry";
+import { VocabContext } from "./VocabContext";
+import { VocabTermRegistry } from "./VocabTermRegistry";
 import {
-  LitMultiLingualLiteral,
+  VocabMultiLingualLiteral,
   NO_LANGUAGE_TAG,
-} from "./LitMultiLingualLiteral";
+} from "./VocabMultiLingualLiteral";
 import { DataFactory, NamedNode, Term, Literal } from "rdf-js";
 import { IriString } from "./index";
 import rdf from "@rdfjs/data-model";
@@ -70,19 +70,19 @@ const DEFAULT_LOCALE = "en";
  * the term IRI (that we don't store!). Currently this doesn't cause any
  * problems, but it's just something to be aware of!
  */
-class LitVocabTerm implements NamedNode {
+class VocabTerm implements NamedNode {
   iri: NamedNode;
   rdfFactory: DataFactory;
   strict: boolean;
 
   // Literals describing the term.
-  private _label: LitMultiLingualLiteral;
-  private _comment: LitMultiLingualLiteral;
-  private _message: LitMultiLingualLiteral;
+  private _label: VocabMultiLingualLiteral;
+  private _comment: VocabMultiLingualLiteral;
+  private _message: VocabMultiLingualLiteral;
 
   // Context store.
-  private _litSessionContext: LitContext;
-  private _registry: LitTermRegistry;
+  private _litSessionContext: VocabContext;
+  private _registry: VocabTermRegistry;
 
   // Internal state.
   private _mandatory: boolean;
@@ -129,26 +129,26 @@ class LitVocabTerm implements NamedNode {
       this.strict = false;
     }
 
-    this._litSessionContext = new LitContext(DEFAULT_LOCALE, contextStorage);
-    this._registry = new LitTermRegistry(contextStorage);
+    this._litSessionContext = new VocabContext(DEFAULT_LOCALE, contextStorage);
+    this._registry = new VocabTermRegistry(contextStorage);
 
     // Create holders for meta-data on this vocabulary term (we could probably
     // lazily create these only if values are actually provided!).
-    this._label = new LitMultiLingualLiteral(
+    this._label = new VocabMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
       "rdfs:label"
     );
 
-    this._comment = new LitMultiLingualLiteral(
+    this._comment = new VocabMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
       "rdfs:comment"
     );
 
-    this._message = new LitMultiLingualLiteral(
+    this._message = new VocabMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
@@ -158,10 +158,7 @@ class LitVocabTerm implements NamedNode {
     if (!strict) {
       // This can be overwritten if we get an actual no-language label later,
       // which would be perfectly fine.
-      this._label.addValue(
-        LitVocabTerm.extractIriLocalName(iri),
-        NO_LANGUAGE_TAG
-      );
+      this._label.addValue(VocabTerm.extractIriLocalName(iri), NO_LANGUAGE_TAG);
     }
 
     // Stateful variables defaults.
@@ -174,7 +171,7 @@ class LitVocabTerm implements NamedNode {
   }
 
   // Set our mandatory flag - i.e. throws if not as expected.
-  get mandatory(): LitVocabTerm {
+  get mandatory(): VocabTerm {
     this._mandatory = true;
     return this;
   }
@@ -188,7 +185,7 @@ class LitVocabTerm implements NamedNode {
   }
 
   // Simple convenience accessor for requesting English.
-  get asEnglish(): LitVocabTerm {
+  get asEnglish(): VocabTerm {
     return this.asLanguage("en");
   }
 
@@ -427,9 +424,9 @@ function buildBasicTerm(
   strict?: boolean
 ) {
   if (typeof iri === "string") {
-    return new LitVocabTerm(rdf.namedNode(iri), rdf, context, strict);
+    return new VocabTerm(rdf.namedNode(iri), rdf, context, strict);
   }
-  return new LitVocabTerm(iri, rdf, context, strict);
+  return new VocabTerm(iri, rdf, context, strict);
 }
 
-export { LitVocabTerm, buildBasicTerm };
+export { VocabTerm, buildBasicTerm };

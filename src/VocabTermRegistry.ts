@@ -23,8 +23,8 @@
  */
 
 import { Store } from "./utils/localStorage";
-import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./LitContext";
-import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
+import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./VocabContext";
+import { NO_LANGUAGE_TAG } from "./VocabMultiLingualLiteral";
 
 /**
  * Simple registry of terms (and their associated meta-data (like labels,
@@ -33,7 +33,7 @@ import { NO_LANGUAGE_TAG } from "./LitMultiLingualLiteral";
  * We use localStorage to store all term meta-data, which can only store
  * strings (so we need to expand out the meta-data for each term).
  */
-class LitTermRegistry {
+class VocabTermRegistry {
   private store: Store;
 
   constructor(store: Store) {
@@ -126,4 +126,4 @@ class LitTermRegistry {
   }
 }
 
-export { LitTermRegistry };
+export { VocabTermRegistry };

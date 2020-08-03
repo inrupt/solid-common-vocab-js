@@ -22,7 +22,7 @@
  * End license text.Source Distributions
  */
 
-import { LitContext, CONTEXT_KEY_LOCALE } from "./LitContext";
+import { VocabContext, CONTEXT_KEY_LOCALE } from "./VocabContext";
 import { getLocalStore } from "./utils/localStorage";
 
 import chai from "chai";
@@ -33,7 +33,7 @@ it("should fail if no locale provided", function () {
     // @ts-ignore, because the parameters of the constructor
     // explicitely expect (string, IStore), to which (undef, undef) cannot
     // be assigned.
-    () => new LitContext(undefined, undefined)
+    () => new VocabContext(undefined, undefined)
   ).to.throw("*MUST* be provided a locale");
 });
 
@@ -41,19 +41,19 @@ it("should fail if no storage provided", function () {
   // @ts-ignore, because the parameters of the constructor
   // explicitely expect (string, IStore), to which (string, undef) cannot
   // be assigned.
-  expect(() => new LitContext("en", undefined)).to.throw(
+  expect(() => new VocabContext("en", undefined)).to.throw(
     "*MUST* be provided storage"
   );
 });
 
 it("should create Ok", function () {
-  const context = new LitContext("en", getLocalStore());
+  const context = new VocabContext("en", getLocalStore());
   expect(context).is.not.null;
   expect(context.getLocale()).equals("en");
 });
 
 it("should change locale Ok", function () {
-  const context = new LitContext("en", getLocalStore());
+  const context = new VocabContext("en", getLocalStore());
   expect(context.getLocale()).equals("en");
   context.setLocale("es");
   expect(context.getLocale()).equals("es");
@@ -64,13 +64,13 @@ it("should change locale Ok", function () {
 
 it("should be created now", function () {
   const now = Date.now();
-  const context = new LitContext("en", getLocalStore());
+  const context = new VocabContext("en", getLocalStore());
   expect(context.getCreatedAt() >= now).to.be.true;
 });
 
 it("should fallback to the initial locale", () => {
   const store = getLocalStore();
-  const context = new LitContext("en", store);
+  const context = new VocabContext("en", store);
   // A value is initialized in the store when the context is created,
   // and to get the default initial locale this value must be removed.
   store.removeItem(CONTEXT_KEY_LOCALE);

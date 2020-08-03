@@ -1,10 +1,5 @@
-# The Linked data Integration Toolkit (LIT) for JavaScript
-This Linked data Integration Toolkit (LIT) is intended to contain a number of
-libraries, that collectively make up the LIT for multiple programming languages,
-initially Java and JavaScript. This broad toolkit is intended to be used by 
-developers working with RDF.
+# The Solid Common Vocab library for JavaScript
 
-## lit-term-js
 A very simple library that provides JavaScript objects that represent the
 individual terms (i.e. the classes and properties) defined in RDF vocabularies
 (both existing vocabularies (like http://schema.org, FOAF, VCard, LDP,
@@ -28,25 +23,26 @@ node index.js
 For detailed examples going beyond the common usages featured here, please see 
 the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
 
-The `lit-term` library is distributed as a Github NPM packages: `@solid/lit-term`
+The `solid-common-vocab` library is distributed as a Github NPM packages: `@inrupt/solid-common-vocab`
 For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
 
 
-**NOTE:** This library is used extensively by the LIT Artifact Generator project 
+**NOTE:** This library is used extensively by the Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
-including JavaScript) that provides LIT Vocab Term instances for every term
-defined within any RDF vocabulary. Due to the ease of simply pointing the LIT
+including JavaScript) that provides Vocab Term instances for every term
+defined within any RDF vocabulary. Due to the ease of simply pointing the
 Artifact Generator at any RDF vocabulary, and _have it_ automatically generate all
-the LIT Vocab Term instances for you automatically, we don't expect manual
-instantiation of LIT Vocab Terms to be very common. However, this documentation
-describes the LIT Vocab Term library without any dependency or requirement to
-use the LIT Artifact Generator whatsoever.
+the Vocab Term instances for you automatically, we don't expect manual
+instantiation of Vocab Terms to be very common. However, this documentation
+describes the Vocab Term library without any dependency or requirement to
+use the Artifact Generator whatsoever.
 
 ## RDF library support
-The LIT Vocab Term objects from this library are intended to be simple wrappers
+
+The Vocab Term objects from this library are intended to be simple wrappers
 around 'NamedNode' objects conforming to the [RDFJS interface](http://rdf.js.org/data-model-spec/).
-This means that LIT Vocab Term instances can be used natively with libraries that
-are RDFJS-compliant, such as `rdf-ext` or `rdflib.js`. A `LitVocabTerm` may be
+This means that Vocab Term instances can be used natively with libraries that
+are RDFJS-compliant, such as `rdf-ext` or `rdflib.js`. A `VocabTerm` may be
 built by passing an RDFJS `Datafactory` implemented with any library, but it also
 embeds a basic `Datafactory` implementation for simplicity.
 
@@ -63,9 +59,9 @@ ex:Person a rdfs:Class ;
   rdfs:comment "Full description of my Person class..."@en .
 ```
 
-We could represent this as a LIT Vocab Term in JavaScript like so:
+We could represent this as a Vocab Term in JavaScript like so:
 ```javascript
-const {LitVocabTerm, buildStore} = require('@solid/lit-term')
+const {VocabTerm, buildStore} = require('@inrupt/solid-common-vocab')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
 const rdf = require('rdf-ext')
 
@@ -76,12 +72,12 @@ const rdf = require('rdf-ext')
 // said local implementation or the browser store depending on the environment.
 // The last parameter indicates whether we want a 'strict' behaviour or not
 // (see below for an explanation).  
-const person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
+const person = new VocabTerm('https://example.com#Person', rdf, buildStore(), true)
   .addLabel('My Person class','en')
   .addComment('Full description of my Person class...','en')
 ```
 
-We can use this LIT vocab term in various ways:
+We can use this vocab term in various ways:
 ```javascript
 // To access the term's full IRI value:
 const personIri = person.value
@@ -89,10 +85,10 @@ const personIri = person.value
 // The label and the comment are available as RDFJS RDFLiteral instances:
 // - get the RDFLiteral object (which contains not just the text value, but also the 
 // language tag of that text (e.g. 'en' for English, or 'es' for Spanish).
-// The LIT can potentially offer further meta-data - such as a description of how the
+// Solid Common can potentially offer further meta-data - such as a description of how the
 // text was determined. For example if a user's current language preference (as stored
 // in localStorage) was 'French', but our original RDF vocabulary didn't provide a
-// French label (in which case the LIT vocab term will fallback to using an English
+// French label (in which case the vocab term will fallback to using an English
 // label by default), then we can describe that behaviour in another field saying:
 // "Current language is French, but only German, Spanish and English labels are available: using English",
 // which can be extremely useful in a User Interface tooltip for instance):
@@ -104,24 +100,24 @@ const personLabelAsString = person.label.value
 const personCommentAsString = person.comment.value
 ```
 
-To use the emmbedded `Datafactory` implementation to build a LitVocabTerm, the 
+To use the emmbedded `Datafactory` implementation to build a VocabTerm, the 
 previous example would become: 
 
 ```javascript
-const {buildBasicTerm, buildStore} = require('@solid/lit-term')
+const {buildBasicTerm, buildStore} = require('@inrupt/solid-common-vocab')
 
 const person = buildBasicTerm('https://example.com#Person', buildStore(), true)
   .addLabel('My Person class','en')
   .addComment('Full description of my Person class...','en')
 ```
 
-**NOTE**: The `lit-term` library is implemented in TypeScript, and embeds 
+**NOTE**: The `solid-common-vocab` library is implemented in TypeScript, and embeds 
 its typing. The following snippet of code demonstrate a basic TypeScript usage:
 
 ```typescript
-import {buildBasicTerm, buildStore, LitVocabTerm} from '@solid/lit-term'
+import {buildBasicTerm, buildStore, VocabTerm} from '@inrupt/solid-common-vocab'
 
-const person: LitVocabTerm = buildBasicTerm(
+const person: VocabTerm = buildBasicTerm(
   'https://example.com#Person',
   buildStore(),
   true
@@ -131,14 +127,14 @@ const person: LitVocabTerm = buildBasicTerm(
 
 ### Messages
 
-An important feature of the `lit-term` is support for parameterized messages.
+An important feature of the `solid-common-vocab` is support for parameterized messages.
 This can be extremely useful when defining your own RDF vocabularies and including
 message strings (thereby providing those message with globally unique IRI identifiers
 and allowing for easy translations of those messages). For instance, to report errors
 to the user with contextual information (and in multiple languages).
 
 ```javascript
-const term = new LitVocabTerm("https://test.com/vocab#Unauthorized", rdf, buildStore(), true)
+const term = new VocabTerm("https://test.com/vocab#Unauthorized", rdf, buildStore(), true)
     .addMessage('Your account ({{0}}), does not have sufficient credentials for this operation', 'en')
     .addMessage('Votre compte ({{0}}) ne dispose pas des informations d'identification suffisantes pour cette opération', 'fr')
     
@@ -156,7 +152,7 @@ the local part of the term's IRI (see the next section about `strictness`)).
 
 ```javascript
 const storage = buildStore()
-const person = new LitVocabTerm('https://example.com#Person', rdf, storage, true)
+const person = new VocabTerm('https://example.com#Person', rdf, storage, true)
   .addLabel('Person','en')
   .addLabel('Personne', 'fr')
   .addLabel('Persona', 'es')
@@ -169,14 +165,14 @@ var personLabel = person.label
 personLabel = person.asLanguage('fr').label
 
 // Change the default language in our context (i.e. localStorage).
-storage.setItem(LitContext.CONTEXT_KEY_LOCALE, 'es')
+storage.setItem(VocabContext.CONTEXT_KEY_LOCALE, 'es')
 
 personLabel = person.label // personLabel now contains the Spanish literal.
 ```
 
 ### Strictness
 
-The last parameter to the LIT Vocab Term constructor indicates if the behaviour
+The last parameter to the Vocab Term constructor indicates if the behaviour
 of the term should be strict or loose.
 In the case of "loose" behaviour, in the absence of any label, 
 `term.label` will default to the local part (i.e. the last segment of the path
@@ -186,14 +182,14 @@ empty (i.e. "").
 
 ```javascript
 // Here we specify 'loose' behaviour(i.e. 'false' parameter to constructor)...
-var person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), false)
+var person = new VocabTerm('https://example.com#Person', rdf, buildStore(), false)
 
 // 'personLabel' will default to an RDF literal with the value "Person", and an empty
 // language tag (i.e. "").
 var personLabel = person.labelLiteral 
  
 // Now strict behaviour...
-person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
+person = new VocabTerm('https://example.com#Person', rdf, buildStore(), true)
 // personLabel will default to 'undefined'.
 personLabel = person.labelLiteral
 ```
@@ -203,7 +199,7 @@ to instead throw an error when no label is found by using the `.mandatory` acces
 
 ```javascript
 // Here 'strictness' has no impact...
-const person = new LitVocabTerm('https://example.com#Person', rdf, buildStore(), true)
+const person = new VocabTerm('https://example.com#Person', rdf, buildStore(), true)
 
 // An exception will be thrown here, because our term has no label.
 const personLabel = person.mandatory.label 

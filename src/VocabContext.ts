@@ -41,7 +41,7 @@ const CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE: string =
  * cases when we are deployed within a browser - e.g. a language drop-down might set the current language using a
  * simple key value of say 'i18nLanguage' in localStorage).
  */
-class LitContext {
+class VocabContext {
   _initialLocale: string;
   _storage: Store;
   _createdAt: number;
@@ -69,7 +69,7 @@ class LitContext {
     return this._storage.getItem(CONTEXT_KEY_LOCALE) ?? this._initialLocale;
   }
 
-  setLocale(locale: string): LitContext {
+  setLocale(locale: string): VocabContext {
     this._storage.setItem(CONTEXT_KEY_LOCALE, locale);
     return this;
   }
@@ -84,7 +84,7 @@ class LitContext {
 }
 
 export {
-  LitContext,
+  VocabContext,
   CONTEXT_KEY_LOCALE,
   CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE,
 };

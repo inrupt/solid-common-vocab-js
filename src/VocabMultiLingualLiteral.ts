@@ -43,7 +43,7 @@ function isLiteral(term: Term): term is Literal {
  * Also supports parameterized string values (using {{0}} placeholders), for
  * which we can provide values when looking them up.
  */
-class LitMultiLingualLiteral implements Literal {
+class VocabMultiLingualLiteral implements Literal {
   _rdfFactory: DataFactory;
   _iri: NamedNode;
   _values: Map<string, string>;
@@ -51,7 +51,7 @@ class LitMultiLingualLiteral implements Literal {
   _language?: string;
   _expandedMessage?: string;
 
-  get setToEnglish(): LitMultiLingualLiteral {
+  get setToEnglish(): VocabMultiLingualLiteral {
     this.asLanguage("en");
     return this;
   }
@@ -63,7 +63,7 @@ class LitMultiLingualLiteral implements Literal {
    * @param iri The IRI for this instance
    * @param values The values (if any) to initialise this instance
    * @param contextMessage Context information (helpful for debugging)
-   * @returns {LitMultiLingualLiteral|*}
+   * @returns {VocabMultiLingualLiteral|*}
    */
   constructor(
     rdfFactory: DataFactory,
@@ -239,4 +239,9 @@ class LitMultiLingualLiteral implements Literal {
   }
 }
 
-export { LitMultiLingualLiteral, NO_LANGUAGE_TAG, XSD_STRING, RDF_LANGSTRING };
+export {
+  VocabMultiLingualLiteral,
+  NO_LANGUAGE_TAG,
+  XSD_STRING,
+  RDF_LANGSTRING,
+};
