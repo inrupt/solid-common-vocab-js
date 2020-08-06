@@ -1,3 +1,4 @@
+import expect from 'expect';
 /**
  * Begin license text.
  * Copyright 2020 Inrupt Inc.
@@ -41,16 +42,16 @@ describe("Vocab context-aware errors", () => {
       // explicitly expect (string, Error), to which (string, string) cannot
       // be assigned.
       () => new VocabContextError(context, "test", "Not an error!")
-    ).to.throw("test");
+    ).toThrowError("test");
     expect(
       // @ts-ignore
       () => new VocabContextError(context, "test", "Not an error!")
-    ).to.throw("Not an error!");
+    ).toThrowError("Not an error!");
   });
 
   it("should be possible to create without a wrapped error", function () {
     const context = new VocabContext("en", getLocalStore());
-    expect(new VocabContextError(context, "test", undefined)).to.not.be.null;
+    expect(new VocabContextError(context, "test", undefined)).not.toBeNull();
   });
 
   it("should be able to wrap a standard error", function () {
@@ -63,11 +64,11 @@ describe("Vocab context-aware errors", () => {
       new Error(message)
     );
 
-    expect(wrapError.countLevels()).to.equal(2);
+    expect(wrapError.countLevels()).toBe(2);
 
     const fullReport = wrapError.unwrapException();
-    expect(fullReport).to.include(message);
-    expect(fullReport).to.include(wrapMessage);
+    expect(fullReport).toEqual(expect.arrayContaining([message]));
+    expect(fullReport).toEqual(expect.arrayContaining([wrapMessage]));
   });
 
   it("should contain wrapped exception details", function () {
@@ -87,11 +88,11 @@ describe("Vocab context-aware errors", () => {
       "Error message Level3",
       errorLvl2
     );
-    expect(errorLvl3.countLevels()).to.equal(3);
+    expect(errorLvl3.countLevels()).toBe(3);
     const fullReport = errorLvl3.unwrapException();
-    expect(fullReport).to.include("Error message Level1");
-    expect(fullReport).to.include("Error message Level2");
-    expect(fullReport).to.include("Error message Level3");
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level1"]));
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level2"]));
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level3"]));
   });
 
   it("throwing a standard error loses nested information", function () {
@@ -113,12 +114,12 @@ describe("Vocab context-aware errors", () => {
       errorLvl3
     );
 
-    expect(errorLvl4.countLevels()).to.equal(3);
+    expect(errorLvl4.countLevels()).toBe(3);
     const fullReport = errorLvl4.unwrapException();
-    expect(fullReport).to.not.include(errorLvl1.message);
-    expect(fullReport).to.include("Standard Error message Level2");
-    expect(fullReport).to.include("Error message Level3");
-    expect(fullReport).to.include("Error message Level4");
+    expect(fullReport).toEqual(expect.not.arrayContaining([errorLvl1.message]));
+    expect(fullReport).toEqual(expect.arrayContaining(["Standard Error message Level2"]));
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level3"]));
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level4"]));
   });
 
   it("should contain wrapped exception details, but no stack info", function () {
@@ -140,13 +141,13 @@ describe("Vocab context-aware errors", () => {
       errorLvl2
     );
 
-    expect(errorLvl3.countLevels()).to.equal(3);
+    expect(errorLvl3.countLevels()).toBe(3);
     const fullReport = errorLvl3.unwrapException();
-    expect(fullReport).to.include("Error message Level1");
-    expect(fullReport).to.include("Error message Level2");
-    expect(fullReport).to.include("Error message Level3");
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level1"]));
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level2"]));
+    expect(fullReport).toEqual(expect.arrayContaining(["Error message Level3"]));
 
-    expect(fullReport).to.not.include("Level ");
+    expect(fullReport).toEqual(expect.not.arrayContaining(["Level "]));
   });
 
   it("should unwrap when calling toString()", function () {
@@ -157,11 +158,11 @@ describe("Vocab context-aware errors", () => {
     } catch (error) {
       const wrapMessage = "Wrap error message";
       const wrapError = new VocabContextError(context, wrapMessage, error);
-      expect(wrapError.countLevels()).to.equal(2);
+      expect(wrapError.countLevels()).toBe(2);
 
       const fullReport = wrapError.toString();
-      expect(fullReport).to.include(message);
-      expect(fullReport).to.include(wrapMessage);
+      expect(fullReport).toEqual(expect.arrayContaining([message]));
+      expect(fullReport).toEqual(expect.arrayContaining([wrapMessage]));
     }
   });
 
@@ -171,9 +172,9 @@ describe("Vocab context-aware errors", () => {
     try {
       throw new VocabContextError(context, message, undefined);
     } catch (error) {
-      expect(error.contains(["Error"])).to.be.true;
-      expect(error.contains(["Error", "occurred"])).to.be.true;
-      expect(error.contains(["Error", "does not", "occurred"])).to.be.false;
+      expect(error.contains(["Error"])).toBe(true);
+      expect(error.contains(["Error", "occurred"])).toBe(true);
+      expect(error.contains(["Error", "does not", "occurred"])).toBe(false);
     }
   });
 
@@ -183,7 +184,7 @@ describe("Vocab context-aware errors", () => {
     try {
       throw new VocabContextError(context, message, undefined);
     } catch (error) {
-      expect(error.contains()).to.be.true;
+      expect(error.contains()).toBe(true);
     }
   });
 
@@ -192,7 +193,7 @@ describe("Vocab context-aware errors", () => {
     const message = "Error occurred";
     const error = new VocabContextError(context, message, undefined);
     error.stack = undefined;
-    expect(error.unwrapException()).to.contain(message);
+    expect(error.unwrapException()).toEqual(expect.arrayContaining([message]));
   });
 
   it("should not show the whole stack in production", () => {
@@ -204,7 +205,7 @@ describe("Vocab context-aware errors", () => {
       const prodReport = error.unwrapException();
       process.env.NODE_ENV = "staging";
       const stagingReport = error.unwrapException();
-      expect(prodReport).to.not.equal(stagingReport);
+      expect(prodReport).not.toBe(stagingReport);
     }
   });
 
@@ -212,6 +213,6 @@ describe("Vocab context-aware errors", () => {
     const context = new VocabContext("en", getLocalStore());
     const message = "Error occurred";
     const error = new VocabContextError(context, message, undefined);
-    expect(() => error.unwrapException()).not.to.throw();
+    expect(() => error.unwrapException()).not.toThrowError();
   });
 });

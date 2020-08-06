@@ -1,3 +1,4 @@
+import expect from 'expect';
 /**
  * Begin license text.
  * Copyright 2020 Inrupt Inc.
@@ -34,38 +35,36 @@ it("should fail if no locale provided", function () {
     // explicitely expect (string, IStore), to which (undef, undef) cannot
     // be assigned.
     () => new VocabContext(undefined, undefined)
-  ).to.throw("*MUST* be provided a locale");
+  ).toThrowError("*MUST* be provided a locale");
 });
 
 it("should fail if no storage provided", function () {
   // @ts-ignore, because the parameters of the constructor
   // explicitely expect (string, IStore), to which (string, undef) cannot
   // be assigned.
-  expect(() => new VocabContext("en", undefined)).to.throw(
-    "*MUST* be provided storage"
-  );
+  expect(() => new VocabContext("en", undefined)).toThrowError("*MUST* be provided storage");
 });
 
 it("should create Ok", function () {
   const context = new VocabContext("en", getLocalStore());
-  expect(context).is.not.null;
-  expect(context.getLocale()).equals("en");
+  expect(context).not.toBeNull();
+  expect(context.getLocale()).toBe("en");
 });
 
 it("should change locale Ok", function () {
   const context = new VocabContext("en", getLocalStore());
-  expect(context.getLocale()).equals("en");
+  expect(context.getLocale()).toBe("en");
   context.setLocale("es");
-  expect(context.getLocale()).equals("es");
+  expect(context.getLocale()).toBe("es");
 
   // Should retain original locale too.
-  expect(context.getInitialLocale()).equals("en");
+  expect(context.getInitialLocale()).toBe("en");
 });
 
 it("should be created now", function () {
   const now = Date.now();
   const context = new VocabContext("en", getLocalStore());
-  expect(context.getCreatedAt() >= now).to.be.true;
+  expect(context.getCreatedAt() >= now).toBe(true);
 });
 
 it("should fallback to the initial locale", () => {
@@ -74,5 +73,5 @@ it("should fallback to the initial locale", () => {
   // A value is initialized in the store when the context is created,
   // and to get the default initial locale this value must be removed.
   store.removeItem(CONTEXT_KEY_LOCALE);
-  expect(context.getLocale()).to.equal("en");
+  expect(context.getLocale()).toBe("en");
 });
