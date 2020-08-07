@@ -1,4 +1,3 @@
-import expect from 'expect';
 /**
  * Begin license text.
  * Copyright 2020 Inrupt Inc.
@@ -24,10 +23,9 @@ import expect from 'expect';
  */
 
 import { VocabContext, CONTEXT_KEY_LOCALE } from "./VocabContext";
-import { getLocalStore } from "./utils/localStorage";
+import { getLocalStore } from "./util/localStorage";
 
-import chai from "chai";
-const expect = chai.expect;
+import expect from "expect";
 
 it("should fail if no locale provided", function () {
   expect(
@@ -42,7 +40,9 @@ it("should fail if no storage provided", function () {
   // @ts-ignore, because the parameters of the constructor
   // explicitely expect (string, IStore), to which (string, undef) cannot
   // be assigned.
-  expect(() => new VocabContext("en", undefined)).toThrowError("*MUST* be provided storage");
+  expect(() => new VocabContext("en", undefined)).toThrowError(
+    "*MUST* be provided storage"
+  );
 });
 
 it("should create Ok", function () {

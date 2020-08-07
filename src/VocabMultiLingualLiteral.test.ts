@@ -1,4 +1,3 @@
-import expect from 'expect';
 /**
  * Begin license text.
  * Copyright 2020 Inrupt Inc.
@@ -32,8 +31,7 @@ import {
   XSD_STRING,
 } from "../src/VocabMultiLingualLiteral";
 
-import chai from "chai";
-const expect = chai.expect;
+import expect from "expect";
 
 const TEST_IRI = rdf.namedNode(`test://iri#localName`);
 
@@ -69,8 +67,12 @@ describe("The RDFJS Literal implementation", () => {
     literal.addValue("whatever no language", NO_LANGUAGE_TAG);
     expect(literal.equals(rdf.literal("whatever no language", ""))).toBe(true);
     literal.addValue("whatever in Spanish", "es");
-    expect(literal.equals(rdf.literal("whatever in English", "en"))).toBe(false);
-    expect(literal.equals(rdf.literal("whatever in English", "es"))).toBe(false);
+    expect(literal.equals(rdf.literal("whatever in English", "en"))).toBe(
+      false
+    );
+    expect(literal.equals(rdf.literal("whatever in English", "es"))).toBe(
+      false
+    );
     expect(literal.equals(rdf.literal("whatever in Spanish", "es"))).toBe(true);
     expect(literal.equals(literal.datatype)).toBe(false);
   });
@@ -105,8 +107,12 @@ describe("Adding messages", () => {
       .addValue("whatever in Spanish", "es")
       .addValue("whatever in Irish", "ga");
 
-    expect(literal.asLanguage("es").lookup(true)?.value).toBe("whatever in Spanish");
-    expect(literal.asLanguage("ga").lookup(true)?.value).toBe("whatever in Irish");
+    expect(literal.asLanguage("es").lookup(true)?.value).toBe(
+      "whatever in Spanish"
+    );
+    expect(literal.asLanguage("ga").lookup(true)?.value).toBe(
+      "whatever in Irish"
+    );
   });
 
   it("Should add message, including constructor values", () => {
@@ -126,9 +132,13 @@ describe("Adding messages", () => {
     literal
       .addValue("whatever in Spanish", "es")
       .addValue("whatever in Irish", "ga");
-    expect(literal.asLanguage("es").lookup(true)?.value).toBe("whatever in Spanish");
+    expect(literal.asLanguage("es").lookup(true)?.value).toBe(
+      "whatever in Spanish"
+    );
 
-    expect(literal.asLanguage("ga").lookup(true)?.value).toBe("whatever in Irish");
+    expect(literal.asLanguage("ga").lookup(true)?.value).toBe(
+      "whatever in Irish"
+    );
   });
 });
 
@@ -144,9 +154,13 @@ describe("Looking up messages", () => {
     );
 
     expect(literal.lookupEnglish(false)?.value).toBe("whatever");
-    expect(literal.asLanguage("fr").lookup(true)?.value).toBe("whatever in French");
+    expect(literal.asLanguage("fr").lookup(true)?.value).toBe(
+      "whatever in French"
+    );
 
-    expect(literal.asLanguage("es").lookup(false)).toEqual(rdf.literal("whatever", "en"));
+    expect(literal.asLanguage("es").lookup(false)).toEqual(
+      rdf.literal("whatever", "en")
+    );
   });
 
   it("Should default to English if no language", () => {
@@ -164,7 +178,9 @@ describe("Looking up messages", () => {
       NO_LANGUAGE_TAG
     );
 
-    expect(literal.asLanguage("es").lookup(false)?.value).toBe("This value has no language");
+    expect(literal.asLanguage("es").lookup(false)?.value).toBe(
+      "This value has no language"
+    );
   });
 
   it("Should return null if not mandatory and no values at all", () => {
@@ -201,11 +217,17 @@ describe("Looking up messages", () => {
       .addValue("whatever {{1}} in Irish is backwards {{0}}", "ga");
 
     literal.asLanguage("ga");
-    expect(literal.params(true, "example", "two")).toEqual(rdf.literal("whatever two in Irish is backwards example", "ga"));
+    expect(literal.params(true, "example", "two")).toEqual(
+      rdf.literal("whatever two in Irish is backwards example", "ga")
+    );
 
-    expect(literal.params(true, "example", "two")?.value).toBe("whatever two in Irish is backwards example");
+    expect(literal.params(true, "example", "two")?.value).toBe(
+      "whatever two in Irish is backwards example"
+    );
 
-    expect(literal.setToEnglish.params(true, "example")).toEqual(rdf.literal("whatever example in English", "en"));
+    expect(literal.setToEnglish.params(true, "example")).toEqual(
+      rdf.literal("whatever example in English", "en")
+    );
   });
 
   it("Should lookup with no params", () => {
@@ -213,9 +235,13 @@ describe("Looking up messages", () => {
       .addValue("whatever in English", "en")
       .addValue("whatever in Irish", "ga");
 
-    expect(literal.lookup(true)).toEqual(rdf.literal("whatever in English", "en"));
+    expect(literal.lookup(true)).toEqual(
+      rdf.literal("whatever in English", "en")
+    );
 
-    expect(literal.asLanguage("ga").lookup(true)?.value).toBe("whatever in Irish");
+    expect(literal.asLanguage("ga").lookup(true)?.value).toBe(
+      "whatever in Irish"
+    );
   });
 
   it("Should use English default if requested language not found", () => {
@@ -225,7 +251,9 @@ describe("Looking up messages", () => {
 
     // NOTE: our result will have an 'en' tag, even though we asked for 'fr'
     // (since we don't have a 'fr' message!).
-    expect(literal.lookup(false)).toEqual(rdf.literal("whatever in English", "en"));
+    expect(literal.lookup(false)).toEqual(
+      rdf.literal("whatever in English", "en")
+    );
   });
 
   it("Should throw with params if requested language not found", () => {
@@ -244,7 +272,9 @@ describe("Looking up messages", () => {
   it("Should return undefined if params requested language not found", () => {
     const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
 
-    expect(literal.asLanguage("fr").params(false, "use default")).toBeUndefined();
+    expect(
+      literal.asLanguage("fr").params(false, "use default")
+    ).toBeUndefined();
   });
 
   it("Should return RDF literal using current language", () => {
@@ -252,10 +282,14 @@ describe("Looking up messages", () => {
       .addValue("whatever {{0}} in English", "en")
       .addValue("whatever {{0}} in French", "fr");
 
-    expect(literal.params(true, "use default")).toEqual(rdf.literal("whatever use default in English", "en"));
+    expect(literal.params(true, "use default")).toEqual(
+      rdf.literal("whatever use default in English", "en")
+    );
 
     literal.asLanguage("fr");
-    expect(literal.params(true, "La Vie!")).toEqual(rdf.literal("whatever La Vie! in French", "fr"));
+    expect(literal.params(true, "La Vie!")).toEqual(
+      rdf.literal("whatever La Vie! in French", "fr")
+    );
   });
 
   it("Should use language and params", () => {
@@ -263,11 +297,13 @@ describe("Looking up messages", () => {
       .addValue("whatever {{0}} in English", "en")
       .addValue("whatever {{0}} in French", "fr");
 
-    expect(
-      literal.asLanguage("en").params(true, "use default")?.value
-    ).toBe("whatever use default in English");
+    expect(literal.asLanguage("en").params(true, "use default")?.value).toBe(
+      "whatever use default in English"
+    );
 
-    expect(literal.asLanguage("fr").params(true, "La Vie!")?.value).toBe("whatever La Vie! in French");
+    expect(literal.asLanguage("fr").params(true, "La Vie!")?.value).toBe(
+      "whatever La Vie! in French"
+    );
   });
 });
 
@@ -282,7 +318,11 @@ describe("Handling language tags", () => {
 
   it("should handle gracefully looking up an uninitialized literal", () => {
     const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
-    expect(literal.lookupButDefaultToEnglishOrNoLanguage(false)).toBeUndefined();
-    expect(() => literal.lookupButDefaultToEnglishOrNoLanguage(true)).toThrowError("No value");
+    expect(
+      literal.lookupButDefaultToEnglishOrNoLanguage(false)
+    ).toBeUndefined();
+    expect(() =>
+      literal.lookupButDefaultToEnglishOrNoLanguage(true)
+    ).toThrowError("No value");
   });
 });

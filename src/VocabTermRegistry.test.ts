@@ -1,4 +1,3 @@
-import expect from 'expect';
 /**
  * Begin license text.
  * Copyright 2020 Inrupt Inc.
@@ -23,14 +22,13 @@ import expect from 'expect';
  * End license text.Source Distributions
  */
 
-import { getLocalStore } from "./utils/localStorage";
+import { getLocalStore } from "./util/localStorage";
 
 import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./VocabContext";
 import { VocabTermRegistry } from "./VocabTermRegistry";
 import { NO_LANGUAGE_TAG } from "./VocabMultiLingualLiteral";
 
-import chai from "chai";
-const expect = chai.expect;
+import expect from "expect";
 
 // Prevents side-effects between tests
 beforeEach(() => {

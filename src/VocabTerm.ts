@@ -22,7 +22,7 @@
  * End license text.Source Distributions
  */
 
-import { Store } from "./utils/localStorage";
+import { Store } from "./util/localStorage";
 import { VocabContext } from "./VocabContext";
 import { VocabTermRegistry } from "./VocabTermRegistry";
 import {
