@@ -22,7 +22,7 @@
  * End license text.Source Distributions
  */
 
-export { Store, getLocalStore, buildStore } from "./utils/localStorage";
+export { Store, getLocalStore, buildStore } from "./util/localStorage";
 export { VocabContext, CONTEXT_KEY_LOCALE } from "./VocabContext";
 export { VocabContextError } from "./VocabContextError";
 export {

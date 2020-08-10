@@ -22,14 +22,13 @@
  * End license text.Source Distributions
  */
 
-import { getLocalStore } from "./utils/localStorage";
+import { getLocalStore } from "./util/localStorage";
 
 import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./VocabContext";
 import { VocabTermRegistry } from "./VocabTermRegistry";
 import { NO_LANGUAGE_TAG } from "./VocabMultiLingualLiteral";
 
-import chai from "chai";
-const expect = chai.expect;
+import expect from "expect";
 
 // Prevents side-effects between tests
 beforeEach(() => {
@@ -45,9 +44,9 @@ describe("Populating the VocabTermRegistry", () => {
     registry.updateComment(iri, "en", "hello comment");
     registry.updateMessage(iri, "en", "hello message");
 
-    expect(registry.lookupLabel(iri, "en")).to.equal("hello label");
-    expect(registry.lookupComment(iri, "en")).to.equal("hello comment");
-    expect(registry.lookupMessage(iri, "en")).to.equal("hello message");
+    expect(registry.lookupLabel(iri, "en")).toBe("hello label");
+    expect(registry.lookupComment(iri, "en")).toBe("hello comment");
+    expect(registry.lookupMessage(iri, "en")).toBe("hello message");
   });
 
   it("should override an appropriate value in the registry", () => {
@@ -56,7 +55,7 @@ describe("Populating the VocabTermRegistry", () => {
     registry.updateLabel(iri, "en", "hello label");
     registry.updateLabel(iri, "en", "hello again label");
 
-    expect(registry.lookupLabel(iri, "en")).to.equal("hello again label");
+    expect(registry.lookupLabel(iri, "en")).toBe("hello again label");
   });
 });
 
@@ -70,9 +69,9 @@ describe("VocabTermRegistry lookup", () => {
     registry.updateComment(iri, "es", "holà comment");
     registry.updateMessage(iri, "es", "holà mensage");
 
-    expect(registry.lookupLabel(iri, "es")).to.equal("holà label");
-    expect(registry.lookupComment(iri, "es")).to.equal("holà comment");
-    expect(registry.lookupMessage(iri, "es")).to.equal("holà mensage");
+    expect(registry.lookupLabel(iri, "es")).toBe("holà label");
+    expect(registry.lookupComment(iri, "es")).toBe("holà comment");
+    expect(registry.lookupMessage(iri, "es")).toBe("holà mensage");
   });
 
   it("should lookup using fallback language if the specified one misses", () => {
@@ -85,9 +84,9 @@ describe("VocabTermRegistry lookup", () => {
     registry.updateComment(iri, "es", "holà comment");
     registry.updateMessage(iri, "es", "holà mensage");
 
-    expect(registry.lookupLabel(iri, "en")).to.equal("holà label");
-    expect(registry.lookupComment(iri, "en")).to.equal("holà comment");
-    expect(registry.lookupMessage(iri, "en")).to.equal("holà mensage");
+    expect(registry.lookupLabel(iri, "en")).toBe("holà label");
+    expect(registry.lookupComment(iri, "en")).toBe("holà comment");
+    expect(registry.lookupMessage(iri, "en")).toBe("holà mensage");
   });
 
   it("should lookup in English upon failing using requested and fallback languages", () => {
@@ -103,9 +102,9 @@ describe("VocabTermRegistry lookup", () => {
     registry.updateComment(iri, "en", "hello comment");
     registry.updateMessage(iri, "en", "hello message");
 
-    expect(registry.lookupLabel(iri, "fr")).to.equal("hello label");
-    expect(registry.lookupComment(iri, "fr")).to.equal("hello comment");
-    expect(registry.lookupMessage(iri, "fr")).to.equal("hello message");
+    expect(registry.lookupLabel(iri, "fr")).toBe("hello label");
+    expect(registry.lookupComment(iri, "fr")).toBe("hello comment");
+    expect(registry.lookupMessage(iri, "fr")).toBe("hello message");
   });
 
   it("should lookup with no language upon failing using requested, fallback in English languages", () => {
@@ -118,17 +117,17 @@ describe("VocabTermRegistry lookup", () => {
     registry.updateComment(iri, NO_LANGUAGE_TAG, "holala comment");
     registry.updateMessage(iri, NO_LANGUAGE_TAG, "holala message");
 
-    expect(registry.lookupLabel(iri, "fr")).to.equal("holala label");
-    expect(registry.lookupComment(iri, "fr")).to.equal("holala comment");
-    expect(registry.lookupMessage(iri, "fr")).to.equal("holala message");
+    expect(registry.lookupLabel(iri, "fr")).toBe("holala label");
+    expect(registry.lookupComment(iri, "fr")).toBe("holala comment");
+    expect(registry.lookupMessage(iri, "fr")).toBe("holala message");
   });
 
   it("should return undefined if no value is available", () => {
     const storage = getLocalStore();
     const registry = new VocabTermRegistry(storage);
 
-    expect(registry.lookupLabel(iri, "fr")).to.be.undefined;
-    expect(registry.lookupComment(iri, "fr")).to.be.undefined;
-    expect(registry.lookupMessage(iri, "fr")).to.be.undefined;
+    expect(registry.lookupLabel(iri, "fr")).toBeUndefined();
+    expect(registry.lookupComment(iri, "fr")).toBeUndefined();
+    expect(registry.lookupMessage(iri, "fr")).toBeUndefined();
   });
 });

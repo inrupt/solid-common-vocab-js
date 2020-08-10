@@ -22,7 +22,7 @@
  * End license text.Source Distributions
  */
 
-import { Store } from "./utils/localStorage";
+import { Store } from "./util/localStorage";
 
 const CONTEXT_KEY_LOCALE: string = "i18nextLng";
 

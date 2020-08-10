@@ -22,7 +22,7 @@
  * End license text.Source Distributions
  */
 
-import { Store } from "./utils/localStorage";
+import { Store } from "./util/localStorage";
 import { CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE } from "./VocabContext";
 import { NO_LANGUAGE_TAG } from "./VocabMultiLingualLiteral";
 
@@ -114,7 +114,7 @@ class VocabTermRegistry {
     language: string,
     fallback: string[]
   ): string | undefined {
-    let result = this.store.getItem(`${term}${language}`);
+    const result = this.store.getItem(`${term}${language}`);
 
     if (result) {
       return result;
