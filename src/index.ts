@@ -25,10 +25,17 @@
 export { Store, getLocalStore, buildStore } from "./util/localStorage";
 export { VocabContext, CONTEXT_KEY_LOCALE } from "./VocabContext";
 export { VocabContextError } from "./VocabContextError";
+
 export {
   VocabMultiLingualLiteral,
   NO_LANGUAGE_TAG,
 } from "./VocabMultiLingualLiteral";
+
 export { VocabTerm, buildBasicTerm } from "./VocabTerm";
+
 export { VocabTermRegistry } from "./VocabTermRegistry";
+
 export type IriString = string;
+
+// Re-export common RDF/JS types - just for convenience to users of our library.
+export { DataFactory, NamedNode, Term, Literal } from "rdf-js";
