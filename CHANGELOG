@@ -2,8 +2,14 @@
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 0.5.2
+
+### Patches
+
+- Export useful RDF/JS types directly.
+
 ## 0.4.2
 
 ### Patches
 
-- Fixed the license SPDX in `package.json` 
+- Fixed the license SPDX in `package.json`.
