@@ -38,4 +38,4 @@ export { VocabTermRegistry } from "./VocabTermRegistry";
 export type IriString = string;
 
 // Re-export common RDF/JS types - just for convenience to users of our library.
-export { DataFactory, NamedNode, Term, Literal } from "rdf-js";
+export type { DataFactory, NamedNode, Term, Literal } from "rdf-js";
