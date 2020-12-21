@@ -22,7 +22,8 @@
  * End license text.Source Distributions
  */
 
-import rdf from "@rdfjs/data-model";
+import { DataFactory } from "rdf-js";
+import { DataFactory as DataFactoryImpl } from "rdf-data-factory";
 
 import {
   VocabMultiLingualLiteral,
@@ -33,11 +34,12 @@ import {
 
 import expect from "expect";
 
-const TEST_IRI = rdf.namedNode(`test://iri#localName`);
+const rdfFactory: DataFactory = new DataFactoryImpl();
+const TEST_IRI = rdfFactory.namedNode(`test://iri#localName`);
 
 describe("The RDFJS Literal implementation", () => {
   it("should return the appropriate data type", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
     literal.addValue("no language", NO_LANGUAGE_TAG);
     expect(literal.datatype.value).toBe(XSD_STRING);
     literal.addValue("whatever in Spanish", "es");
@@ -45,7 +47,7 @@ describe("The RDFJS Literal implementation", () => {
   });
 
   it("should return the value (if any)", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
     expect(literal.value).toBe("");
     literal.addValue("no language", NO_LANGUAGE_TAG);
     expect(literal.value).toBe("no language");
@@ -54,7 +56,7 @@ describe("The RDFJS Literal implementation", () => {
   });
 
   it("should return the language (if any)", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
     expect(literal.language).toBe("");
     literal.addValue("no language", NO_LANGUAGE_TAG);
     expect(literal.language).toBe("");
@@ -63,35 +65,41 @@ describe("The RDFJS Literal implementation", () => {
   });
 
   it("should be able to compare to other terms", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
     literal.addValue("whatever no language", NO_LANGUAGE_TAG);
-    expect(literal.equals(rdf.literal("whatever no language", ""))).toBe(true);
+    expect(literal.equals(rdfFactory.literal("whatever no language", ""))).toBe(
+      true
+    );
     literal.addValue("whatever in Spanish", "es");
-    expect(literal.equals(rdf.literal("whatever in English", "en"))).toBe(
-      false
-    );
-    expect(literal.equals(rdf.literal("whatever in English", "es"))).toBe(
-      false
-    );
-    expect(literal.equals(rdf.literal("whatever in Spanish", "es"))).toBe(true);
+    expect(
+      literal.equals(rdfFactory.literal("whatever in English", "en"))
+    ).toBe(false);
+    expect(
+      literal.equals(rdfFactory.literal("whatever in English", "es"))
+    ).toBe(false);
+    expect(
+      literal.equals(rdfFactory.literal("whatever in Spanish", "es"))
+    ).toBe(true);
     expect(literal.equals(literal.datatype)).toBe(false);
   });
 });
 
 describe("Constructing a litteral", () => {
   it("should preserve the provided IRI", () => {
-    expect(new VocabMultiLingualLiteral(rdf, TEST_IRI).getIri()).toBe(TEST_IRI);
+    expect(new VocabMultiLingualLiteral(rdfFactory, TEST_IRI).getIri()).toBe(
+      TEST_IRI
+    );
   });
 
   it("should default to a default context message if none is provided", () => {
     const contextualLiteral = new VocabMultiLingualLiteral(
-      rdf,
+      rdfFactory,
       TEST_IRI,
       new Map<string, string>(),
       "Some contextual message"
     );
     const nonContextualLiteral = new VocabMultiLingualLiteral(
-      rdf,
+      rdfFactory,
       TEST_IRI,
       new Map<string, string>()
     );
@@ -102,7 +110,7 @@ describe("Constructing a litteral", () => {
 
 describe("Adding messages", () => {
   it("Should add message, no constructor values", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
     literal
       .addValue("whatever in Spanish", "es")
       .addValue("whatever in Irish", "ga");
@@ -117,7 +125,7 @@ describe("Adding messages", () => {
 
   it("Should add message, including constructor values", () => {
     const literal = new VocabMultiLingualLiteral(
-      rdf,
+      rdfFactory,
       TEST_IRI,
       new Map([["en", "whatever"]])
     );
@@ -145,7 +153,7 @@ describe("Adding messages", () => {
 describe("Looking up messages", () => {
   it("Should return correct value, including with fallback", () => {
     const literal = new VocabMultiLingualLiteral(
-      rdf,
+      rdfFactory,
       TEST_IRI,
       new Map([
         ["en", "whatever"],
@@ -159,12 +167,12 @@ describe("Looking up messages", () => {
     );
 
     expect(literal.asLanguage("es").lookup(false)).toEqual(
-      rdf.literal("whatever", "en")
+      rdfFactory.literal("whatever", "en")
     );
   });
 
   it("Should default to English if no language", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI).addValue(
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI).addValue(
       "whatever in English",
       "en"
     );
@@ -173,7 +181,7 @@ describe("Looking up messages", () => {
   });
 
   it("should default to a value without language if no other option is available", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI).addValue(
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI).addValue(
       "This value has no language",
       NO_LANGUAGE_TAG
     );
@@ -184,13 +192,13 @@ describe("Looking up messages", () => {
   });
 
   it("Should return null if not mandatory and no values at all", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
 
     expect(literal.asLanguage("es").lookup(false)).toBeUndefined();
   });
 
   it("Should return string with param markers", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI).addValue(
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI).addValue(
       "whatever {{0}} in English {{1}}",
       "en"
     );
@@ -199,7 +207,7 @@ describe("Looking up messages", () => {
   });
 
   it("Should fail if remaining unexpanded param placeholders", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI).addValue(
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI).addValue(
       "whatever {{0}} in English {{1}}",
       "en"
     );
@@ -212,13 +220,13 @@ describe("Looking up messages", () => {
   });
 
   it("Should lookup literal correctly", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI)
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI)
       .addValue("whatever {{0}} in English", "en")
       .addValue("whatever {{1}} in Irish is backwards {{0}}", "ga");
 
     literal.asLanguage("ga");
     expect(literal.params(true, "example", "two")).toEqual(
-      rdf.literal("whatever two in Irish is backwards example", "ga")
+      rdfFactory.literal("whatever two in Irish is backwards example", "ga")
     );
 
     expect(literal.params(true, "example", "two")?.value).toBe(
@@ -226,17 +234,17 @@ describe("Looking up messages", () => {
     );
 
     expect(literal.setToEnglish.params(true, "example")).toEqual(
-      rdf.literal("whatever example in English", "en")
+      rdfFactory.literal("whatever example in English", "en")
     );
   });
 
   it("Should lookup with no params", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI)
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI)
       .addValue("whatever in English", "en")
       .addValue("whatever in Irish", "ga");
 
     expect(literal.lookup(true)).toEqual(
-      rdf.literal("whatever in English", "en")
+      rdfFactory.literal("whatever in English", "en")
     );
 
     expect(literal.asLanguage("ga").lookup(true)?.value).toBe(
@@ -245,19 +253,19 @@ describe("Looking up messages", () => {
   });
 
   it("Should use English default if requested language not found", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI)
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI)
       .addValue("whatever in English", "en")
       .addValue("whatever in Irish", "ga");
 
     // NOTE: our result will have an 'en' tag, even though we asked for 'fr'
     // (since we don't have a 'fr' message!).
     expect(literal.lookup(false)).toEqual(
-      rdf.literal("whatever in English", "en")
+      rdfFactory.literal("whatever in English", "en")
     );
   });
 
   it("Should throw with params if requested language not found", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI).addValue(
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI).addValue(
       "whatever {{0}} in English",
       "en"
     );
@@ -270,7 +278,7 @@ describe("Looking up messages", () => {
   });
 
   it("Should return undefined if params requested language not found", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
 
     expect(
       literal.asLanguage("fr").params(false, "use default")
@@ -278,22 +286,22 @@ describe("Looking up messages", () => {
   });
 
   it("Should return RDF literal using current language", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI)
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI)
       .addValue("whatever {{0}} in English", "en")
       .addValue("whatever {{0}} in French", "fr");
 
     expect(literal.params(true, "use default")).toEqual(
-      rdf.literal("whatever use default in English", "en")
+      rdfFactory.literal("whatever use default in English", "en")
     );
 
     literal.asLanguage("fr");
     expect(literal.params(true, "La Vie!")).toEqual(
-      rdf.literal("whatever La Vie! in French", "fr")
+      rdfFactory.literal("whatever La Vie! in French", "fr")
     );
   });
 
   it("Should use language and params", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI)
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI)
       .addValue("whatever {{0}} in English", "en")
       .addValue("whatever {{0}} in French", "fr");
 
@@ -309,7 +317,7 @@ describe("Looking up messages", () => {
 
 describe("Handling language tags", () => {
   it('should return an empty string for the "no language" tag', () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI).addValue(
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI).addValue(
       "value no language",
       NO_LANGUAGE_TAG
     );
@@ -317,7 +325,7 @@ describe("Handling language tags", () => {
   });
 
   it("should handle gracefully looking up an uninitialized literal", () => {
-    const literal = new VocabMultiLingualLiteral(rdf, TEST_IRI);
+    const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
     expect(
       literal.lookupButDefaultToEnglishOrNoLanguage(false)
     ).toBeUndefined();

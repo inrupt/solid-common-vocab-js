@@ -22,13 +22,13 @@
  * End license text.Source Distributions
  */
 
-import rdf from "@rdfjs/data-model";
-
 import { getLocalStore } from "../src/util/localStorage";
 import { VocabContext, CONTEXT_KEY_LOCALE } from "../src/VocabContext";
 import { VocabTerm, buildBasicTerm } from "../src/VocabTerm";
 
 import expect from "expect";
+import { DataFactory } from "rdf-js";
+import { DataFactory as DataFactoryImpl } from "rdf-data-factory";
 
 /**
  * Test class intended to demonstrate by example how to use Vocab Term
@@ -39,12 +39,12 @@ import expect from "expect";
  * below, with the term 'ex:name' defined in our tests as the constant
  * 'TEST_TERM_NAME'.
  *
- *   prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+ *   prefix rdfFactory:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
  *   prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
  *   prefix skos: <http://www.w3.org/2004/02/skos/core#>
  *   prefix test:   <https://test.com/vocab#>
  *
- *   test:name a rdf:Property ;
+ *   test:name a rdfFactory:Property ;
  *     rdfs:label "Name" ;
  *     rdfs:label "First name"@en ;
  *     rdfs:label "Prénom"@fr ;
@@ -58,11 +58,14 @@ import expect from "expect";
  */
 describe("Demonstrate Vocab Term usage", () => {
   const TEST_TERM_NAME_PATH = "name";
-  const TEST_TERM_NAME = rdf.namedNode(
+  const rdfFactory: DataFactory = new DataFactoryImpl();
+  const TEST_TERM_NAME = rdfFactory.namedNode(
     `https://test.com/vocab#${TEST_TERM_NAME_PATH}`
   );
 
-  const TEST_TERM_ERROR = rdf.namedNode(`https://test.com/vocab#errSomeError`);
+  const TEST_TERM_ERROR = rdfFactory.namedNode(
+    `https://test.com/vocab#errSomeError`
+  );
 
   // Vocab Term labels can be configured (via a constructor parameter) to
   // fallback to using the path component of the term IRI as the English label
@@ -81,7 +84,12 @@ describe("Demonstrate Vocab Term usage", () => {
       // enforces that an explicit English label be provided!).
       // Here we're simply creating the term itself, and not yet add any labels,
       // comments or messages.
-      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), false);
+      const term = new VocabTerm(
+        TEST_TERM_NAME,
+        rdfFactory,
+        getLocalStore(),
+        false
+      );
 
       // Simply requesting the label now without an explicit language assumes
       // English, but since we haven't provided any labels at all yet, all we
@@ -100,7 +108,9 @@ describe("Demonstrate Vocab Term usage", () => {
       // (i.e. the value is of type XSD:string) meaning a string with no
       // language component at all. This makes sense in our case because the
       // local part of an IRI would not be expected to be language-specific.
-      expect(term.labelLiteral).toEqual(rdf.literal(TEST_TERM_NAME_PATH, ""));
+      expect(term.labelLiteral).toEqual(
+        rdfFactory.literal(TEST_TERM_NAME_PATH, "")
+      );
 
       // If we only want the text value of the label, we can explicitly ask
       // for only that using '.value' (which comes from the RDFJS interfaces).
@@ -125,7 +135,7 @@ describe("Demonstrate Vocab Term usage", () => {
       // But if we now explicitly ask for French, we'll get the French
       // Literal object.
       expect(term.asLanguage("fr").labelLiteral).toEqual(
-        rdf.literal("Prénom", "fr")
+        rdfFactory.literal("Prénom", "fr")
       );
 
       // ...or if we just want the French label as a string...
@@ -171,7 +181,12 @@ describe("Demonstrate Vocab Term usage", () => {
       // can enforce that all terms must have at least English labels and
       // comments (this is something that the Artifact Generator can enforce
       // today for example).
-      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
+      const term = new VocabTerm(
+        TEST_TERM_NAME,
+        rdfFactory,
+        getLocalStore(),
+        true
+      );
 
       // Simply requesting the label without an explicit language assumes
       // English, but since we haven't provided any labels at all we get
@@ -210,10 +225,12 @@ describe("Demonstrate Vocab Term usage", () => {
       // Create a vocab term with a non-English language label (in this case
       // Irish, and using the 'strict' mode).
       const labelInIrish = "Ainm";
-      const term = new VocabTerm(TEST_TERM_NAME, rdf, storage, true).addLabel(
-        labelInIrish,
-        "ga"
-      );
+      const term = new VocabTerm(
+        TEST_TERM_NAME,
+        rdfFactory,
+        storage,
+        true
+      ).addLabel(labelInIrish, "ga");
 
       // First show that by default we can't find any label values at all
       // (because we created our term in 'strict' mode, meaning we won't
@@ -224,7 +241,7 @@ describe("Demonstrate Vocab Term usage", () => {
       storage.setItem(CONTEXT_KEY_LOCALE, "ga");
 
       // ..and now our default will return our Irish label Literal object.
-      expect(term.labelLiteral).toEqual(rdf.literal(labelInIrish, "ga"));
+      expect(term.labelLiteral).toEqual(rdfFactory.literal(labelInIrish, "ga"));
 
       // ...or, as before, just the label text if we ask for just the value.
       expect(term.label).toEqual(labelInIrish);
@@ -239,7 +256,12 @@ describe("Demonstrate Vocab Term usage", () => {
    */
   describe("Strict support", () => {
     it("Should not use IRI path if no label and strict", () => {
-      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true);
+      const term = new VocabTerm(
+        TEST_TERM_NAME,
+        rdfFactory,
+        getLocalStore(),
+        true
+      );
 
       // Won't fallback to use IRI path - just returns 'undefined'.
       expect(term.label).toBeUndefined;
@@ -249,7 +271,12 @@ describe("Demonstrate Vocab Term usage", () => {
     });
 
     it("Should still fallback to English if language not found", () => {
-      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true)
+      const term = new VocabTerm(
+        TEST_TERM_NAME,
+        rdfFactory,
+        getLocalStore(),
+        true
+      )
         .addLabel(`First name`, "en")
         .addComment(`English comment...`, "en");
 
@@ -260,7 +287,12 @@ describe("Demonstrate Vocab Term usage", () => {
     });
 
     it("Should require explicitly English label and comment if mandatory", () => {
-      const term = new VocabTerm(TEST_TERM_NAME, rdf, getLocalStore(), true)
+      const term = new VocabTerm(
+        TEST_TERM_NAME,
+        rdfFactory,
+        getLocalStore(),
+        true
+      )
         .addLabelNoLanguage(`No-language label isn't enough for 'mandatory'...`)
         .addCommentNoLanguage(
           `No-language comment isn't enough for 'mandatory'...`
@@ -276,7 +308,7 @@ describe("Demonstrate Vocab Term usage", () => {
     it("Comment and message do not fallback to using the IRIs local name", () => {
       const termStrict = new VocabTerm(
         TEST_TERM_NAME,
-        rdf,
+        rdfFactory,
         getLocalStore(),
         true
       );
@@ -293,7 +325,7 @@ describe("Demonstrate Vocab Term usage", () => {
       // Same behaviour for unstrict terms.
       const termUnstrict = new VocabTerm(
         TEST_TERM_NAME,
-        rdf,
+        rdfFactory,
         getLocalStore(),
         false
       );
@@ -311,7 +343,12 @@ describe("Demonstrate Vocab Term usage", () => {
     it("Message with no parameters", () => {
       const englishMessage = "Some message with no parameters...";
       const germanMessage = "Eine Nachricht ohne Parameter...";
-      const term = new VocabTerm(TEST_TERM_ERROR, rdf, getLocalStore(), true)
+      const term = new VocabTerm(
+        TEST_TERM_ERROR,
+        rdfFactory,
+        getLocalStore(),
+        true
+      )
         .addMessage(englishMessage, "en")
         .addMessage(germanMessage, "de");
 
@@ -332,7 +369,12 @@ describe("Demonstrate Vocab Term usage", () => {
       const englishMessage = "Message with {{0}}, {{1}} params";
       const germanMessage =
         "Unterschiedliche Reihenfolge {{1}} und dann {{0}} Parameter";
-      const term = new VocabTerm(TEST_TERM_ERROR, rdf, getLocalStore(), true)
+      const term = new VocabTerm(
+        TEST_TERM_ERROR,
+        rdfFactory,
+        getLocalStore(),
+        true
+      )
         .addMessage(englishMessage, "en")
         .addMessage(germanMessage, "de");
 
