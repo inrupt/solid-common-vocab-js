@@ -31,7 +31,7 @@ export {
   NO_LANGUAGE_TAG,
 } from "./VocabMultiLingualLiteral";
 
-export { VocabTerm, buildBasicTerm } from "./VocabTerm";
+export { VocabTerm } from "./VocabTerm";
 
 export { VocabTermRegistry } from "./VocabTermRegistry";
 
