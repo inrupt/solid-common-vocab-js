@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 0.5.3
+
+### Internal refactor
+
+- Replaced `@rdfjs/data-model` with `rdf-data-factory` (as it provides full
+TypeScript compatibility with the RDF/JS DataFactory type).
+- Only require RDF/JS implementation as a Dev dependency as opposed to a full
+dependency (meaning users of this library are completely free to depend on
+whatever implementation they choose).
+
 ## 0.5.2
 
 ### Patches
