@@ -1,6 +1,6 @@
 {
   "name": "@inrupt/solid-common-vocab",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Implementation of Solid Common Vocab, with minimal RDF library dependencies.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
