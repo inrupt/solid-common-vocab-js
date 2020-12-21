@@ -43,8 +43,8 @@ The Vocab Term objects from this library are intended to be simple wrappers
 around 'NamedNode' objects conforming to the [RDFJS interface](http://rdf.js.org/data-model-spec/).
 This means that Vocab Term instances can be used natively with libraries that
 are RDFJS-compliant, such as `rdf-ext` or `rdflib.js`. A `VocabTerm` may be
-built by passing an RDFJS `Datafactory` implemented with any library, but it also
-embeds a basic `Datafactory` implementation for simplicity.
+built by passing an RDFJS `DataFactory` implemented with any library, but it also
+embeds a basic `DataFactory` implementation for simplicity.
 
 ### Introductory example
 
@@ -63,7 +63,7 @@ We could represent this as a Vocab Term in JavaScript like so:
 ```javascript
 const {VocabTerm, buildStore} = require('@inrupt/solid-common-vocab')
 // Any other implementation of the RDFJS interfaces would also be appropriate.
-const rdf = require('rdf-ext')
+const rdf = require('rdfFactory-ext')
 
 // The third argument provides as a context - it will commonly store things like the current
 // language preference of the user, which can be used to lookup term labels or comments
@@ -100,7 +100,7 @@ const personLabelAsString = person.label.value
 const personCommentAsString = person.comment.value
 ```
 
-To use the emmbedded `Datafactory` implementation to build a VocabTerm, the 
+To use the emmbedded `DataFactory` implementation to build a VocabTerm, the 
 previous example would become: 
 
 ```javascript

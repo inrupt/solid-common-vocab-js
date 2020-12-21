@@ -1,7 +1,7 @@
-const {LitVocabTermRdfExt:LitVocabTerm} = require('@pmcb55/lit-vocab-term-rdf-ext')
+const { VocabTerm } = require('@inrupt/solid-common-vocab')
 require('mock-local-storage')
 
-const person = new LitVocabTerm('https://example.com#Person', localStorage, true)
+const person = new VocabTerm('https://example.com#Person', localStorage, true)
   .addLabel('Person','en')
   .addLabel('Personne','fr')
   .addLabel('人', 'ch')

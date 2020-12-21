@@ -31,7 +31,6 @@ import {
 } from "./VocabMultiLingualLiteral";
 import { DataFactory, NamedNode, Term, Literal } from "rdf-js";
 import { IriString } from "./index";
-import rdf from "@rdfjs/data-model";
 
 const DEFAULT_LOCALE = "en";
 
@@ -411,22 +410,4 @@ class VocabTerm implements NamedNode {
   }
 }
 
-/**
- * This constructor exposes a base LitVocabTerm implementation by providing
- * a simple RDFJS Datafactory.
- * @param iri
- * @param context
- * @param strict
- */
-function buildBasicTerm(
-  iri: NamedNode | IriString,
-  context: Store,
-  strict?: boolean
-) {
-  if (typeof iri === "string") {
-    return new VocabTerm(rdf.namedNode(iri), rdf, context, strict);
-  }
-  return new VocabTerm(iri, rdf, context, strict);
-}
-
-export { VocabTerm, buildBasicTerm };
+export { VocabTerm };
