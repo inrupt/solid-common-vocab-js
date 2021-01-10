@@ -2,13 +2,14 @@
 
 A very simple library that provides JavaScript objects that represent the
 individual terms (i.e. the classes and properties) defined in RDF vocabularies
-(both existing vocabularies (like http://schema.org, FOAF, VCard, LDP,
-ActivityStreams, etc.) and your own custom RDF vocabularies).
+(both existing vocabularies (like http://schema.org, FOAF, vCard, LDP,
+ActivityStreams, etc.), and your own custom RDF vocabularies).
   
 A major feature of this library is that it provides easy access to any 
 `rdfs:label` or `rdfs:comment` values provided for these vocabulary terms, and 
 provides very easy-to-use support for multi-lingual values for these labels and
-comments (and generic message strings).
+comments (as well as generic message strings, for example error message strings,
+or labels or tooltip text for user interfaces).
 
 ### Setup
 
@@ -20,17 +21,17 @@ npm install
 node index.js
 ```
 
-For detailed examples going beyond the common usages featured here, please see 
-the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
+For more detailed examples that go beyond the common uses featured here, please
+see  the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
 
-The `solid-common-vocab` library is distributed as a Github NPM packages: `@inrupt/solid-common-vocab`
-For more information about Github NPM packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
+The `solid-common-vocab` library is distributed as a GitHub npm packages: `@inrupt/solid-common-vocab`
+For more information about GitHub npm packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
 
 
-**NOTE:** This library is used extensively by the Artifact Generator project 
+**Note:** This library is used extensively by the Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
-including JavaScript) that provides Vocab Term instances for every term
-defined within any RDF vocabulary. Due to the ease of simply pointing the
+including JavaScript or TypeScript) that provides Vocab Term instances for every
+term defined within any RDF vocabulary. Due to the ease of simply pointing the
 Artifact Generator at any RDF vocabulary, and _have it_ automatically generate all
 the Vocab Term instances for you automatically, we don't expect manual
 instantiation of Vocab Terms to be very common. However, this documentation
@@ -44,15 +45,15 @@ around 'NamedNode' objects conforming to the [RDFJS interface](http://rdf.js.org
 This means that Vocab Term instances can be used natively with libraries that
 are RDFJS-compliant, such as `rdf-ext` or `rdflib.js`. A `VocabTerm` may be
 built by passing an RDFJS `DataFactory` implemented with any library, but it also
-embeds a basic `DataFactory` implementation for simplicity.
+includes a very basic `DataFactory` implementation for simplicity.
 
 ### Introductory example
 
 For example, if we have the following simple RDF vocabulary defining a single
 `Person` term (in this case a Class):
 ```
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix ex:   <https://example.com#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix ex:   <https://example.com#>
 
 ex:Person a rdfs:Class ;
   rdfs:label "My Person class"@en ;
@@ -77,7 +78,7 @@ const person = new VocabTerm('https://example.com#Person', rdf, buildStore(), tr
   .addComment('Full description of my Person class...','en')
 ```
 
-We can use this vocab term in various ways:
+We can use this Vocab Term in various ways:
 ```javascript
 // To access the term's full IRI value:
 const personIri = person.value
@@ -100,7 +101,7 @@ const personLabelAsString = person.label.value
 const personCommentAsString = person.comment.value
 ```
 
-To use the emmbedded `DataFactory` implementation to build a VocabTerm, the 
+To use the included `DataFactory` implementation to build a VocabTerm, the 
 previous example would become: 
 
 ```javascript
@@ -111,7 +112,7 @@ const person = buildBasicTerm('https://example.com#Person', buildStore(), true)
   .addComment('Full description of my Person class...','en')
 ```
 
-**NOTE**: The `solid-common-vocab` library is implemented in TypeScript, and embeds 
+**Note**: The `solid-common-vocab` library is implemented in TypeScript, and embeds 
 its typing. The following snippet of code demonstrate a basic TypeScript usage:
 
 ```typescript
@@ -130,8 +131,8 @@ const person: VocabTerm = buildBasicTerm(
 An important feature of the `solid-common-vocab` is support for parameterized messages.
 This can be extremely useful when defining your own RDF vocabularies and including
 message strings (thereby providing those message with globally unique IRI identifiers
-and allowing for easy translations of those messages). For instance, to report errors
-to the user with contextual information (and in multiple languages).
+and allowing for easy translations of those message strings). For instance, to report
+errors to the user with contextual information (and in multiple languages):
 
 ```javascript
 const term = new VocabTerm("https://test.com/vocab#Unauthorized", rdf, buildStore(), true)
@@ -175,10 +176,10 @@ personLabel = person.label // personLabel now contains the Spanish literal.
 The last parameter to the Vocab Term constructor indicates if the behaviour
 of the term should be strict or loose.
 In the case of "loose" behaviour, in the absence of any label, 
-`term.label` will default to the local part (i.e. the last segment of the path
-component) of the term's IRI. With "strict" behaviour it will return `undefined`.
-When the local part of the IRI is returned as a label the language tag will be
-empty (i.e. "").
+`term.label` will default to the local part of the term's IRI (i.e. the last
+segment of the full path component). With "strict" behaviour it will return
+`undefined`. When the local part of the IRI is returned as a label the language
+tag will be empty (i.e. "").
 
 ```javascript
 // Here we specify 'loose' behaviour(i.e. 'false' parameter to constructor)...
@@ -194,8 +195,9 @@ person = new VocabTerm('https://example.com#Person', rdf, buildStore(), true)
 personLabel = person.labelLiteral
 ```
 
-This behaviour (i.e. returning the local part of the IRI, or `undefined`) may be overridden
-to instead throw an error when no label is found by using the `.mandatory` accessor.
+This behaviour (i.e. returning the local part of the IRI, or `undefined`) may
+be overridden to instead throw an error when no label is found by using the
+`.mandatory` accessor.
 
 ```javascript
 // Here 'strictness' has no impact...
