@@ -8,7 +8,7 @@ and your own custom RDF vocabularies).
 A major feature of this library is that it provides easy access to any 
 `rdfs:label` and `rdfs:comment` values provided for these vocabulary terms, and 
 provides very easy-to-use support for multi-lingual values for these labels and
-comments. We also support other term meta-term (such as `rdfs:seeAlso` and
+comments. We also support other term metadata (such as `rdfs:seeAlso` and
 `skos:isDefinedBy`), and also generic message strings (using 
 [SKOS-XL](https://www.w3.org/TR/skos-reference/skos-xl.html)) that can be used
 for error message strings, or labels or tooltip text for user interfaces, etc.
