@@ -1,20 +1,23 @@
 # The Solid Common Vocab library for JavaScript
 
-A very simple library that provides JavaScript objects that represent the
-individual terms (i.e. the classes and properties) defined in RDF vocabularies
-(both existing vocabularies (like http://schema.org, FOAF, vCard, LDP,
-ActivityStreams, etc.), and your own custom RDF vocabularies).
+A library providing JavaScript objects to represent the individual terms (i.e.
+the classes and properties) defined in RDF vocabularies (both existing
+vocabularies (like http://schema.org, FOAF, vCard, LDP, ActivityStreams, etc.),
+and your own custom RDF vocabularies).
   
 A major feature of this library is that it provides easy access to any 
-`rdfs:label` or `rdfs:comment` values provided for these vocabulary terms, and 
+`rdfs:label` and `rdfs:comment` values provided for these vocabulary terms, and 
 provides very easy-to-use support for multi-lingual values for these labels and
-comments (as well as generic message strings, for example error message strings,
-or labels or tooltip text for user interfaces).
+comments. We also support other term metadata (such as `rdfs:seeAlso` and
+`skos:isDefinedBy`), and also generic message strings (using 
+[SKOS-XL](https://www.w3.org/TR/skos-reference/skos-xl.html)) that can be used
+for error message strings, or labels or tooltip text for user interfaces, etc.
 
 ### Setup
 
-The `demo` directory provides an extremely basic working example that you can run
-with the following commands:
+The `demo` directory provides a working example that you can run with the
+following commands:
+
 ```
 cd demo
 npm install
@@ -22,7 +25,7 @@ node index.js
 ```
 
 For more detailed examples that go beyond the common uses featured here, please
-see  the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
+see the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
 
 The `solid-common-vocab` library is distributed as a GitHub npm packages: `@inrupt/solid-common-vocab`
 For more information about GitHub npm packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
@@ -32,20 +35,23 @@ For more information about GitHub npm packages, please visit [the dedicated docu
 that can automatically generate source-code (in multiple programming languages, 
 including JavaScript or TypeScript) that provides Vocab Term instances for every
 term defined within any RDF vocabulary. Due to the ease of simply pointing the
-Artifact Generator at any RDF vocabulary, and _have it_ automatically generate all
-the Vocab Term instances for you automatically, we don't expect manual
-instantiation of Vocab Terms to be very common. However, this documentation
-describes the Vocab Term library without any dependency or requirement to
-use the Artifact Generator whatsoever.
+Artifact Generator at any RDF vocabulary, and having it automatically generate all
+the Vocab Term instances for you, we don't expect manual instantiation of Vocab
+Terms to be very common. However, this documentation describes the Vocab Term
+library without any dependency or requirement to use the Artifact Generator at
+all.
 
 ## RDF library support
 
-The Vocab Term objects from this library are intended to be simple wrappers
-around 'NamedNode' objects conforming to the [RDFJS interface](http://rdf.js.org/data-model-spec/).
+The Vocab Term object from this library is intended to be a simple wrapper
+around the 'NamedNode' object conforming to the
+[RDFJS interface](http://rdf.js.org/data-model-spec/).
 This means that Vocab Term instances can be used natively with libraries that
-are RDFJS-compliant, such as `rdf-ext` or `rdflib.js`. A `VocabTerm` may be
-built by passing an RDFJS `DataFactory` implemented with any library, but it also
-includes a very basic `DataFactory` implementation for simplicity.
+are RDFJS-compliant, such as `rdf-ext`, `rdflib.js`, `rdf-data-factory`, `graphy`,
+etc. An instance of a `VocabTerm` may be built by passing an RDFJS `DataFactory`
+implemented by any library, but it also includes a very basic `DataFactory`
+implementation for convenience if you don't wish to include an existing
+implementation.
 
 ### Introductory example
 
@@ -113,7 +119,7 @@ const person = buildBasicTerm('https://example.com#Person', buildStore(), true)
 ```
 
 **Note**: The `solid-common-vocab` library is implemented in TypeScript, and embeds 
-its typing. The following snippet of code demonstrate a basic TypeScript usage:
+its types. The following code snippet demonstrates basic TypeScript usage:
 
 ```typescript
 import {buildBasicTerm, buildStore, VocabTerm} from '@inrupt/solid-common-vocab'
@@ -128,11 +134,12 @@ const person: VocabTerm = buildBasicTerm(
 
 ### Messages
 
-An important feature of the `solid-common-vocab` is support for parameterized messages.
+An important feature of `solid-common-vocab` is support for parameterized messages.
 This can be extremely useful when defining your own RDF vocabularies and including
-message strings (thereby providing those message with globally unique IRI identifiers
-and allowing for easy translations of those message strings). For instance, to report
-errors to the user with contextual information (and in multiple languages):
+message strings (thereby providing those messages with globally unique IRI
+identifiers, and allowing for easy translations of those message strings). For
+instance, to report errors to the user with contextual information (and in
+multiple languages):
 
 ```javascript
 const term = new VocabTerm("https://test.com/vocab#Unauthorized", rdf, buildStore(), true)
@@ -142,14 +149,15 @@ const term = new VocabTerm("https://test.com/vocab#Unauthorized", rdf, buildStor
 term.messageParams('Current Account').value // Evaluates to "Your account (Current Account)..."
 ```
 
-### Multilinguality
+### Multilingual support
 
-Unless we explicitly mandate a specific language, English will be used as the default
-language. Best practice for RDF vocabularies in general is to provide labels (short 
-human readable descriptions) and comments (longer, more detailed descriptions), and to
+Unless we explicitly mandate a specific language, English will be used by default.
+Best practice for RDF vocabularies in general is to provide labels (short human
+readable descriptions) and comments (longer, more detailed descriptions), and to
 also provide these descriptions in multiple languages if appropriate and possible.
-(Technical note: the language tag defaults to an empty string in the case of fallback to 
-the local part of the term's IRI (see the next section about `strictness`)).
+(Technical note: the language tag defaults to an empty string in the case of
+falling back to the local part of the term's IRI (see the next section about
+`strictness`)).
 
 ```javascript
 const storage = buildStore()
@@ -161,8 +169,8 @@ const person = new VocabTerm('https://example.com#Person', rdf, storage, true)
 // Default to the English label (if there is one).
 var personLabel = person.label
 
-// Request an explicit language for the label (but if there isn't one, fallback to the
-// English one, if there is one).
+// Request an explicit language for the label - but if there isn't one, we'll 
+// fallback to the English one, if there is one).
 personLabel = person.asLanguage('fr').label
 
 // Change the default language in our context (i.e. localStorage).
@@ -178,7 +186,7 @@ of the term should be strict or loose.
 In the case of "loose" behaviour, in the absence of any label, 
 `term.label` will default to the local part of the term's IRI (i.e. the last
 segment of the full path component). With "strict" behaviour it will return
-`undefined`. When the local part of the IRI is returned as a label the language
+`undefined`. When the local part of the IRI is returned as a label, the language
 tag will be empty (i.e. "").
 
 ```javascript
