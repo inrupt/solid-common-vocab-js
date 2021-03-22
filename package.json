@@ -17,6 +17,7 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint --config .eslintrc.js --fix \"src/**\"",
     "test": "eslint --config .eslintrc.js \"src/**\" && npm run check-licenses && jest ./src",
+    "prepare": "husky install",
     "preversion": "npm test",
     "build": "rollup --config rollup.config.js",
     "prepublishOnly": "npm run build",
@@ -55,11 +56,6 @@
     "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^26.1.4",
     "typescript": "^4.1.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.ts": [
