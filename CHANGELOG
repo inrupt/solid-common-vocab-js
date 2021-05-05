@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Deprecation notice
+
+- With Node.js version 10 [reaching end-of-life on
+  2021-04-30](https://github.com/nodejs/Release),
+  @inrupt/solid-common-vocab no longer actively supports it. It will not
+  stop working right away, but it will no longer be actively tested and no
+  special effort will be made to keep it from breaking.
+
 ## 0.5.3
 
 ### Internal refactor
