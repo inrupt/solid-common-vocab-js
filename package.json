@@ -49,7 +49,7 @@
     "husky": "^5.2.0",
     "jest": "^26.2.2",
     "license-checker": "^25.0.1",
-    "lint-staged": "^10.5.3",
+    "lint-staged": "^11.0.1",
     "prettier": "2.2.1",
     "rdf-data-factory": "^1.0.4",
     "rollup": "^2.35.1",
