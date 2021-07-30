@@ -37,7 +37,7 @@ import expect from "expect";
 const rdfFactory: DataFactory = new DataFactoryImpl();
 const TEST_IRI = rdfFactory.namedNode(`test://iri#localName`);
 
-describe("The RDFJS Literal implementation", () => {
+describe("The RDF/JS Literal implementation", () => {
   it("should return the appropriate data type", () => {
     const literal = new VocabMultiLingualLiteral(rdfFactory, TEST_IRI);
     literal.addValue("no language", NO_LANGUAGE_TAG);

@@ -113,7 +113,7 @@ describe("Demonstrate Vocab Term usage", () => {
       );
 
       // If we only want the text value of the label, we can explicitly ask
-      // for only that using '.value' (which comes from the RDFJS interfaces).
+      // for only that using '.value' (which comes from the RDF/JS interfaces).
       expect(term.label).toEqual(TEST_TERM_NAME_PATH);
 
       // Explicitly saying that a value is mandatory will throw an exception
