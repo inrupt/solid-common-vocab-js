@@ -530,7 +530,7 @@ describe("VocabTerm tests", () => {
     });
   });
 
-  describe("Embedding an RDFJS implementation", () => {
+  describe("Embedding an RDF/JS implementation", () => {
     it("should be possible to get a valid VocabTerm without providing any DataFactory", () => {
       const store = getLocalStore();
       const aTerm = buildBasicTerm(TEST_TERM_NAME, store, false).addLabel(
