@@ -1,7 +1,7 @@
 # The Solid Common Vocab library for JavaScript
 
-A library providing JavaScript objects to represent the individual terms (i.e.
-the classes and properties) defined in RDF vocabularies (both existing
+A library providing JavaScript objects to represent the individual terms
+(i.e., the classes and properties) defined in RDF vocabularies (both existing
 vocabularies (like http://schema.org, FOAF, vCard, LDP, ActivityStreams, etc.),
 and your own custom RDF vocabularies).
   
@@ -11,7 +11,7 @@ provides very easy-to-use support for multi-lingual values for these labels and
 comments. We also support other term metadata (such as `rdfs:seeAlso` and
 `skos:isDefinedBy`), and also generic message strings (using 
 [SKOS-XL](https://www.w3.org/TR/skos-reference/skos-xl.html)) that can be used
-for error message strings, or labels or tooltip text for user interfaces, etc.
+for error message strings, or labels, or tooltip text for user interfaces, etc.
 
 ### Setup
 
@@ -25,17 +25,19 @@ node index.js
 ```
 
 For more detailed examples that go beyond the common uses featured here, please
-see the [demonstration test suite](./demo/DemonstrateUsage.test.js). 
+see the [demonstration test suite](./demo/demonstrateByUsage.test.js). 
 
-The `solid-common-vocab` library is distributed as a GitHub npm packages: `@inrupt/solid-common-vocab`
-For more information about GitHub npm packages, please visit [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
+The `solid-common-vocab` library is distributed as a GitHub npm package: 
+`@inrupt/solid-common-vocab`.
+For more information about GitHub npm packages, please visit
+[the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
 
 
 **Note:** This library is used extensively by the Artifact Generator project 
 that can automatically generate source-code (in multiple programming languages, 
 including JavaScript or TypeScript) that provides Vocab Term instances for every
 term defined within any RDF vocabulary. Due to the ease of simply pointing the
-Artifact Generator at any RDF vocabulary, and having it automatically generate all
+Artifact Generator at any RDF vocabulary and having it automatically generate all
 the Vocab Term instances for you, we don't expect manual instantiation of Vocab
 Terms to be very common. However, this documentation describes the Vocab Term
 library without any dependency or requirement to use the Artifact Generator at
@@ -45,18 +47,18 @@ all.
 
 The Vocab Term object from this library is intended to be a simple wrapper
 around the 'NamedNode' object conforming to the
-[RDFJS interface](http://rdf.js.org/data-model-spec/).
+[RDF/JS interface](http://rdf.js.org/data-model-spec/).
 This means that Vocab Term instances can be used natively with libraries that
-are RDFJS-compliant, such as `rdf-ext`, `rdflib.js`, `rdf-data-factory`, `graphy`,
-etc. An instance of a `VocabTerm` may be built by passing an RDFJS `DataFactory`
-implemented by any library, but it also includes a very basic `DataFactory`
-implementation for convenience if you don't wish to include an existing
-implementation.
+are RDF/JS-compliant, such as `rdf-ext`, `rdflib.js`, `rdf-data-factory`,
+`graphy`, etc. An instance of a `VocabTerm` may be built by passing an RDF/JS
+`DataFactory` implemented by any library, but it also includes a very basic
+`DataFactory` implementation for convenience if you don't wish to include an
+existing implementation.
 
 ### Introductory example
 
 For example, if we have the following simple RDF vocabulary defining a single
-`Person` term (in this case a Class):
+`Person` term (in this case an RDF Class):
 ```
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix ex:   <https://example.com#>
@@ -69,7 +71,7 @@ ex:Person a rdfs:Class ;
 We could represent this as a Vocab Term in JavaScript like so:
 ```javascript
 const {VocabTerm, buildStore} = require('@inrupt/solid-common-vocab')
-// Any other implementation of the RDFJS interfaces would also be appropriate.
+// Any other implementation of the RDF/JS interfaces would also be appropriate.
 const rdf = require('rdfFactory-ext')
 
 // The third argument provides as a context - it will commonly store things like the current
@@ -89,7 +91,7 @@ We can use this Vocab Term in various ways:
 // To access the term's full IRI value:
 const personIri = person.value
 
-// The label and the comment are available as RDFJS RDFLiteral instances:
+// The label and the comment are available as RDF/JS RDFLiteral instances:
 // - get the RDFLiteral object (which contains not just the text value, but also the 
 // language tag of that text (e.g. 'en' for English, or 'es' for Spanish).
 // Solid Common can potentially offer further meta-data - such as a description of how the
@@ -184,10 +186,10 @@ personLabel = person.label // personLabel now contains the Spanish literal.
 The last parameter to the Vocab Term constructor indicates if the behaviour
 of the term should be strict or loose.
 In the case of "loose" behaviour, in the absence of any label, 
-`term.label` will default to the local part of the term's IRI (i.e. the last
+`term.label` will default to the local part of the term's IRI (i.e., the last
 segment of the full path component). With "strict" behaviour it will return
 `undefined`. When the local part of the IRI is returned as a label, the language
-tag will be empty (i.e. "").
+tag will be empty (i.e., "").
 
 ```javascript
 // Here we specify 'loose' behaviour(i.e. 'false' parameter to constructor)...
