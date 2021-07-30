@@ -81,7 +81,7 @@ class VocabMultiLingualLiteral implements Literal {
     this._expandedMessage = undefined;
   }
 
-  // Implementing the RDFJS Literal interface
+  // Implementing the RDF/JS Literal interface
   termType: "Literal" = "Literal";
 
   get value(): string {
