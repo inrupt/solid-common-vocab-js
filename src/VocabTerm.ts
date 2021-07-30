@@ -36,7 +36,7 @@ const DEFAULT_LOCALE = "en";
 
 /**
  * Class to represent vocabulary terms. We expect derived classes to extend
- * an IRI (e.g. a NamedNode in RDFJS), but we just provide effectively an
+ * an IRI (e.g. a NamedNode in RDF/JS), but we just provide effectively an
  * abstract base class providing meta-data associated with terms in a
  * vocabulary, like labels and comments (in multiple-languages).
  *
