@@ -34,14 +34,14 @@ For more information about GitHub npm packages, please visit
 
 
 **Note:** This library is used extensively by the Artifact Generator project 
-that can automatically generate source-code (in multiple programming languages, 
-including JavaScript or TypeScript) that provides Vocab Term instances for every
-term defined within any RDF vocabulary. Due to the ease of simply pointing the
-Artifact Generator at any RDF vocabulary and having it automatically generate all
-the Vocab Term instances for you, we don't expect manual instantiation of Vocab
-Terms to be very common. However, this documentation describes the Vocab Term
-library without any dependency or requirement to use the Artifact Generator at
-all.
+that can automatically generate source-code (in multiple programming
+languages, including JavaScript or TypeScript) that can provide Vocab Term
+instances for every term defined within any RDF vocabulary. Due to the ease of
+simply pointing the Artifact Generator at any RDF vocabulary and having it
+automatically generate all the Vocab Term instances for you, we don't expect
+manual instantiation of Vocab Terms to be very common. However, this
+documentation describes the Vocab library without any dependency or
+requirement to use the Artifact Generator at all.
 
 ## RDF library support
 
@@ -59,6 +59,7 @@ existing implementation.
 
 For example, if we have the following simple RDF vocabulary defining a single
 `Person` term (in this case an RDF Class):
+
 ```
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix ex:   <https://example.com#>
@@ -69,6 +70,7 @@ ex:Person a rdfs:Class ;
 ```
 
 We could represent this as a Vocab Term in JavaScript like so:
+
 ```javascript
 const {VocabTerm, buildStore} = require('@inrupt/solid-common-vocab')
 // Any other implementation of the RDF/JS interfaces would also be appropriate.
@@ -87,6 +89,7 @@ const person = new VocabTerm('https://example.com#Person', rdf, buildStore(), tr
 ```
 
 We can use this Vocab Term in various ways:
+
 ```javascript
 // To access the term's full IRI value:
 const personIri = person.value
@@ -184,12 +187,11 @@ personLabel = person.label // personLabel now contains the Spanish literal.
 ### Strictness
 
 The last parameter to the Vocab Term constructor indicates if the behaviour
-of the term should be strict or loose.
-In the case of "loose" behaviour, in the absence of any label, 
-`term.label` will default to the local part of the term's IRI (i.e., the last
-segment of the full path component). With "strict" behaviour it will return
-`undefined`. When the local part of the IRI is returned as a label, the language
-tag will be empty (i.e., "").
+of the term should be strict or loose. In the case of "loose" behaviour, in
+the absence of any label, `term.label` will default to the local part of the
+term's IRI (i.e., the last segment of the full path component). With "strict"
+behaviour it will return `undefined`. When the local part of the IRI is
+returned as a label, the language tag will be empty (i.e., "").
 
 ```javascript
 // Here we specify 'loose' behaviour(i.e. 'false' parameter to constructor)...
