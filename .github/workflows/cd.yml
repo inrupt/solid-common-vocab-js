@@ -3,8 +3,9 @@ name: CD
 on: 
   push:
     branches:
+      '*'
     tags:
-      # This excludes tags from CD, as they should be published through a release
+      # This excludes tags from CD, as they should be published through a release.
       '!v*'
 
 env:
