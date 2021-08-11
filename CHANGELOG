@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 1.0.0 2021/10/11
+
+- Open sourcing.
+
 ### Deprecation notice
 
 - With Node.js version 10 [reaching end-of-life on
