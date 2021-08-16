@@ -24,7 +24,7 @@
 
 import { Store, getLocalStore } from "./util/localStorage";
 
-import { DataFactory, NamedNode, Term, Literal } from "rdf-js";
+import type { DataFactory, NamedNode } from "@rdfjs/types/data-model";
 import { DataFactory as DataFactoryImpl } from "rdf-data-factory";
 const defaultRdfFactory: DataFactory = new DataFactoryImpl();
 

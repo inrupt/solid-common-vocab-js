@@ -22,7 +22,12 @@
  * End license text.Source Distributions
  */
 
-import { DataFactory, Literal, NamedNode, Term } from "rdf-js";
+import type {
+  DataFactory,
+  Literal,
+  NamedNode,
+  Term,
+} from "@rdfjs/types/data-model";
 
 const NO_LANGUAGE_TAG = "<No Language>";
 

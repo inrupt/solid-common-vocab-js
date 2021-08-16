@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+- Made CHANGELOG a markdown file by adding '.md' extension!
+- Updated to now use the official RDF/JS TypeScript types.
+- Tidied up demo code so both the Node.JS application and the usage
+  demonstration tests both work now.
+
 ## 1.0.0 2021/10/11
 
 - Open sourcing.
