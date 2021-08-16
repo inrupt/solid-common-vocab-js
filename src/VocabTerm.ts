@@ -29,7 +29,12 @@ import {
   VocabMultiLingualLiteral,
   NO_LANGUAGE_TAG,
 } from "./VocabMultiLingualLiteral";
-import { DataFactory, NamedNode, Term, Literal } from "rdf-js";
+import type {
+  DataFactory,
+  NamedNode,
+  Term,
+  Literal,
+} from "@rdfjs/types/data-model";
 import { IriString } from "./index";
 
 const DEFAULT_LOCALE = "en";

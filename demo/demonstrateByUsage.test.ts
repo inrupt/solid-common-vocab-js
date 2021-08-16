@@ -23,11 +23,11 @@
  */
 
 import { getLocalStore } from "../src/util/localStorage";
-import { VocabContext, CONTEXT_KEY_LOCALE } from "../src/VocabContext";
-import { VocabTerm, buildBasicTerm } from "../src/VocabTerm";
+import { CONTEXT_KEY_LOCALE } from "../src/VocabContext";
+import { VocabTerm } from "../src/VocabTerm";
 
 import expect from "expect";
-import { DataFactory } from "rdf-js";
+import type { DataFactory } from "@rdfjs/types/data-model";
 import { DataFactory as DataFactoryImpl } from "rdf-data-factory";
 
 /**

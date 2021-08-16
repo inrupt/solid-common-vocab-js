@@ -22,7 +22,7 @@
  * End license text.Source Distributions
  */
 
-import { DataFactory } from "rdf-js";
+import type { DataFactory } from "@rdfjs/types/data-model";
 import { DataFactory as DataFactoryImpl } from "rdf-data-factory";
 
 import {
