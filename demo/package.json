@@ -10,7 +10,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@inrupt/solid-common-vocab": "^0.5.0",
-    "mock-local-storage": "^1.1.11"
+    "@rdfjs/types": "^1.0.1",
+    "mock-local-storage": "^1.1.11",
+    "rdf-data-factory": "^1.1.0"
   }
 }
