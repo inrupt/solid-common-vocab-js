@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Updated to now use the official RDF/JS TypeScript types.
 - Tidied up demo code so both the Node.JS application and the usage
   demonstration tests both work now.
+- Typo in README.
+- Removed MacOS and Windows runners from CI.
 
 ## 1.0.0 2021/10/11
 
