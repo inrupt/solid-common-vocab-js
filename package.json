@@ -43,7 +43,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-license-header": "^0.2.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^7.0.1",
+    "husky": "^8.0.1",
     "jest": "^27.0.6",
     "license-checker": "^25.0.1",
     "lint-staged": "^11.1.1",
