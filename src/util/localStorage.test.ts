@@ -85,3 +85,18 @@ describe("localstorage should work in a Node environment", () => {
     expect(store.getItem("test key")).toEqual("test value");
   });
 });
+
+describe("localstorage should work across instances", () => {
+  it("should return a proper store instance", () => {
+    const store1 = getLocalStore();
+    store1.setItem("test key 1", "test value");
+    expect(store1.getItem("test key 1")).toEqual("test value");
+
+    const store2 = getLocalStore();
+    expect(store2.getItem("test key 1")).toEqual("test value");
+    store2.setItem("test key 2", "another test value");
+
+    expect(store2.getItem("test key 2")).toEqual("another test value");
+    expect(store1.getItem("test key 2")).toEqual("another test value");
+  });
+});

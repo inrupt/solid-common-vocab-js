@@ -1,8 +1,9 @@
 // Normally we would import the package from a repository, but for this demo
 // we can access the code directly.
 const { VocabTerm } = require("../");
+const { CONTEXT_KEY_LOCALE } = require("../");
 // In your code, you would normally do:
-// const { VocabTerm } = require('@inrupt/solid-common-vocab')
+// const { VocabTerm, CONTEXT_KEY_LOCALE } = require('@inrupt/solid-common-vocab')
 
 // We need to provide an implementation for the RDF/JS interfaces. There are a
 // number of implementations you can choose from, we've chosen this one:
@@ -45,4 +46,10 @@ console.log(
 
 console.log(
   `The default comment for the class [${person.value}] is [${person.comment}]`
+);
+
+console.log(`Setting the default language to Chinese...`);
+localStorage.setItem(CONTEXT_KEY_LOCALE, "ch");
+console.log(
+  `Now the default label for the class [${person.value}] is [${person.label}]`
 );
