@@ -157,7 +157,7 @@ describe("Vocab context-aware errors", () => {
     const message = "Error occurred";
     try {
       throw new Error(message);
-    } catch (error) {
+    } catch (error: any) {
       const wrapMessage = "Wrap error message";
       const wrapError = new VocabContextError(context, wrapMessage, error);
       expect(wrapError.countLevels()).toBe(2);
@@ -173,7 +173,7 @@ describe("Vocab context-aware errors", () => {
     const message = "Error occurred";
     try {
       throw new VocabContextError(context, message, undefined);
-    } catch (error) {
+    } catch (error: any) {
       expect(error.contains(["Error"])).toBe(true);
       expect(error.contains(["Error", "occurred"])).toBe(true);
       expect(error.contains(["Error", "does not", "occurred"])).toBe(false);
@@ -185,7 +185,7 @@ describe("Vocab context-aware errors", () => {
     const message = "Error occurred";
     try {
       throw new VocabContextError(context, message, undefined);
-    } catch (error) {
+    } catch (error: any) {
       expect(error.contains()).toBe(true);
     }
   });
