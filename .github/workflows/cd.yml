@@ -12,14 +12,14 @@ env:
   CI: true
 jobs:
   publish-npm:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
     - uses: actions/checkout@3.0.2
     - name: Prepare for publication to npm
       uses: actions/setup-node@v3.4.1
       with:
-        node-version: '12.x'
+        node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
         scope: '@inrupt'
     - name: Determine npm tag
