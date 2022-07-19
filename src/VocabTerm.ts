@@ -71,7 +71,7 @@ const DEFAULT_LOCALE = "en";
  * term (since we expect derived classes to provide that), testing this
  * class in isolation will result in strange looking (i.e. 'undefined-'
  * prefixed) key values in 'localStorage' since we create those keys based on
- * the term IRI (that we don't store!). Currently this doesn't cause any
+ * the term IRI (that we don't store!). Currently, this doesn't cause any
  * problems, but it's just something to be aware of!
  */
 class VocabTerm implements NamedNode {
@@ -85,7 +85,7 @@ class VocabTerm implements NamedNode {
   private _message: VocabMultiLingualLiteral;
 
   // Context store.
-  private _litSessionContext: VocabContext;
+  private _vocabContext: VocabContext;
   private _registry: VocabTermRegistry;
 
   // Internal state.
@@ -133,7 +133,7 @@ class VocabTerm implements NamedNode {
       this.strict = false;
     }
 
-    this._litSessionContext = new VocabContext(DEFAULT_LOCALE, contextStorage);
+    this._vocabContext = new VocabContext(DEFAULT_LOCALE, contextStorage);
     this._registry = new VocabTermRegistry(contextStorage);
 
     // Create holders for meta-data on this vocabulary term (we could probably
@@ -345,7 +345,7 @@ class VocabTerm implements NamedNode {
 
   useLanguageOverrideOrGetFromContext() {
     return this._languageOverride === undefined
-      ? this._litSessionContext.getLocale()
+      ? this._vocabContext.getLocale()
       : this._languageOverride;
   }
 

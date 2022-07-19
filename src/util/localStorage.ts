@@ -24,11 +24,15 @@
 
 type Store = typeof window.localStorage;
 
+// Importantly, this storage instance needs to be a global, so that its
+// contents are intentionally shared (as it's meant to replicate the notion of
+// 'Local Storage' in a browser).
+const storage = new Map<string, string>();
+
 /**
- * Returns a local store instance
+ * Returns a local store instance.
  */
 function buildStore(): Store {
-  const storage = new Map<string, string>();
   return {
     setItem: (key: string, value: string) => {
       storage.set(key, value);
@@ -65,6 +69,7 @@ function getLocalStore(): Store {
   ) {
     return window.localStorage;
   }
+
   return buildStore();
 }
 

@@ -22,21 +22,26 @@
  * End license text.Source Distributions
  */
 
-import { getLocalStore } from "../src/util/localStorage";
-import { CONTEXT_KEY_LOCALE } from "../src/VocabContext";
-import { VocabTerm } from "../src/VocabTerm";
+/**
+ * We want to keep this demo code as simple and basic as possible, so we just
+ * use vanilla JavaScript (instead of using TypeScript), so we just pull in
+ * implementations directly from the built `../dist/index.js` file (so we can
+ * only run successfully once the main project itself has been built (i.e.,
+ * using `npm run build`)).
+ */
+const { getLocalStore } = require("../dist/index");
+const { CONTEXT_KEY_LOCALE } = require("../dist/index");
+const { VocabTerm } = require("../dist/index");
 
-import expect from "expect";
-import type { DataFactory } from "@rdfjs/types/data-model";
-import { DataFactory as DataFactoryImpl } from "rdf-data-factory";
+const { DataFactory } = require("rdf-data-factory");
 
 /**
  * Test class intended to demonstrate by example how to use Vocab Term
  * instances. This class is not intended to contribute to test coverage, and
  * duplicates test conditions in our standard unit tests.
  *
- * We'll use this Turtle snippet to help illustrate some of the usage patterns
- * below, with the term 'ex:name' defined in our tests as the constant
+ * We'll use this Turtle snippet to help illustrate some usage patterns below,
+ * with the term 'ex:name' defined in our tests as the constant
  * 'TEST_TERM_NAME'.
  *
  *   prefix rdfFactory:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -58,13 +63,13 @@ import { DataFactory as DataFactoryImpl } from "rdf-data-factory";
  */
 describe("Demonstrate Vocab Term usage", () => {
   const TEST_TERM_NAME_PATH = "name";
-  const rdfFactory: DataFactory = new DataFactoryImpl();
+  const rdfFactory = new DataFactory();
   const TEST_TERM_NAME = rdfFactory.namedNode(
-    `https://test.com/vocab#${TEST_TERM_NAME_PATH}`
+      `https://test.com/vocab#${TEST_TERM_NAME_PATH}`
   );
 
   const TEST_TERM_ERROR = rdfFactory.namedNode(
-    `https://test.com/vocab#errSomeError`
+      `https://test.com/vocab#errSomeError`
   );
 
   // Vocab Term labels can be configured (via a constructor parameter) to
@@ -85,10 +90,10 @@ describe("Demonstrate Vocab Term usage", () => {
       // Here we're simply creating the term itself, and not yet add any labels,
       // comments or messages.
       const term = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        getLocalStore(),
-        false
+          TEST_TERM_NAME,
+          rdfFactory,
+          getLocalStore(),
+          false
       );
 
       // Simply requesting the label now without an explicit language assumes
@@ -109,7 +114,7 @@ describe("Demonstrate Vocab Term usage", () => {
       // language component at all. This makes sense in our case because the
       // local part of an IRI would not be expected to be language-specific.
       expect(term.labelLiteral).toEqual(
-        rdfFactory.literal(TEST_TERM_NAME_PATH, "")
+          rdfFactory.literal(TEST_TERM_NAME_PATH, "")
       );
 
       // If we only want the text value of the label, we can explicitly ask
@@ -135,7 +140,7 @@ describe("Demonstrate Vocab Term usage", () => {
       // But if we now explicitly ask for French, we'll get the French
       // Literal object.
       expect(term.asLanguage("fr").labelLiteral).toEqual(
-        rdfFactory.literal("Prénom", "fr")
+          rdfFactory.literal("Prénom", "fr")
       );
 
       // ...or if we just want the French label as a string...
@@ -182,10 +187,10 @@ describe("Demonstrate Vocab Term usage", () => {
       // comments (this is something that the Artifact Generator can enforce
       // today for example).
       const term = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        getLocalStore(),
-        true
+          TEST_TERM_NAME,
+          rdfFactory,
+          getLocalStore(),
+          true
       );
 
       // Simply requesting the label without an explicit language assumes
@@ -226,10 +231,10 @@ describe("Demonstrate Vocab Term usage", () => {
       // Irish, and using the 'strict' mode).
       const labelInIrish = "Ainm";
       const term = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        storage,
-        true
+          TEST_TERM_NAME,
+          rdfFactory,
+          storage,
+          true
       ).addLabel(labelInIrish, "ga");
 
       // First show that by default we can't find any label values at all
@@ -257,10 +262,10 @@ describe("Demonstrate Vocab Term usage", () => {
   describe("Strict support", () => {
     it("Should not use IRI path if no label and strict", () => {
       const term = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        getLocalStore(),
-        true
+          TEST_TERM_NAME,
+          rdfFactory,
+          getLocalStore(),
+          true
       );
 
       // Won't fallback to use IRI path - just returns 'undefined'.
@@ -272,13 +277,13 @@ describe("Demonstrate Vocab Term usage", () => {
 
     it("Should still fallback to English if language not found", () => {
       const term = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        getLocalStore(),
-        true
+          TEST_TERM_NAME,
+          rdfFactory,
+          getLocalStore(),
+          true
       )
-        .addLabel(`First name`, "en")
-        .addComment(`English comment...`, "en");
+          .addLabel(`First name`, "en")
+          .addComment(`English comment...`, "en");
 
       // Here we ask for French (which we didn't provide), so we fallback to
       // the English values we did provide...
@@ -288,15 +293,15 @@ describe("Demonstrate Vocab Term usage", () => {
 
     it("Should require explicitly English label and comment if mandatory", () => {
       const term = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        getLocalStore(),
-        true
+          TEST_TERM_NAME,
+          rdfFactory,
+          getLocalStore(),
+          true
       )
-        .addLabelNoLanguage(`No-language label isn't enough for 'mandatory'...`)
-        .addCommentNoLanguage(
-          `No-language comment isn't enough for 'mandatory'...`
-        );
+          .addLabelNoLanguage(`No-language label isn't enough for 'mandatory'...`)
+          .addCommentNoLanguage(
+              `No-language comment isn't enough for 'mandatory'...`
+          );
 
       expect(() => term.mandatory.label).toThrow(TEST_TERM_NAME.value);
       expect(() => term.mandatory.comment).toThrow(TEST_TERM_NAME.value);
@@ -307,10 +312,10 @@ describe("Demonstrate Vocab Term usage", () => {
   describe("Vocab Term comment or message usage", () => {
     it("Comment and message do not fallback to using the IRIs local name", () => {
       const termStrict = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        getLocalStore(),
-        true
+          TEST_TERM_NAME,
+          rdfFactory,
+          getLocalStore(),
+          true
       );
 
       // By default, with no comments or messages added, we expect to get
@@ -324,19 +329,19 @@ describe("Demonstrate Vocab Term usage", () => {
 
       // Same behaviour for unstrict terms.
       const termUnstrict = new VocabTerm(
-        TEST_TERM_NAME,
-        rdfFactory,
-        getLocalStore(),
-        false
+          TEST_TERM_NAME,
+          rdfFactory,
+          getLocalStore(),
+          false
       );
       expect(termUnstrict.comment).toBeUndefined;
       expect(termUnstrict.message).toBeUndefined;
 
       expect(() => termUnstrict.mandatory.comment).toThrow(
-        TEST_TERM_NAME.value
+          TEST_TERM_NAME.value
       );
       expect(() => termUnstrict.mandatory.message).toThrow(
-        TEST_TERM_NAME.value
+          TEST_TERM_NAME.value
       );
     });
 
@@ -344,13 +349,13 @@ describe("Demonstrate Vocab Term usage", () => {
       const englishMessage = "Some message with no parameters...";
       const germanMessage = "Eine Nachricht ohne Parameter...";
       const term = new VocabTerm(
-        TEST_TERM_ERROR,
-        rdfFactory,
-        getLocalStore(),
-        true
+          TEST_TERM_ERROR,
+          rdfFactory,
+          getLocalStore(),
+          true
       )
-        .addMessage(englishMessage, "en")
-        .addMessage(germanMessage, "de");
+          .addMessage(englishMessage, "en")
+          .addMessage(germanMessage, "de");
 
       expect(term.message).toEqual(englishMessage);
       expect(term.asLanguage("de").message).toEqual(germanMessage);
@@ -361,37 +366,37 @@ describe("Demonstrate Vocab Term usage", () => {
       // But if we look for the message with an incorrect number of parameters
       // (in this case our message has zero), we'll get an exception.
       expect(() =>
-        term.mandatory.messageParamsLiteral("too many params")
+          term.mandatory.messageParamsLiteral("too many params")
       ).toThrow(TEST_TERM_ERROR.value);
     });
 
     it("Message with parameters", () => {
       const englishMessage = "Message with {{0}}, {{1}} params";
       const germanMessage =
-        "Unterschiedliche Reihenfolge {{1}} und dann {{0}} Parameter";
+          "Unterschiedliche Reihenfolge {{1}} und dann {{0}} Parameter";
       const term = new VocabTerm(
-        TEST_TERM_ERROR,
-        rdfFactory,
-        getLocalStore(),
-        true
+          TEST_TERM_ERROR,
+          rdfFactory,
+          getLocalStore(),
+          true
       )
-        .addMessage(englishMessage, "en")
-        .addMessage(germanMessage, "de");
+          .addMessage(englishMessage, "en")
+          .addMessage(germanMessage, "de");
 
       expect(term.messageParams("one", "two")).toEqual(
-        "Message with one, two params"
+          "Message with one, two params"
       );
 
       // We can freely move parameters around in the message text, as
       // illustrated in our German translation...
       expect(term.asLanguage("de").messageParams("one", "two")).toEqual(
-        "Unterschiedliche Reihenfolge two und dann one Parameter"
+          "Unterschiedliche Reihenfolge two und dann one Parameter"
       );
 
       // ...and again, if we make it mandatory and pass the incorrect number of
       // parameters, we get an exception.
       expect(() => term.mandatory.messageParams("too few params")).toThrow(
-        TEST_TERM_ERROR.value
+          TEST_TERM_ERROR.value
       );
     });
   });

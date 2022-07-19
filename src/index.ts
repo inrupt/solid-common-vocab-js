@@ -23,7 +23,11 @@
  */
 
 export { Store, getLocalStore, buildStore } from "./util/localStorage";
-export { VocabContext, CONTEXT_KEY_LOCALE } from "./VocabContext";
+export {
+  VocabContext,
+  CONTEXT_KEY_LOCALE,
+  CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE,
+} from "./VocabContext";
 export { VocabContextError } from "./VocabContextError";
 
 export {

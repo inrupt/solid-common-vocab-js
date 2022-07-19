@@ -24,6 +24,7 @@
 
 import { Store } from "./util/localStorage";
 
+// Key for the locale to use if one is not explicitly provided as an override.
 const CONTEXT_KEY_LOCALE: string = "i18nextLng";
 
 // Key that specifies a preferred fallback language - e.g. if the user selects
@@ -34,12 +35,14 @@ const CONTEXT_KEY_PREFERRED_FALLBACK_LANGUAGE: string =
   "lang_preferred_fallback";
 
 /**
- * Simple class to hold 'context', which could include things like a chosen language, localization settings, process
- * details (like the credentials of the process, time the process started, the process ID, etc.).
+ * Simple class to hold 'context', which could include things like a chosen
+ * language, localization settings, process details (like the credentials of
+ * the process, time the process started, the process ID, etc.).
  *
- * We can be configured with a storage instance on construction (e.g. to attempt to read values from 'localStorage' in
- * cases when we are deployed within a browser - e.g. a language drop-down might set the current language using a
- * simple key value of say 'i18nLanguage' in localStorage).
+ * We can be configured with a storage instance on construction (e.g. to
+ * attempt to read values from 'localStorage' in cases when we are deployed
+ * within a browser - e.g., a language drop-down might set the current
+ * language using a simple key value of say 'i18nLanguage' in localStorage).
  */
 class VocabContext {
   _initialLocale: string;
