@@ -31,9 +31,11 @@ import type {
 
 const NO_LANGUAGE_TAG = "<No Language>";
 
-// Typically, these would come from a LIT-generated artifact,
-// but since those generated artifacts depend on this current, it's
-// just much easier to define the constants we need manually here.
+// Typically, these term IRIs would come from a generated artifact, but since
+// those generated artifacts may depend on this current project (i.e., if we
+// wanted the metadata (e.g., like the `rdfs:label` or `rdfs:comment` values))
+// associated with these terms, it's just much easier to define the IRI
+// constants we need manually here.
 const XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
 const RDF_LANGSTRING = "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
 
