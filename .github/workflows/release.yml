@@ -4,17 +4,17 @@ on:
 
 jobs:
   release-vocab-term:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     name: Releases the Solid Common Vocab package
     steps:
      # Makes the current repository available to the workflow.
     - name: Checkout repo
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v3.0.2
       # Initializes node for the runner
     - name: Node setup
-      uses: actions/setup-node@v2.4.1
+      uses: actions/setup-node@v3.4.1
       with:
-        node-version: '12.12.0'
+        node-version: '16'
         registry-url: 'https://registry.npmjs.org'
         scope: '@inrupt'
     - name: NPM install, test and publish
