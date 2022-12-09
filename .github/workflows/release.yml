@@ -9,10 +9,10 @@ jobs:
     steps:
      # Makes the current repository available to the workflow.
     - name: Checkout repo
-      uses: actions/checkout@v3.0.2
+      uses: actions/checkout@v3
       # Initializes node for the runner
     - name: Node setup
-      uses: actions/setup-node@v3.5.0
+      uses: actions/setup-node@v3
       with:
         node-version: '16'
         registry-url: 'https://registry.npmjs.org'

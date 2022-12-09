@@ -19,7 +19,7 @@
     "test": "eslint --config .eslintrc.js \"src/**\" && npm run check-licenses && jest ./src",
     "prepare": "husky install",
     "preversion": "npm test",
-    "build": "rollup --config rollup.config.js",
+    "build": "rollup --config rollup.config.mjs",
     "prepublishOnly": "npm run build",
     "list-licenses": "license-checker --production --csv --out LICENSE_DEPENDENCIES_ALL",
     "check-licenses": "license-checker --production --failOn \"AGPL-1.0-only; AGPL-1.0-or-later; AGPL-3.0-only; AGPL-3.0-or-later; Beerware; CC-BY-NC-1.0; CC-BY-NC-2.0; CC-BY-NC-2.5; CC-BY-NC-3.0; CC-BY-NC-4.0; CC-BY-NC-ND-1.0; CC-BY-NC-ND-2.0; CC-BY-NC-ND-2.5; CC-BY-NC-ND-3.0; CC-BY-NC-ND-4.0; CC-BY-NC-SA-1.0; CC-BY-NC-SA-2.0; CC-BY-NC-SA-2.5; CC-BY-NC-SA-3.0; CC-BY-NC-SA-4.0; CPAL-1.0; EUPL-1.0; EUPL-1.1; EUPL-1.1;  GPL-1.0-only; GPL-1.0-or-later; GPL-2.0-only;  GPL-2.0-or-later; GPL-3.0; GPL-3.0-only; GPL-3.0-or-later; SISSL;  SISSL-1.2; WTFPL\""
@@ -34,25 +34,23 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^22.0.1",
-    "@rollup/plugin-node-resolve": "^14.1.0",
     "@types/jest": "^27.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.30.7",
-    "@typescript-eslint/parser": "^5.30.7",
-    "eslint": "^8.20.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
+    "eslint": "^8.29.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-license-header": "^0.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.1",
+    "husky": "^8.0.2",
     "jest": "^27.0.6",
     "license-checker": "^25.0.1",
-    "lint-staged": "^13.0.3",
-    "prettier": "^2.7.1",
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.1",
     "rdf-data-factory": "^1.1.1",
-    "rollup": "^2.77.0",
+    "rollup": "^3.6.0",
     "rollup-plugin-typescript2": "^0.34.1",
     "ts-jest": "^27.0.5",
-    "typescript": "^4.7.4"
+    "typescript": "^4.9.3"
   },
   "lint-staged": {
     "*.ts": [
