@@ -76,7 +76,7 @@ class VocabMultiLingualLiteral implements Literal {
     rdfFactory: DataFactory,
     iri: NamedNode,
     values?: Map<String, String>,
-    contextMessage?: string
+    contextMessage?: string,
   ) {
     this._rdfFactory = rdfFactory;
     this._iri = iri;
@@ -172,7 +172,7 @@ class VocabMultiLingualLiteral implements Literal {
    * @returns {*}
    */
   lookupButDefaultToEnglishOrNoLanguage(
-    mandatory: boolean
+    mandatory: boolean,
   ): string | undefined {
     if (!this._language) {
       if (mandatory) {
@@ -187,7 +187,7 @@ class VocabMultiLingualLiteral implements Literal {
     } else if (mandatory) {
       // NOTE: we explicitly throw here, regardless of our 'throw' parameter.
       throw new Error(
-        `MultiLingualLiteral message with IRI [${this._iri.value}] required value in language [${this._language}], but none found (Context: [${this._contextMessage}]).`
+        `MultiLingualLiteral message with IRI [${this._iri.value}] required value in language [${this._language}], but none found (Context: [${this._contextMessage}]).`,
       );
     } else {
       message = this._values.get("en");
@@ -222,7 +222,7 @@ class VocabMultiLingualLiteral implements Literal {
     const paramsRequired = message.split("{{").length - 1;
     if (paramsRequired !== rest.length) {
       throw new Error(
-        `Setting parameters on LitMultiLingualLiteral with IRI [${this._iri.value}] and value [${message}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`
+        `Setting parameters on LitMultiLingualLiteral with IRI [${this._iri.value}] and value [${message}] in language [${this._language}], but it requires [${paramsRequired}] params and we received [${rest.length}] (Context: [${this._contextMessage}]).`,
       );
     }
 

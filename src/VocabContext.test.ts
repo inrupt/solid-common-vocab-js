@@ -32,7 +32,7 @@ it("should fail if no locale provided", function () {
     // @ts-ignore, because the parameters of the constructor
     // explicitely expect (string, IStore), to which (undef, undef) cannot
     // be assigned.
-    () => new VocabContext(undefined, undefined)
+    () => new VocabContext(undefined, undefined),
   ).toThrowError("*MUST* be provided a locale");
 });
 
@@ -41,7 +41,7 @@ it("should fail if no storage provided", function () {
   // explicitely expect (string, IStore), to which (string, undef) cannot
   // be assigned.
   expect(() => new VocabContext("en", undefined)).toThrowError(
-    "*MUST* be provided storage"
+    "*MUST* be provided storage",
   );
 });
 

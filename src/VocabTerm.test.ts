@@ -45,13 +45,13 @@ import expect from "expect";
 function buildBasicTerm(
   iri: NamedNode | IriString,
   context: Store,
-  strict?: boolean
+  strict?: boolean,
 ) {
   return new VocabTerm(
     typeof iri === "string" ? defaultRdfFactory.namedNode(iri) : iri,
     defaultRdfFactory,
     context,
-    strict
+    strict,
   );
 }
 
@@ -72,7 +72,7 @@ describe("VocabTerm tests", () => {
   const TEST_TERM_NAME_PATH = "localName";
   const rdfFactory: DataFactory = new DataFactoryImpl();
   const TEST_TERM_NAME = rdfFactory.namedNode(
-    `test://iri#${TEST_TERM_NAME_PATH}`
+    `test://iri#${TEST_TERM_NAME_PATH}`,
   );
 
   it("should support creating a term using a string IRI", () => {
@@ -80,7 +80,7 @@ describe("VocabTerm tests", () => {
       "http://some.vocab#myTerm",
       rdfFactory,
       getLocalStore(),
-      false
+      false,
     ).addLabel("test label...", "en");
     expect(myTerm.iri.value).toBe("http://some.vocab#myTerm");
   });
@@ -109,7 +109,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        true
+        true,
       );
       expect(term.label).toBeUndefined();
     });
@@ -119,7 +119,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        true
+        true,
       );
       expect(() => term.mandatory.label).toThrowError(TEST_TERM_NAME.value);
     });
@@ -129,54 +129,54 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        true
+        true,
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addLabel(null)).toThrowError(
-        "Attempted to add a non-existent [label] value to vocab term"
+        "Attempted to add a non-existent [label] value to vocab term",
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addLabel()).toThrowError(
-        "Attempted to add a non-existent [label] value to vocab term"
+        "Attempted to add a non-existent [label] value to vocab term",
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addLabel("test value...")).toThrowError(
-        "without specifying a language"
+        "without specifying a language",
       );
       expect(() => term.addLabel("test value...", "")).toThrowError(
-        "without specifying a language"
+        "without specifying a language",
       );
 
       // @ts-ignore to enable testing error management
       expect(() => term.addComment(null)).toThrowError(
-        "Attempted to add a non-existent [comment] value to vocab term"
+        "Attempted to add a non-existent [comment] value to vocab term",
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addComment()).toThrowError(
-        "Attempted to add a non-existent [comment] value to vocab term"
+        "Attempted to add a non-existent [comment] value to vocab term",
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addComment("test value...")).toThrowError(
-        "without specifying a language"
+        "without specifying a language",
       );
       expect(() => term.addComment("test value...", "")).toThrowError(
-        "without specifying a language"
+        "without specifying a language",
       );
 
       // @ts-ignore to enable testing error management
       expect(() => term.addMessage(null)).toThrowError(
-        "Attempted to add a non-existent [message] value to vocab term"
+        "Attempted to add a non-existent [message] value to vocab term",
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addMessage()).toThrowError(
-        "Attempted to add a non-existent [message] value to vocab term"
+        "Attempted to add a non-existent [message] value to vocab term",
       );
       // @ts-ignore to enable testing error management
       expect(() => term.addMessage("test value...")).toThrowError(
-        "without specifying a language"
+        "without specifying a language",
       );
       expect(() => term.addMessage("test value...", "")).toThrowError(
-        "without specifying a language"
+        "without specifying a language",
       );
     });
 
@@ -185,7 +185,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        true
+        true,
       )
         .addLabelNoLanguage("")
         .addCommentNoLanguage("")
@@ -203,7 +203,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        false
+        false,
       )
         .addLabelNoLanguage("test label...")
         .addCommentNoLanguage("test comment...")
@@ -211,7 +211,7 @@ describe("VocabTerm tests", () => {
 
       expect(term.label).toBe("test label...");
       expect(term.labelLiteral).toEqual(
-        rdfFactory.literal("test label...", "")
+        rdfFactory.literal("test label...", ""),
       );
 
       expect(term.comment).toBe("test comment...");
@@ -223,16 +223,16 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        true
+        true,
       )
         .addLabel(`English label...`, "en")
         .addComment(`English comment...`, "en");
 
       expect(term.asLanguage("fr").labelLiteral).toEqual(
-        rdfFactory.literal(`English label...`, "en")
+        rdfFactory.literal(`English label...`, "en"),
       );
       expect(term.asLanguage("fr").commentLiteral).toEqual(
-        rdfFactory.literal(`English comment...`, "en")
+        rdfFactory.literal(`English comment...`, "en"),
       );
     });
 
@@ -241,7 +241,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        true
+        true,
       );
       expect(() => term.mandatory.label).toThrowError("none found");
     });
@@ -255,7 +255,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         storage,
-        false
+        false,
       ).addLabel(label, "ga");
 
       storage.setItem(CONTEXT_KEY_LOCALE, "ga");
@@ -267,19 +267,19 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        false
+        false,
       );
 
       // NOTE: The returned literal has a 'No-Language' tag!
       expect(unStrictTerm.labelLiteral).toEqual(
-        rdfFactory.literal(TEST_TERM_NAME_PATH, "")
+        rdfFactory.literal(TEST_TERM_NAME_PATH, ""),
       );
       expect(unStrictTerm.label).toBe(TEST_TERM_NAME_PATH);
 
       const englishLabel = "English language value";
       unStrictTerm.addLabel(englishLabel, "en");
       expect(unStrictTerm.labelLiteral).toEqual(
-        rdfFactory.literal(englishLabel, "en")
+        rdfFactory.literal(englishLabel, "en"),
       );
       expect(unStrictTerm.label).toBe(englishLabel);
       expect(unStrictTerm.mandatory.label).toBe(englishLabel);
@@ -291,7 +291,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        false
+        false,
       ).addLabel(englishLabel, "en");
 
       expect(term.asLanguage("ga").label).toBe(englishLabel);
@@ -304,7 +304,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         storage,
-        true
+        true,
       ).addLabel(irishLabel, "ga");
 
       expect(term.labelLiteral).toBeUndefined();
@@ -328,11 +328,11 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        true
+        true,
       ).addLabel("Test label in English...", "en");
 
       expect(() => term.mandatory.asLanguage("fr").labelLiteral).toThrowError(
-        "none found"
+        "none found",
       );
 
       expect(() => term.mandatory.comment).toThrowError("none found");
@@ -345,11 +345,11 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        false
+        false,
       ).addLabel("Test label in English...", "en");
 
       expect(() => term.mandatory.asLanguage("fr").labelLiteral).toThrowError(
-        TEST_TERM_NAME.value
+        TEST_TERM_NAME.value,
       );
       expect(() => term.mandatory.comment).toThrowError(TEST_TERM_NAME.value);
       expect(() => term.mandatory.message).toThrowError(TEST_TERM_NAME.value);
@@ -362,7 +362,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         storage,
-        undefined
+        undefined,
       ); //.addComment(comment, 'en')
 
       expect(term.comment).toBeUndefined();
@@ -380,7 +380,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         storage,
-        true
+        true,
       ).addLabel(irishLabel, "ga");
       const englishLabel = "English labelLiteral...";
       term.addLabel(englishLabel, "en");
@@ -409,12 +409,12 @@ describe("VocabTerm tests", () => {
 
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
       expect(term.messageParamsLiteral("first", "second")).toEqual(
-        rdfFactory.literal("Prueba de parámetros first y second", "es")
+        rdfFactory.literal("Prueba de parámetros first y second", "es"),
       );
 
       storage.setItem(CONTEXT_KEY_LOCALE, "en");
       expect(term.messageParams("first", "second")).toBe(
-        "Params test first and second"
+        "Params test first and second",
       );
     });
 
@@ -426,12 +426,12 @@ describe("VocabTerm tests", () => {
 
       storage.setItem(CONTEXT_KEY_LOCALE, "es");
       expect(term.asLanguage("en").messageParams("first", "second")).toBe(
-        "Params test first and second"
+        "Params test first and second",
       );
 
       getLocalStore().setItem(CONTEXT_KEY_LOCALE, "en");
       expect(term.asLanguage("es").messageParams("first", "second")).toBe(
-        "Prueba de parámetros first y second"
+        "Prueba de parámetros first y second",
       );
     });
   });
@@ -439,23 +439,23 @@ describe("VocabTerm tests", () => {
   describe("extracting IRI local name", () => {
     it("Should throw if no local name", () => {
       expect(() =>
-        VocabTerm.extractIriLocalName("http://example.com-whatever")
+        VocabTerm.extractIriLocalName("http://example.com-whatever"),
       ).toThrowError("Expected hash");
 
       expect(() =>
-        VocabTerm.extractIriLocalName("https://example.com-whatever")
+        VocabTerm.extractIriLocalName("https://example.com-whatever"),
       ).toThrowError("Expected hash");
     });
 
     it("Should extract a / name", () => {
       expect(
-        VocabTerm.extractIriLocalName("http://example.com-whatever/localName")
+        VocabTerm.extractIriLocalName("http://example.com-whatever/localName"),
       ).toBe("localName");
     });
 
     it("Should extract a # name", () => {
       expect(
-        VocabTerm.extractIriLocalName("http://example.com-whatever#localName")
+        VocabTerm.extractIriLocalName("http://example.com-whatever#localName"),
       ).toBe("localName");
     });
   });
@@ -466,7 +466,7 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         getLocalStore(),
-        false
+        false,
       )
         .addLabel("test label", "en")
         .addComment("test comment", "en")
@@ -482,7 +482,7 @@ describe("VocabTerm tests", () => {
     it("Should determine correctly", () => {
       expect(VocabTerm.isString("test user name")).toBe(true);
       expect(VocabTerm.isString(new String("test user name").toString())).toBe(
-        true
+        true,
       );
       // @ts-ignore to enable testing error management
       expect(VocabTerm.isString(57)).toBe(false);
@@ -510,19 +510,19 @@ describe("VocabTerm tests", () => {
         TEST_TERM_NAME,
         rdfFactory,
         store,
-        false
+        false,
       ).addLabel("test label...", "en");
       const anotherTerm = new VocabTerm(
         TEST_TERM_NAME,
         rdfFactory,
         store,
-        false
+        false,
       ).addLabel("test label...", "en");
       const aDifferentTerm = new VocabTerm(
         rdfFactory.namedNode(`${TEST_TERM_NAME.value}_`),
         rdfFactory,
         store,
-        false
+        false,
       ).addLabel("test label...", "en");
 
       expect(aTerm.equals(anotherTerm)).toBe(true);
@@ -535,13 +535,13 @@ describe("VocabTerm tests", () => {
       const store = getLocalStore();
       const aTerm = buildBasicTerm(TEST_TERM_NAME, store, false).addLabel(
         "test label...",
-        "en"
+        "en",
       );
       const anotherTerm = new VocabTerm(
         TEST_TERM_NAME,
         rdfFactory,
         store,
-        false
+        false,
       ).addLabel("test label...", "en");
       expect(aTerm.equals(anotherTerm)).toBe(true);
     });
@@ -550,7 +550,7 @@ describe("VocabTerm tests", () => {
       const myTerm = buildBasicTerm(
         "http://some.vocab#myTerm",
         getLocalStore(),
-        false
+        false,
       ).addLabel("test label...", "en");
       expect(myTerm.iri.value).toBe("http://some.vocab#myTerm");
     });
@@ -561,7 +561,7 @@ describe("VocabTerm tests", () => {
       const myTerm = buildBasicTerm(
         "http://some.vocab#myTerm",
         getLocalStore(),
-        false
+        false,
       );
       expect(myTerm.seeAlso).toBeUndefined();
 
@@ -574,7 +574,7 @@ describe("VocabTerm tests", () => {
       const myTerm = buildBasicTerm(
         "http://some.vocab#myTerm",
         getLocalStore(),
-        false
+        false,
       )
         .addSeeAlso(TEST_TERM_NAME)
         .addSeeAlso(TEST_TERM_NAME);
@@ -588,7 +588,7 @@ describe("VocabTerm tests", () => {
       const myTerm = buildBasicTerm(
         "http://some.vocab#myTerm",
         getLocalStore(),
-        false
+        false,
       );
 
       expect(myTerm.isDefinedBy).toBeUndefined();
