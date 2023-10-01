@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 1.1.0 2023/10/01
+
 - Add the ability to retrieve all the RDF:type values for any vocab term.
 - Add convenience methods to ask if a vocab term is a Class or a Property (using
   RDF, RDFS, and OWL definitions of Class and Property).
