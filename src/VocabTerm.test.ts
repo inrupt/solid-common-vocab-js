@@ -570,7 +570,7 @@ describe("VocabTerm tests", () => {
       expect(myTerm.seeAlso!.has(TEST_TERM_NAME)).toBe(true);
     });
 
-    it("should treat as a set", () => {
+    it("should treat seAlso as a set", () => {
       const myTerm = buildBasicTerm(
         "http://some.vocab#myTerm",
         getLocalStore(),
@@ -594,6 +594,66 @@ describe("VocabTerm tests", () => {
       expect(myTerm.isDefinedBy).toBeUndefined();
       myTerm.addIsDefinedBy(TEST_TERM_NAME);
       expect(myTerm.isDefinedBy!).toBe(TEST_TERM_NAME);
+    });
+  });
+
+  describe("rdf:type support", () => {
+    it("should retrieve 'rdf:type'", () => {
+      const myTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false,
+      );
+
+      expect(myTerm.type).toBeUndefined();
+      myTerm.addType(TEST_TERM_NAME);
+      expect(myTerm.type!.size).toBe(1);
+      expect(myTerm.type!.has(TEST_TERM_NAME)).toBe(true);
+    });
+
+    it("should treat type as a set", () => {
+      const myTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false,
+      )
+        .addType(TEST_TERM_NAME)
+        .addType(TEST_TERM_NAME);
+
+      expect(myTerm.type!.size).toBe(1);
+
+      myTerm.addType(rdfFactory.namedNode("https://example.com/myNewType"));
+      expect(myTerm.type!.size).toBe(2);
+    });
+
+    it("should handle rdf:type of Class", () => {
+      const RDF_CLASS = rdfFactory.namedNode(
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#Class",
+      );
+      const myTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false,
+      );
+
+      expect(myTerm.isClass).toBe(false);
+      myTerm.addType(RDF_CLASS);
+      expect(myTerm.isClass).toBe(true);
+    });
+
+    it("should handle rdf:type of Property", () => {
+      const OWL_OBJECT_PROPERTY = rdfFactory.namedNode(
+        "http://www.w3.org/2002/07/owl#ObjectProperty",
+      );
+      const myTerm = buildBasicTerm(
+        "http://some.vocab#myTerm",
+        getLocalStore(),
+        false,
+      );
+
+      expect(myTerm.isProperty).toBe(false);
+      myTerm.addType(OWL_OBJECT_PROPERTY);
+      expect(myTerm.isProperty).toBe(true);
     });
   });
 });

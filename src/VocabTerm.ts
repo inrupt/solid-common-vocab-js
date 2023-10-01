@@ -39,6 +39,22 @@ import { IriString } from "./index";
 
 const DEFAULT_LOCALE = "en";
 
+// We need an instance of an RDF Factory to instantiate a Named Node, but we
+// only want to create instances of these RDF types if we are checking for the
+//
+let LAZY_TYPE_RDF_CLASS: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_CLASS: NamedNode | undefined = undefined;
+
+let LAZY_TYPE_RDFS_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_DATATYPE_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_OBJECT_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_ANNOTATION_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_TRANSITIVE_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_FUNCTIONAL_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_SYMMETRIC_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_OWL_INVERSE_FUNCTIONAL_PROPERTY: NamedNode | undefined =
+  undefined;
+
 /**
  * Class to represent vocabulary terms. We expect derived classes to extend
  * an IRI (e.g. a NamedNode in RDF/JS), but we just provide effectively an
@@ -93,6 +109,7 @@ class VocabTerm implements NamedNode {
   private _languageOverride: string | undefined;
   private _isDefinedBy: NamedNode | undefined; // Only allow one value.
   private _seeAlso: Set<NamedNode> | undefined;
+  private _type: Set<NamedNode> | undefined;
 
   // Implementation of the NamedNode interface.
   termType: "NamedNode" = "NamedNode";
@@ -170,6 +187,7 @@ class VocabTerm implements NamedNode {
     this._languageOverride = undefined;
     this._isDefinedBy = undefined;
     this._seeAlso = undefined;
+    this._type = undefined;
 
     this.resetState();
   }
@@ -182,6 +200,10 @@ class VocabTerm implements NamedNode {
 
   get seeAlso(): Set<NamedNode> | undefined {
     return this._seeAlso;
+  }
+
+  get type(): Set<NamedNode> | undefined {
+    return this._type;
   }
 
   get isDefinedBy(): NamedNode | undefined {
@@ -243,6 +265,71 @@ class VocabTerm implements NamedNode {
     return message && message.value;
   }
 
+  createNamedNodeConstantsClass(): void {
+    LAZY_TYPE_RDF_CLASS = this.rdfFactory.namedNode(
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Class",
+    );
+
+    LAZY_TYPE_OWL_CLASS = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#Property",
+    );
+  }
+
+  createNamedNodeConstantsProperty(): void {
+    LAZY_TYPE_RDFS_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2000/01/rdf-schema#Property",
+    );
+    LAZY_TYPE_OWL_DATATYPE_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#Property",
+    );
+    LAZY_TYPE_OWL_OBJECT_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#ObjectProperty",
+    );
+    LAZY_TYPE_OWL_ANNOTATION_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#AnnotationProperty",
+    );
+    LAZY_TYPE_OWL_TRANSITIVE_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#TransitiveProperty",
+    );
+    LAZY_TYPE_OWL_FUNCTIONAL_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#FunctionalProperty",
+    );
+    LAZY_TYPE_OWL_INVERSE_FUNCTIONAL_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#InverseFunctionalProperty",
+    );
+    LAZY_TYPE_OWL_SYMMETRIC_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/2002/07/owl#SymmetricProperty",
+    );
+  }
+
+  get isClass(): boolean {
+    if (!LAZY_TYPE_RDF_CLASS) {
+      this.createNamedNodeConstantsClass();
+    }
+
+    return (
+      (this._type?.has(LAZY_TYPE_RDF_CLASS!) ||
+        this._type?.has(LAZY_TYPE_OWL_CLASS!)) !== undefined
+    );
+  }
+
+  get isProperty(): boolean {
+    if (!LAZY_TYPE_RDFS_PROPERTY) {
+      this.createNamedNodeConstantsProperty();
+    }
+
+    return (
+      (this._type?.has(LAZY_TYPE_RDFS_PROPERTY!) ||
+        this._type?.has(LAZY_TYPE_OWL_OBJECT_PROPERTY!) ||
+        this._type?.has(LAZY_TYPE_OWL_DATATYPE_PROPERTY!) ||
+        this._type?.has(LAZY_TYPE_OWL_ANNOTATION_PROPERTY!) ||
+        this._type?.has(LAZY_TYPE_OWL_FUNCTIONAL_PROPERTY!) ||
+        this._type?.has(LAZY_TYPE_OWL_INVERSE_FUNCTIONAL_PROPERTY!) ||
+        this._type?.has(LAZY_TYPE_OWL_SYMMETRIC_PROPERTY!) ||
+        this._type?.has(LAZY_TYPE_OWL_TRANSITIVE_PROPERTY!)) !== undefined
+    );
+  }
+
   // Get the IRI of this term as a String (means we can treat this object
   // instance as a string more easily).
   // NOTE: This is *NOT* an accessor, but deliberately overriding the
@@ -279,6 +366,15 @@ class VocabTerm implements NamedNode {
     }
 
     this._seeAlso.add(value);
+    return this;
+  }
+
+  addType(value: NamedNode) {
+    if (!this._type) {
+      this._type = new Set<NamedNode>();
+    }
+
+    this._type.add(value);
     return this;
   }
 
@@ -362,7 +458,7 @@ class VocabTerm implements NamedNode {
    * @param stringOrNamedNode The IRI to extract from.
    * @returns {string}
    */
-  static extractIriLocalName(stringOrNamedNode: string | NamedNode) {
+  static extractIriLocalName(stringOrNamedNode: string | NamedNode): string {
     const iri = this.isString(stringOrNamedNode)
       ? stringOrNamedNode
       : stringOrNamedNode.value;
@@ -403,7 +499,7 @@ class VocabTerm implements NamedNode {
    * @param value
    * @returns {boolean}
    */
-  static isStringIri(value: string) {
+  static isStringIri(value: string): boolean {
     if (!this.isString(value)) {
       return false;
     }
