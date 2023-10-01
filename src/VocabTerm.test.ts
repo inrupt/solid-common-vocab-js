@@ -627,8 +627,8 @@ describe("VocabTerm tests", () => {
     });
 
     it("should handle rdf:type of Class", () => {
-      const RDF_CLASS = rdfFactory.namedNode(
-        "http://www.w3.org/1999/02/22-rdf-syntax-ns#Class",
+      const RDFS_CLASS = rdfFactory.namedNode(
+        "http://www.w3.org/2000/01/rdf-schema#Class",
       );
       const myTerm = buildBasicTerm(
         "http://some.vocab#myTerm",
@@ -637,7 +637,7 @@ describe("VocabTerm tests", () => {
       );
 
       expect(myTerm.isClass).toBe(false);
-      myTerm.addType(RDF_CLASS);
+      myTerm.addType(RDFS_CLASS);
       expect(myTerm.isClass).toBe(true);
     });
 
