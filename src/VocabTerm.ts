@@ -119,7 +119,7 @@ class VocabTerm implements NamedNode {
     iri: NamedNode | IriString,
     rdfFactory: DataFactory,
     contextStorage: Store,
-    strict?: boolean
+    strict?: boolean,
   ) {
     if (typeof iri === "string") {
       this.iri = rdfFactory.namedNode(iri);
@@ -142,21 +142,21 @@ class VocabTerm implements NamedNode {
       rdfFactory,
       this.iri,
       undefined,
-      "rdfs:label"
+      "rdfs:label",
     );
 
     this._comment = new VocabMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
-      "rdfs:comment"
+      "rdfs:comment",
     );
 
     this._message = new VocabMultiLingualLiteral(
       rdfFactory,
       this.iri,
       undefined,
-      "message (should be defined in RDF vocab using: skos:definition)"
+      "message (should be defined in RDF vocab using: skos:definition)",
     );
 
     if (!strict) {
@@ -330,13 +330,13 @@ class VocabTerm implements NamedNode {
   validateAddParams(value: string, language: string, what: string) {
     if (value === undefined || value === null) {
       throw new Error(
-        `Attempted to add a non-existent [${what}] value to vocab term`
+        `Attempted to add a non-existent [${what}] value to vocab term`,
       );
     }
 
     if (!language) {
       throw new Error(
-        `Attempted to add the [${what}] value [${value}], but without specifying a language`
+        `Attempted to add the [${what}] value [${value}], but without specifying a language`,
       );
     }
 
@@ -379,7 +379,7 @@ class VocabTerm implements NamedNode {
         lastSlashPos < (iri.toLowerCase().startsWith("https") ? 8 : 7))
     ) {
       throw Error(
-        `Expected hash fragment ('#') or slash ('/') (other than 'https://...') in IRI [${iri}]`
+        `Expected hash fragment ('#') or slash ('/') (other than 'https://...') in IRI [${iri}]`,
       );
     } else {
       return iri.substring(lastSlashPos + 1);

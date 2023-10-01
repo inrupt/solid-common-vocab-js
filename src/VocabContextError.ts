@@ -32,7 +32,7 @@ class VocabContextError extends Error {
   constructor(
     context: VocabContext,
     message: string,
-    wrappedException?: Error
+    wrappedException?: Error,
   ) {
     // The ignore is required because of code coverage bug
     // https://github.com/gotwarlost/istanbul/issues/690
@@ -46,7 +46,7 @@ class VocabContextError extends Error {
         this.message = `${this.message}\nContains error: ${wrappedException.message}`;
       } else {
         throw new Error(
-          `Context error can only wrap ContextErrors or Errors, but got [${wrappedException}] (message was [${message}]).`
+          `Context error can only wrap ContextErrors or Errors, but got [${wrappedException}] (message was [${message}]).`,
         );
       }
     }

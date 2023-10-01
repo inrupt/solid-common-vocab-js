@@ -68,7 +68,7 @@ class VocabTermRegistry {
     termIri: string,
     language: string,
     label: string,
-    item: string
+    item: string,
   ) {
     this.store.setItem(`${termIri}-${item}-${language}`, label);
   }
@@ -112,7 +112,7 @@ class VocabTermRegistry {
   lookupFullTermFallback(
     term: string,
     language: string,
-    fallback: string[]
+    fallback: string[],
   ): string | undefined {
     const result = this.store.getItem(`${term}${language}`);
 
