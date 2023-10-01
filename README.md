@@ -1,13 +1,13 @@
 # The Solid Common Vocab library for JavaScript
 
 A library providing JavaScript objects to represent the individual terms
-(i.e., the classes and properties) defined in RDF vocabularies (both existing
+(i.e., the classes and properties) defined in RDF vocabularies, both existing
 vocabularies (like http://schema.org, FOAF, vCard, LDP, ActivityStreams, etc.),
-and your own custom RDF vocabularies).
+and your own custom RDF vocabularies.
 
 A major feature of this library is that it provides easy access to any
 `rdfs:label` and `rdfs:comment` values provided for these vocabulary terms, and
-provides very easy-to-use support for multi-lingual values for these labels and
+provides very easy-to-use support for multilingual values for these labels and
 comments. We also support other term metadata (such as `rdfs:seeAlso` and
 `rdfs:isDefinedBy`), and also generic message strings (using
 [SKOS-XL](https://www.w3.org/TR/skos-reference/skos-xl.html)) that can be used
@@ -28,7 +28,7 @@ npm ci
 node index.js
 ```
 
-The `solid-common-vocab` library is distributed as a GitHub npm package:
+The `solid-common-vocab` library is distributed as a GitHub `npm` package:
 `@inrupt/solid-common-vocab`.
 For more information about GitHub npm packages, please visit
 [the dedicated documentation](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-npm-for-use-with-github-packages).
@@ -62,12 +62,13 @@ jest demonstrateByUsage.test.js
 The Vocab Term object from this library is intended to be a simple wrapper
 around the 'NamedNode' object conforming to the
 [RDF/JS interface](http://rdf.js.org/data-model-spec/).
+
 This means that Vocab Term instances can be used natively with libraries that
 are RDF/JS-compliant, such as `rdf-ext`, `rdflib.js`, `rdf-data-factory`,
 `graphy`, etc. An instance of a `VocabTerm` may be built by passing an RDF/JS
 `DataFactory` implemented by any library, but it also includes its own very
-basic `DataFactory` implementation for convenience if you don't wish to include
-an existing implementation.
+basic `DataFactory` implementation, just for convenience if you don't wish to
+include an existing implementation.
 
 ### Introductory example
 
@@ -157,7 +158,7 @@ const person: VocabTerm = buildBasicTerm(
 ### Messages
 
 An important feature of `solid-common-vocab` is support for parameterized
-messages. This can be extremely useful when defining your own RDF vocabularies
+messages. This can be extremely useful when creating your own RDF vocabularies
 and including message strings (thereby providing those messages with globally
 unique IRI identifiers, and allowing for easy translations of those message
 strings). For instance, to report errors to the user with contextual information
@@ -175,7 +176,7 @@ term.messageParams('Current Account').value // Evaluates to "Your account (Curre
 
 Unless we explicitly mandate a specific language, English will be used by
 default. Best practice for RDF vocabularies in general is to provide labels
-(short human readable descriptions) and comments (longer, more detailed
+(short human-readable descriptions) and comments (longer, more detailed
 descriptions), and to also provide these descriptions in multiple languages if
 appropriate and possible.
 
@@ -206,9 +207,9 @@ personLabel = person.label // personLabel now contains the Spanish literal.
 ### Strictness
 
 The last parameter to the Vocab Term constructor indicates if the behaviour of
-the term should be strict or loose. In the case of "loose" behaviour, in the
+the term should be strict or loose. In the case of 'loose' behaviour, in the
 absence of any label, `term.label` will default to the local part of the term's
-IRI (i.e., the last segment of the full path component). With "strict" behaviour
+IRI (i.e., the last segment of the full path component). With 'strict' behaviour
 it will return `undefined`. When the local part of the IRI is returned as a
 label, the language tag will be empty (i.e., "").
 
@@ -237,3 +238,4 @@ const person = new VocabTerm('https://example.com#Person', rdf, buildStore(), tr
 // An exception will be thrown here, because our term has no label.
 const personLabel = person.mandatory.label 
 ```
+    
