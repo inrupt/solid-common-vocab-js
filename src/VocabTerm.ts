@@ -42,10 +42,10 @@ const DEFAULT_LOCALE = "en";
 // We need an instance of an RDF Factory to instantiate a Named Node, but we
 // only want to create instances of these RDF types if we are checking for the
 //
-let LAZY_TYPE_RDF_CLASS: NamedNode | undefined = undefined;
+let LAZY_TYPE_RDFS_CLASS: NamedNode | undefined = undefined;
 let LAZY_TYPE_OWL_CLASS: NamedNode | undefined = undefined;
 
-let LAZY_TYPE_RDFS_PROPERTY: NamedNode | undefined = undefined;
+let LAZY_TYPE_RDF_PROPERTY: NamedNode | undefined = undefined;
 let LAZY_TYPE_OWL_DATATYPE_PROPERTY: NamedNode | undefined = undefined;
 let LAZY_TYPE_OWL_OBJECT_PROPERTY: NamedNode | undefined = undefined;
 let LAZY_TYPE_OWL_ANNOTATION_PROPERTY: NamedNode | undefined = undefined;
@@ -266,8 +266,8 @@ class VocabTerm implements NamedNode {
   }
 
   createNamedNodeConstantsClass(): void {
-    LAZY_TYPE_RDF_CLASS = this.rdfFactory.namedNode(
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Class",
+    LAZY_TYPE_RDFS_CLASS = this.rdfFactory.namedNode(
+      "http://www.w3.org/2000/01/rdf-schema#Class",
     );
 
     LAZY_TYPE_OWL_CLASS = this.rdfFactory.namedNode(
@@ -276,8 +276,8 @@ class VocabTerm implements NamedNode {
   }
 
   createNamedNodeConstantsProperty(): void {
-    LAZY_TYPE_RDFS_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2000/01/rdf-schema#Property",
+    LAZY_TYPE_RDF_PROPERTY = this.rdfFactory.namedNode(
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
     );
     LAZY_TYPE_OWL_DATATYPE_PROPERTY = this.rdfFactory.namedNode(
       "http://www.w3.org/2002/07/owl#Property",
@@ -303,23 +303,23 @@ class VocabTerm implements NamedNode {
   }
 
   get isClass(): boolean {
-    if (!LAZY_TYPE_RDF_CLASS) {
+    if (!LAZY_TYPE_RDFS_CLASS) {
       this.createNamedNodeConstantsClass();
     }
 
     return (
-      (this._type?.has(LAZY_TYPE_RDF_CLASS!) ||
+      (this._type?.has(LAZY_TYPE_RDFS_CLASS!) ||
         this._type?.has(LAZY_TYPE_OWL_CLASS!)) !== undefined
     );
   }
 
   get isProperty(): boolean {
-    if (!LAZY_TYPE_RDFS_PROPERTY) {
+    if (!LAZY_TYPE_RDF_PROPERTY) {
       this.createNamedNodeConstantsProperty();
     }
 
     return (
-      (this._type?.has(LAZY_TYPE_RDFS_PROPERTY!) ||
+      (this._type?.has(LAZY_TYPE_RDF_PROPERTY!) ||
         this._type?.has(LAZY_TYPE_OWL_OBJECT_PROPERTY!) ||
         this._type?.has(LAZY_TYPE_OWL_DATATYPE_PROPERTY!) ||
         this._type?.has(LAZY_TYPE_OWL_ANNOTATION_PROPERTY!) ||
