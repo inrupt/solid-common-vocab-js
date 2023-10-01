@@ -39,11 +39,11 @@ describe("Vocab context-aware errors", () => {
       // @ts-ignore, because the parameters of the constructor
       // explicitly expect (string, Error), to which (string, string) cannot
       // be assigned.
-      () => new VocabContextError(context, "test", "Not an error!")
+      () => new VocabContextError(context, "test", "Not an error!"),
     ).toThrowError("test");
     expect(
       // @ts-ignore
-      () => new VocabContextError(context, "test", "Not an error!")
+      () => new VocabContextError(context, "test", "Not an error!"),
     ).toThrowError("Not an error!");
   });
 
@@ -59,7 +59,7 @@ describe("Vocab context-aware errors", () => {
     const wrapError = new VocabContextError(
       context,
       wrapMessage,
-      new Error(message)
+      new Error(message),
     );
 
     expect(wrapError.countLevels()).toBe(2);
@@ -74,17 +74,17 @@ describe("Vocab context-aware errors", () => {
     const errorLevel1 = new VocabContextError(
       context,
       "Error message Level1",
-      undefined
+      undefined,
     );
     const errorLevel2 = new VocabContextError(
       context,
       "Error message Level2",
-      errorLevel1
+      errorLevel1,
     );
     const errorLevel3 = new VocabContextError(
       context,
       "Error message Level3",
-      errorLevel2
+      errorLevel2,
     );
     expect(errorLevel3.countLevels()).toBe(3);
     const fullReport = errorLevel3.unwrapException();
@@ -98,27 +98,27 @@ describe("Vocab context-aware errors", () => {
     const errorLevel1 = new VocabContextError(
       context,
       "Error message Level1",
-      undefined
+      undefined,
     );
     const errorLevel2 = new Error("Standard Error message Level2");
     const errorLevel3 = new VocabContextError(
       context,
       "Error message Level3",
-      errorLevel2
+      errorLevel2,
     );
     const errorLevel4 = new VocabContextError(
       context,
       "Error message Level4",
-      errorLevel3
+      errorLevel3,
     );
 
     expect(errorLevel4.countLevels()).toBe(3);
     const fullReport = errorLevel4.unwrapException();
     expect(fullReport).not.toEqual(
-      expect.stringContaining(errorLevel1.message)
+      expect.stringContaining(errorLevel1.message),
     );
     expect(fullReport).toEqual(
-      expect.stringContaining("Standard Error message Level2")
+      expect.stringContaining("Standard Error message Level2"),
     );
     expect(fullReport).toEqual(expect.stringContaining("Error message Level3"));
     expect(fullReport).toEqual(expect.stringContaining("Error message Level4"));
@@ -130,17 +130,17 @@ describe("Vocab context-aware errors", () => {
     const errorLevel1 = new VocabContextError(
       context,
       "Error message Level1",
-      undefined
+      undefined,
     );
     const errorLevel2 = new VocabContextError(
       context,
       "Error message Level2",
-      errorLevel1
+      errorLevel1,
     );
     const errorLevel3 = new VocabContextError(
       context,
       "Error message Level3",
-      errorLevel2
+      errorLevel2,
     );
 
     expect(errorLevel3.countLevels()).toBe(3);

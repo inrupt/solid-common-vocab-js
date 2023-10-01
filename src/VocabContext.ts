@@ -52,12 +52,12 @@ class VocabContext {
   constructor(locale: string, storage: Store) {
     if (!locale) {
       throw new Error(
-        "A new context *MUST* be provided a locale, but none was provided."
+        "A new context *MUST* be provided a locale, but none was provided.",
       );
     }
     if (!storage) {
       throw new Error(
-        `A new context *MUST* be provided storage (we expect 'localStorage').`
+        `A new context *MUST* be provided storage (we expect 'localStorage').`,
       );
     }
 
