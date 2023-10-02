@@ -302,7 +302,7 @@ class VocabTerm implements NamedNode {
     );
   }
 
-  get isClass(): boolean {
+  get isRdfClass(): boolean {
     if (!LAZY_TYPE_RDFS_CLASS) {
       this.createNamedNodeConstantsClass();
     }
@@ -313,7 +313,7 @@ class VocabTerm implements NamedNode {
     );
   }
 
-  get isProperty(): boolean {
+  get isRdfProperty(): boolean {
     if (!LAZY_TYPE_RDF_PROPERTY) {
       this.createNamedNodeConstantsProperty();
     }
