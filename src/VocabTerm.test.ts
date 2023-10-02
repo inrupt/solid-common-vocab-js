@@ -636,9 +636,9 @@ describe("VocabTerm tests", () => {
         false,
       );
 
-      expect(myTerm.isClass).toBe(false);
+      expect(myTerm.isRdfClass).toBe(false);
       myTerm.addType(RDFS_CLASS);
-      expect(myTerm.isClass).toBe(true);
+      expect(myTerm.isRdfClass).toBe(true);
     });
 
     it("should handle rdf:type of Property", () => {
@@ -651,9 +651,9 @@ describe("VocabTerm tests", () => {
         false,
       );
 
-      expect(myTerm.isProperty).toBe(false);
+      expect(myTerm.isRdfProperty).toBe(false);
       myTerm.addType(OWL_OBJECT_PROPERTY);
-      expect(myTerm.isProperty).toBe(true);
+      expect(myTerm.isRdfProperty).toBe(true);
     });
   });
 });
