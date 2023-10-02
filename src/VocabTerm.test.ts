@@ -621,9 +621,18 @@ describe("VocabTerm tests", () => {
         .addType(TEST_TERM_NAME);
 
       expect(myTerm.type!.size).toBe(1);
+      expect(myTerm.isRdfClass).toBe(false);
+      expect(myTerm.isRdfProperty).toBe(false);
 
       myTerm.addType(rdfFactory.namedNode("https://example.com/myNewType"));
       expect(myTerm.type!.size).toBe(2);
+      expect(myTerm.isRdfClass).toBe(false);
+
+      myTerm.addType(
+        rdfFactory.namedNode("http://www.w3.org/2000/01/rdf-schema#Class"),
+      );
+      expect(myTerm.type!.size).toBe(3);
+      expect(myTerm.isRdfClass).toBe(true);
     });
 
     it("should handle rdf:type of Class", () => {
