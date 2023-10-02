@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
+## 1.4.0 2023/10/02
+
 - Better implementation of RDF type checkers. 
 
 ## 1.3.0 2023/10/02
