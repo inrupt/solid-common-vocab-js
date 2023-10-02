@@ -39,21 +39,23 @@ import { IriString } from "./index";
 
 const DEFAULT_LOCALE = "en";
 
-// We need an instance of an RDF Factory to instantiate a Named Node, but we
-// only want to create instances of these RDF types if we are checking for the
-//
-let LAZY_TYPE_RDFS_CLASS: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_CLASS: NamedNode | undefined = undefined;
+// Array of RDF types that we consider 'Classes'.
+const RDF_TYPE_CLASS = [
+  "http://www.w3.org/2000/01/rdf-schema#Class",
+  "http://www.w3.org/2002/07/owl#Class",
+];
 
-let LAZY_TYPE_RDF_PROPERTY: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_DATATYPE_PROPERTY: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_OBJECT_PROPERTY: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_ANNOTATION_PROPERTY: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_TRANSITIVE_PROPERTY: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_FUNCTIONAL_PROPERTY: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_SYMMETRIC_PROPERTY: NamedNode | undefined = undefined;
-let LAZY_TYPE_OWL_INVERSE_FUNCTIONAL_PROPERTY: NamedNode | undefined =
-  undefined;
+// Array of RDF types that we consider 'Properties'.
+const RDF_TYPE_PROPERTY = [
+  "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+  "http://www.w3.org/2002/07/owl#Property",
+  "http://www.w3.org/2002/07/owl#ObjectProperty",
+  "http://www.w3.org/2002/07/owl#AnnotationProperty",
+  "http://www.w3.org/2002/07/owl#TransitiveProperty",
+  "http://www.w3.org/2002/07/owl#FunctionalProperty",
+  "http://www.w3.org/2002/07/owl#InverseFunctionalProperty",
+  "http://www.w3.org/2002/07/owl#SymmetricProperty",
+];
 
 /**
  * Class to represent vocabulary terms. We expect derived classes to extend
@@ -265,68 +267,31 @@ class VocabTerm implements NamedNode {
     return message && message.value;
   }
 
-  createNamedNodeConstantsClass(): void {
-    LAZY_TYPE_RDFS_CLASS = this.rdfFactory.namedNode(
-      "http://www.w3.org/2000/01/rdf-schema#Class",
-    );
-
-    LAZY_TYPE_OWL_CLASS = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#Property",
-    );
-  }
-
-  createNamedNodeConstantsProperty(): void {
-    LAZY_TYPE_RDF_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
-    );
-    LAZY_TYPE_OWL_DATATYPE_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#Property",
-    );
-    LAZY_TYPE_OWL_OBJECT_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#ObjectProperty",
-    );
-    LAZY_TYPE_OWL_ANNOTATION_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#AnnotationProperty",
-    );
-    LAZY_TYPE_OWL_TRANSITIVE_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#TransitiveProperty",
-    );
-    LAZY_TYPE_OWL_FUNCTIONAL_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#FunctionalProperty",
-    );
-    LAZY_TYPE_OWL_INVERSE_FUNCTIONAL_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#InverseFunctionalProperty",
-    );
-    LAZY_TYPE_OWL_SYMMETRIC_PROPERTY = this.rdfFactory.namedNode(
-      "http://www.w3.org/2002/07/owl#SymmetricProperty",
-    );
-  }
-
   get isRdfClass(): boolean {
-    if (!LAZY_TYPE_RDFS_CLASS) {
-      this.createNamedNodeConstantsClass();
+    if (!this._type) {
+      return false;
     }
 
+    // Spread our types Set into an array to find the first (if any)
+    // occurrence of array of matching types.
     return (
-      (this._type?.has(LAZY_TYPE_RDFS_CLASS!) ||
-        this._type?.has(LAZY_TYPE_OWL_CLASS!)) !== undefined
+      [...this._type].find((rdfType) =>
+        RDF_TYPE_CLASS.includes(rdfType.value),
+      ) !== undefined
     );
   }
 
   get isRdfProperty(): boolean {
-    if (!LAZY_TYPE_RDF_PROPERTY) {
-      this.createNamedNodeConstantsProperty();
+    if (!this._type) {
+      return false;
     }
 
+    // Spread our types Set into an array to find the first (if any)
+    // occurrence of array of matching types.
     return (
-      (this._type?.has(LAZY_TYPE_RDF_PROPERTY!) ||
-        this._type?.has(LAZY_TYPE_OWL_OBJECT_PROPERTY!) ||
-        this._type?.has(LAZY_TYPE_OWL_DATATYPE_PROPERTY!) ||
-        this._type?.has(LAZY_TYPE_OWL_ANNOTATION_PROPERTY!) ||
-        this._type?.has(LAZY_TYPE_OWL_FUNCTIONAL_PROPERTY!) ||
-        this._type?.has(LAZY_TYPE_OWL_INVERSE_FUNCTIONAL_PROPERTY!) ||
-        this._type?.has(LAZY_TYPE_OWL_SYMMETRIC_PROPERTY!) ||
-        this._type?.has(LAZY_TYPE_OWL_TRANSITIVE_PROPERTY!)) !== undefined
+      [...this._type].find((rdfType) =>
+        RDF_TYPE_PROPERTY.includes(rdfType.value),
+      ) !== undefined
     );
   }
 
