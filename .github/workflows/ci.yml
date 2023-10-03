@@ -5,6 +5,9 @@ on: [push]
 env:
   CI: true
 jobs:
+  lint:
+    uses: inrupt/typescript-sdk-tools/.github/workflows/reusable-lint.yml@v2
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -17,27 +20,32 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Cache node modules
-      uses: actions/cache@v3.3.2
-      env:
-        cache-name: cache-node-modules
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-node${{ runner.node-version }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        cache: npm
     - run: npm ci
     - run: npm run build
     - run: npm test
-    - run: npx prettier --check "src/**"
-      # Prettier for some reason reports that the formatting is off on Windows.
-      # Since a single check is sufficient for code formatting, we skip it there:
-      if: runner.os != 'Windows'
-    - name: Archive code coverage results
-      uses: actions/upload-artifact@v4
+    # Upload coverage for sonarcube (only matching OS and one node version required)
+    - uses: actions/upload-artifact@v4
+      if: ${{ matrix.os == 'ubuntu-20.04' && matrix.node-version == '20.x' }}
       with:
-        name: code-coverage-report
-        path: coverage
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: dist
-        path: dist
+        name: code-coverage-${{matrix.os}}-${{matrix.node-version}}
+        path: coverage/
+
+  sonar-scan:
+    needs: [build]
+    runs-on: ubuntu-20.04
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Sonar analysis needs the full history for features like automatic assignment of bugs. If the following step
+          # is not included the project will show a warning about incomplete information.
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: code-coverage-ubuntu-20.04-20.x
+          path: coverage/
+      - uses: SonarSource/sonarcloud-github-action@v1.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
