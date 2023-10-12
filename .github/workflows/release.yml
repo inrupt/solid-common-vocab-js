@@ -14,9 +14,10 @@ jobs:
     - name: Node setup
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version-file: ".nvmrc"
         registry-url: 'https://registry.npmjs.org'
         scope: '@inrupt'
+        cache: 'npm'
     - name: NPM install, test and publish
       run: |
         npm install
