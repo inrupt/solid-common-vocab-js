@@ -7,12 +7,12 @@ env:
 jobs:
   unpublish-npm:
     runs-on: ubuntu-22.04
-    if: ${{github.event.ref_type == 'branch' && github.actor != 'dependabot[bot]'}} 
+    if: ${{github.event.ref_type == 'branch' && github.actor != 'dependabot[bot]'}}
     steps:
     - name: Prepare for unpublication from npm
       uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: '22.x'
         registry-url: 'https://registry.npmjs.org'
     - name: Determine npm tag
       # Remove non-alphanumeric characters
