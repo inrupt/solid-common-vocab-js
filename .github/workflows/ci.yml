@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-latest]
         node-version: [22.x, 20.x, 18.x]
     steps:
     - uses: actions/checkout@v4
@@ -26,14 +26,14 @@ jobs:
     - run: npm test
     # Upload coverage for sonarcube (only matching OS and one node version required)
     - uses: actions/upload-artifact@v4
-      if: ${{ matrix.os == 'ubuntu-20.04' && matrix.node-version == '22.x' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '22.x' }}
       with:
         name: code-coverage-${{matrix.os}}-${{matrix.node-version}}
         path: coverage/
 
   sonar-scan:
     needs: [build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
-          name: code-coverage-ubuntu-20.04-22.x
+          name: code-coverage-ubuntu-latest-22.x
           path: coverage/
       - uses: SonarSource/sonarcloud-github-action@v2.2
         env:
