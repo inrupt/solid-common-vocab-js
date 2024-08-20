@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Unreleased
 
-### New Features
+## 1.4.1 2024/08/20
 
 - Node 22 is now supported
 
