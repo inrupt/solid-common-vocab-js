@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@rdfjs/types": "^1.0.1",
-    "mock-local-storage": "^1.1.11",
-    "rdf-data-factory": "^1.1.0"
+    "mock-local-storage": "^1.1.24",
+    "rdf-data-factory": "^1.1.2"
   }
 }
