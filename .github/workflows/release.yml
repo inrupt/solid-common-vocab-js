@@ -1,10 +1,10 @@
-on: 
-  release: 
+on:
+  release:
     types: [published]
 
 jobs:
   release-vocab-term:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Releases the Solid Common Vocab package
     steps:
      # Makes the current repository available to the workflow.
