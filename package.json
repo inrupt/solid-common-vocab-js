@@ -44,7 +44,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "license-checker": "^25.0.1",
     "prettier": "3.4.2",
-    "rdf-data-factory": "^1.1.2",
+    "rdf-data-factory": "^2.0.1",
     "rollup": "^4.21.0",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.2.4",
